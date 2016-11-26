@@ -21,9 +21,15 @@
 import argparse
 import os
 import shutil
+import subprocess
 
 import jinja2
 
+import libretro_ctypes
+
+import config
+
+ADDONS = config.ADDONS
 DIR = os.path.dirname(os.path.realpath(__file__))
 
 
@@ -33,12 +39,19 @@ def main():
     parser.add_argument('--game-addons-dir', dest='working_directory',
                         type=str, required=True,
                         help='Directory where the game addons reside')
+    parser.add_argument('--compile', action="store_true",
+                        help="Compile libretro cores and read system info")
+    parser.add_argument('--kodi-source-dir', dest='kodi_directory',
+                        type=str,
+                        help='Kodi\'s source directory')
 
     args = parser.parse_args()
-    process(os.path.abspath(args.working_directory))
+    process(os.path.abspath(args.working_directory),
+            args.compile,
+            os.path.abspath(args.kodi_directory))
 
 
-def process(working_directory):
+def process(working_directory, compile_addons, kodi_directory):
     """ Process Kodi Game addons and unify project files """
     template_dir = os.path.join(DIR, 'template')
     working_dir = os.path.abspath(working_directory)
@@ -49,8 +62,17 @@ def process(working_directory):
     for addon in next(os.walk(working_dir))[1]:
         print("Processing addon: {}".format(addon))
         addon_dir = os.path.join(working_dir, addon)
-        template_vars = {'game': {'name': addon.rsplit('.', 1)[1]},
-                         'makefile': {}}
+        addon_name = addon.rsplit('.', 1)[1]
+        template_vars = {'game': {'name': addon_name},
+                         'makefile': {}, 'repo': None}
+        try:
+            addon_config = config.ADDONS[addon_name]
+            template_vars['repo'] = addon_config[0]
+            template_vars['makefile'] = {'file': addon_config[1],
+                                         'dir': addon_config[2]}
+            print('Read addon config.py entry')
+        except KeyError:
+            print('Addon has no (or incorrect) config.py entry')
 
         for infile in list_all_files(template_dir):
             if '{{' in infile and '}}' in infile:
@@ -71,10 +93,40 @@ def process(working_directory):
                 shutil.copyfile(os.path.join(template_dir, infile),
                                 os.path.join(addon_dir, outfile))
 
+        if compile_addons:
+            print("  Compiling addon")
+            compile_addon(addon, working_directory, kodi_directory)
+            library = libretro_ctypes.LibretroWrapper(
+                os.path.join(working_directory, addon, 'install', addon,
+                             '{}.so'.format(addon)))
+            print(library.system_info)
+            print(library.variables)
 
-def ensure_directory_exists(path):
+            # Generate addon.xml.in
+
+
+def compile_addon(addon, working_directory, kodi_directory):
+    """ Compile the addon in order to read system info from the binary """
+    addon_dir = os.path.join(working_directory, addon)
+    build_dir = os.path.join(addon_dir, 'build')
+    install_dir = os.path.join(addon_dir, 'install')
+    project_dir = os.path.join(kodi_directory, 'project', 'cmake', 'addons')
+    ensure_directory_exists(build_dir, clean=True)
+    subprocess.run(['/usr/local/bin/cmake',
+                    '-DADDONS_TO_BUILD={}$'.format(addon),
+                    '-DADDON_SRC_PREFIX={}'.format(working_directory),
+                    '-DCMAKE_BUILD_TYPE=Debug', '-DPACKAGE_ZIP=1',
+                    '-DCMAKE_INSTALL_PREFIX={}'.format(install_dir),
+                    project_dir], cwd=build_dir)
+    subprocess.run(['make', '-j8'], cwd=build_dir)
+
+
+def ensure_directory_exists(path, clean=False):
     """ Ensure that the given path exists """
     try:
+        if clean and os.path.exists(path):
+            shutil.rmtree(path)
+
         if not os.path.exists(path):
             os.makedirs(path)
     except OSError:

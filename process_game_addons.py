@@ -93,7 +93,7 @@ class KodiGameAddons:
         print("Processing addon: {}".format(addon))
         addon_name = addon.rsplit('.', 1)[1]  # game.libretro.<addon_name>
         template_vars = {'game': {'name': addon_name},
-                         'makefile': {}, 'repo': None,
+                         'makefile': {},
                          'datetime': '{0:%Y-%m-%d %H:%Mi%z}'.format(
                              datetime.datetime.now()),
                          'system_info': {}, 'settings': []}
@@ -113,6 +113,7 @@ class KodiGameAddons:
 
         # Compile addons to read info from built library
         if self._args.compile:
+            self._process_addondescription_files(addon, template_vars)
             library_file = os.path.join(directory, addon, 'install',
                                         addon, '{}.so'.format(addon))
             self._compile_addon(addon, directory)
@@ -127,11 +128,26 @@ class KodiGameAddons:
             except OSError:
                 print("Failed to compile addon, output library not found.")
 
+    def _process_addondescription_files(self, addon, template_vars):
+        self._process_templates(
+            os.path.join(DIR, 'template_description'),
+            os.path.join(self._args.kodi_directory, 'project', 'cmake',
+                         'addons', 'addons', addon), template_vars)
+
     def _process_addon_files(self, addon, directory, template_vars):
-        addon_dir = os.path.join(directory, addon)
+        self._process_templates(
+            os.path.join(DIR, 'template'),
+            os.path.join(directory, addon), template_vars)
+
+    @classmethod
+    def _process_templates(cls, template_dir, destination, template_vars):
+        """ Process templates """
+        template_env = jinja2.Environment(
+            loader=jinja2.FileSystemLoader(template_dir),
+            trim_blocks=True, lstrip_blocks=True)
 
         # Loop over all templates
-        for infile in list_all_files(self._template_dir):
+        for infile in list_all_files(template_dir):
 
             # Files may have templatized names
             if '{{' in infile and '}}' in infile:
@@ -142,20 +158,20 @@ class KodiGameAddons:
 
             # Create directories if necessary
             ensure_directory_exists(
-                os.path.dirname(os.path.join(addon_dir, outfile)))
+                os.path.dirname(os.path.join(destination, outfile)))
 
             # Files that end with .j2 are templates
             if extension.startswith('.j2'):
                 print("  Generating {}".format(outfile_name))
-                template = self._template_env.get_template(infile)
+                template = template_env.get_template(infile)
                 template.stream(template_vars).dump(
-                    os.path.join(addon_dir, outfile_name))
+                    os.path.join(destination, outfile_name))
 
             # Other files are just copied
             else:
                 print("     Copying {}".format(outfile_name))
-                shutil.copyfile(os.path.join(self._template_dir, infile),
-                                os.path.join(addon_dir, outfile))
+                shutil.copyfile(os.path.join(template_dir, infile),
+                                os.path.join(destination, outfile))
 
     def _compile_addon(self, addon, directory):
         """ Compile the addon in order to read system info from the binary """

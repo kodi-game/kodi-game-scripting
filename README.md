@@ -15,10 +15,18 @@ Manual porting is explained in this [forum post](http://forum.kodi.tv/showthread
 
 ## Usage
 
-Clone [game add-ons](https://github.com/kodi-game) to `<WORKING_DIRECTORY>` and
-run:
+Clone [game add-ons](https://github.com/kodi-game) to `<WORKING_DIRECTORY>` or
+specify the `--git` parameter and then run:
 
-    ./process_game_addons.py --game-addons-dir <WORKING_DIRECTORY>
+    ./process_game_addons.py --game-addons-dir=<WORKING_DIRECTORY>
+
+Some of the information (such as version or supported extensions) can only be
+retrieved from a compiled add-on binary. This script can compile add-ons:
+
+    ./process_game_addons.py --game-addons-dir=<WORKING_DIRECTORY> \
+                             --compile --kodi-source-dir=<KODI_SOURCE_DIR>
+
+Add-ons can be filtered with `--filter` (e.g. `--filter=bnes`).
 
 Afterwards use `git` to check in the changes and push them to the repos.
 

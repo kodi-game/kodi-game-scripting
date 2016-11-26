@@ -1,1 +1,3 @@
+gitpython
 jinja2
+PyGithub

@@ -24,6 +24,7 @@
 
 # core: {(Libretro repo, Makefile, Directory)}
 ADDONS = {
-    'bnes':   ('bnes-libretro',   'Makefile',          '.'),
-    'dosbox': ('dosbox-libretro', 'Makefile.libretro', '.')
+    'bnes':          ('bnes-libretro',          'Makefile',          '.'),
+    'dosbox':        ('dosbox-libretro',        'Makefile.libretro', '.'),
+    'virtualjaguar': ('virtualjaguar-libretro', 'Makefile',          '.')
 }

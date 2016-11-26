@@ -27,6 +27,7 @@ import subprocess
 
 import jinja2
 
+import git_access
 import libretro_ctypes
 
 import config
@@ -46,8 +47,20 @@ def main():
     parser.add_argument('--kodi-source-dir', dest='kodi_directory',
                         type=str,
                         help="Kodi's source directory")
+    parser.add_argument('--git', action="store_true",
+                        help="Clone / reset libretro cores from GitHub")
+    parser.add_argument('--filter', type=str, default='',
+                        help="Filter games (e.g. nes)")
 
     args = parser.parse_args()
+
+    if args.git:
+        print("Cloning git repositories")
+        gitaccess = git_access.Git()
+        addon_filter = 'game.libretro' + \
+            '.' + args.filter if args.filter else ''
+        repos = gitaccess.get_repos('kodi-game', addon_filter)
+        gitaccess.clone_repos(repos, os.path.abspath(args.working_directory))
 
     util = KodiGameAddons(args)
     util.process_directory(os.path.abspath(args.working_directory))
@@ -70,7 +83,10 @@ class KodiGameAddons:
 
         # Loop over all addons in the working directory
         for addon in next(os.walk(directory))[1]:
-            self.process_addon(addon, directory)
+            if self._args.filter in addon:
+                self.process_addon(addon, directory)
+            else:
+                print("Skipping addon {} due to filter".format(addon))
 
     def process_addon(self, addon, directory):
         """ Process a single Kodi Game addon """
@@ -79,7 +95,8 @@ class KodiGameAddons:
         template_vars = {'game': {'name': addon_name},
                          'makefile': {}, 'repo': None,
                          'datetime': '{0:%Y-%m-%d %H:%Mi%z}'.format(
-                             datetime.datetime.now())}
+                             datetime.datetime.now()),
+                         'system_info': {}, 'settings': []}
 
         # Read addon config from config.py
         try:
@@ -87,8 +104,6 @@ class KodiGameAddons:
             template_vars['repo'] = addon_config[0]
             template_vars['makefile'] = {'file': addon_config[1],
                                          'dir': addon_config[2]}
-            template_vars['system_info'] = {},
-            template_vars['settings'] = []
             print("  Ussing config.py entry")
         except KeyError:
             print("  Addon has no (or incorrect) config.py entry")

@@ -1,3 +1,6 @@
+[![CircleCI
+Status](https://circleci.com/gh/fetzerch/kodi-game-scripting.svg?style=shield)](https://circleci.com/gh/fetzerch/kodi-game-scripting)
+
 # Scripting for Kodi Game addons
 
 [Kodi's RetroPlayer](https://github.com/garbear/xbmc) offers a wrapper to use

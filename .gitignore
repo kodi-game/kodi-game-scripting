@@ -3,5 +3,7 @@
 __pycache__
 .tox
 .coverage
+coverage.xml
+nosetests.xml
 cover/
 working_directory

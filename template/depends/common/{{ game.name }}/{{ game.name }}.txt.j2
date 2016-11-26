@@ -1,1 +1,2 @@
-{{ game.name }} https://github.com/libretro/{{ game.name }} master
+{{ game.name }} https://github.com/libretro/{{ repo | default(game.name) }} master
+

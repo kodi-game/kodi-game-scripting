@@ -20,11 +20,69 @@
 
     Override settings for specific libretro cores. """
 
-# pylint: disable=bad-whitespace
+# pylint: disable=bad-whitespace, line-too-long
+# flake8: noqa
 
 # core: {(Libretro repo, Makefile, Directory)}
 ADDONS = {
-    'bnes':          ('bnes-libretro',          'Makefile',          '.'),
-    'dosbox':        ('dosbox-libretro',        'Makefile.libretro', '.'),
-    'virtualjaguar': ('virtualjaguar-libretro', 'Makefile',          '.')
+    '2048':                      ('libretro-2048',              'Makefile.libretro', '.'),
+    '4do':                       ('4do-libretro',               'Makefile',          '.'),
+    'beetle-bsnes':              ('beetle-bsnes-libretro',      'Makefile',          '.'),
+    'beetle-gba':                ('beetle-gba-libretro',        'Makefile',          '.'),
+    'beetle-lynx':               ('beetle-lynx-libretro',       'Makefile',          '.'),
+    'beetle-ngp':                ('beetle-ngp-libretro',        'Makefile',          '.'),
+    'beetle-pce-fast':           ('beetle-pce-fast-libretro',   'Makefile',          '.'),
+    'beetle-pcfx':               ('beetle-pcfx-libretro',       'Makefile',          '.'),
+    'beetle-psx':                ('beetle-psx-libretro',        'Makefile',          '.'),
+    'beetle-supergrafx':         ('beetle-supergrafx-libretro', 'Makefile',          '.'),
+    'beetle-vb':                 ('beetle-vb-libretro',         'Makefile',          '.'),
+    'beetle-wswan':              ('beetle-wswan-libretro',      'Makefile',          '.'),
+    'bluemsx':                   ('blueMSX-libretro',           'Makefile',          '.'),
+    'bnes':                      ('bnes-libretro',              'Makefile',          '.'),
+    'bsnes-mercury-accuracy':    ('bsnes-mercury',              'Makefile',          '.'),
+    'bsnes-mercury-balanced':    ('bsnes-mercury',              'Makefile',          '.'),
+    'bsnes-mercury-performance': ('bsnes-mercury',              'Makefile',          '.'),
+    'cap32':                     ('libretro-cap32',             'Makefile',          '.'),
+    'desmume':                   ('desmume-libretro',           'Makefile.libretro', '.'),
+    'dolphin':                   ('dolphin',                    'Makefile',          'libretro.'),
+    'dinothawr':                 ('Dinothawr',                  'Makefile',          '.'),
+    'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.'),
+    'fbalpha2012':               ('fbalpha2012',                'makefile.libretro', 'svn-current/trunk'),  # fba
+    'fceumm':                    ('libretro-fceumm',            'Makefile',          '.'),
+    'fmsx':                      ('fmsx-libretro',              'Makefile',          '.'),
+    'fuse':                      ('fuse-libretro',              'Makefile',          '.'),
+    'gambatte':                  ('gambatte-libretro',          'Makefile',          '.'),
+    'genplus':                   ('Genesis-Plus-GX',            'Makefile',          '.'),
+    'gw':                        ('gw-libretro',                'Makefile',          '.'),
+    'handy':                     ('libretro-handy',             'Makefile',          '.'),
+    'hatari':                    ('hatari',                     'Makefile.libretro', '.'),
+    'lutro':                     ('libretro-lutro',             'Makefile',          '.'),
+    'mame':                      ('mame',                       'Makefile.libretro', '.'),
+    'meteor':                    ('meteor-libretro',            'Makefile',          'libretro'),
+    'mgba':                      ('mgba',                       'Makefile',          '.'),
+    'mupen64plus':               ('mupen64plus-libretro',       'Makefile',          '.'),
+    'nestopia':                  ('nestopia',                   'Makefile',          '.'),
+    'nx':                        ('nxengine-libretro',          'Makefile',          '.'),
+    'o2em':                      ('libretro-o2em',              'Makefile',          '.'),
+    'pcem':                      ('libretro-pcem',              'Makefile.libretro', 'src'),
+    'pcsx-rearmed':              ('pcsx_rearmed',               'Makefile',          '.'),
+    'picodrive':                 ('picodrive',                  'Makefile',          '.'),
+    'ppsspp':                    ('libretro-ppsspp',            'Makefile',          'libretro'),
+    'prboom':                    ('libretro-prboom',            'Makefile',          '.'),
+    'prosystem':                 ('prosystem-libretro',         'Makefile',          '.'),
+    'quicknes':                  ('QuickNES_Core',              'Makefile',          '.'),
+    'reicast':                   ('reicast-emulator',           'Makefile',          '.'),
+    'rustation':                 ('rustation-libretro',         'Makefile',          '.'),
+    'scummvm':                   ('scummvm',                    'Makefile',          'backends/platform/libretro/build'),
+    'snes9x':                    ('snes9x',                     'Makefile',          '.'),
+    'snes9x2002':                ('snes9x2002',                 'Makefile',          '.'),
+    'snes9x2010':                ('snes9x2010',                 'Makefile',          '.'),
+    'stella':                    ('stella-libretro',            'Makefile',          '.'),
+    'tgbdual':                   ('tgbdual-libretro',           'Makefile',          '.'),
+    'tyrquake':                  ('tyrquake',                   'Makefile',          '.'),
+    'vbam':                      ('vbam-libretro',              'Makefile',          'src/libretro'),
+    'vba-next':                  ('vba-next',                   'Makefile',          '.'),
+    'vecx':                      ('libretro-vecx',              'Makefile',          '.'),
+    'yabause':                   ('yabause',                    'Makefile',          'libretro'),
+    'virtualjaguar':             ('virtualjaguar-libretro',     'Makefile',          '.')
 }

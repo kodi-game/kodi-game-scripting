@@ -1,0 +1,30 @@
+{% if settings %}
+# game.libretro.{{ game.name }} language file
+# Addon Name: game.libretro.{{ game.name }}
+# Addon id: game.libretro.{{ game.name }}
+# Addon Provider: libretro
+msgid ""
+msgstr ""
+"Project-Id-Version: game.libretro.{{ game.name }}\n"
+"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
+"POT-Creation-Date: {{ datetime }}\n"
+"PO-Revision-Date: {{ datetime }}\n"
+"Last-Translator: Kodi Translation Team\n"
+"Language-Team: English (http://www.transifex.com/projects/p/xbmc-addons/language/en/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "#30000"
+msgid "Settings"
+msgstr ""
+
+{% for setting in settings %}
+msgctxt "#{{ 30000 + loop.index }}"
+msgid "{{ setting.description }}"
+msgstr ""
+
+{% endfor %}
+{% endif %}

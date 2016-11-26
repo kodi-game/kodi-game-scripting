@@ -20,7 +20,10 @@
 
     Override settings for specific libretro cores. """
 
+# pylint: disable=bad-whitespace
+
 # core: {(Libretro repo, Makefile, Directory)}
 ADDONS = {
-    'bnes': ('bnes-libretro', 'Makefile', '.')
+    'bnes':   ('bnes-libretro',   'Makefile',          '.'),
+    'dosbox': ('dosbox-libretro', 'Makefile.libretro', '.')
 }

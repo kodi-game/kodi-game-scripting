@@ -1,5 +1,6 @@
 """ Libretro Wrapper """
 
+import collections
 import ctypes
 import os
 import subprocess
@@ -23,9 +24,10 @@ class LibretroWrapper:
     class SystemInfo():
         """ Wrapped system info """
         def __init__(self, retro_system_info=None):
-            self.name = retro_system_info.library_name
-            self.version = retro_system_info.library_version
-            self.extensions = retro_system_info.valid_extensions
+            self.name = str(retro_system_info.library_name, 'utf-8')
+            self.version = str(retro_system_info.library_version, 'utf-8')
+            self.extensions = \
+                str(retro_system_info.valid_extensions, 'utf-8').split('|')
             self.need_fullpath = retro_system_info.need_fullpath
             self.block_extract = retro_system_info.block_extract
             self.supports_no_game = False
@@ -79,10 +81,22 @@ class LibretroWrapper:
                     index += 1
                     if var.key is None and var.value is None:
                         break
-                    outer.variables.append((var.key, var.value))
+                    outer.variables.append(outer.parse_libretro_variable(var))
 
         retro_environment_cb = retro_environment_t(retro_environment_cb)
         retro_set_environment(retro_environment_cb)
+
+    @classmethod
+    def parse_libretro_variable(cls, variable):
+        """ Parse variable into Variable(id, desc, values, default) """
+        key = str(variable.key, 'utf-8')
+        description, values = str(variable.value, 'utf-8').split(';', 1)
+        values = values.strip().split('|')
+        default = values[0]
+
+        var = collections.namedtuple('Variable',
+                                     'id description values default')
+        return var(key, description, values, default)
 
 
 def compile_testlibrary():
@@ -102,12 +116,12 @@ def test_load_library():
     """ Test LibretroWrapper """
     lib = LibretroWrapper(compile_testlibrary())
     print(lib.system_info)
-    assert lib.system_info.name == b'libraryname'
+    assert lib.system_info.name == 'libraryname'
     print(lib.variables)
     assert len(lib.variables) == 2
 
     lib2 = LibretroWrapper(compile_testlibrary())
     print(lib2.system_info)
-    assert lib2.system_info.name == b'libraryname'
+    assert lib2.system_info.name == 'libraryname'
     print(lib2.variables)
     assert len(lib2.variables) == 2

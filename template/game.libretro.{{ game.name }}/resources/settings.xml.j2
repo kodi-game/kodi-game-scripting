@@ -1,0 +1,10 @@
+{% if settings %}
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+	<category label="30000">
+	{% for setting in settings %}
+		<setting label="{{ 30000 + loop.index }}" type="select" id="{{ setting.id | e }}" values="{{ setting.values|join('|') | e }}" default="{{ setting.default | e }}"/>
+	{% endfor %}
+	</category>
+</settings>
+{% endif %}

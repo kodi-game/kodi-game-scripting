@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="game.libretro.{{ game.name }}"
+		name="{{ system_info.name | default(game.name) | e }}"
+		version="{{ system_info.version | default('0.0.0') | e }}"
+		provider-name="Libretro">
+	<requires>
+		<import addon="game.libretro" version="1.0.0"/>
+	</requires>
+	<extension point="kodi.gameclient"
+			library_@PLATFORM@="@LIBRARY_FILENAME@">
+		<platforms></platforms>
+		<extensions>{{ system_info.extensions | join('|') | e }}</extensions>
+		<supports_vfs>{{ system_info.block_extract | lower }}</supports_vfs>
+		<supports_standalone>{{ system_info.supports_no_game | lower | default('false') }}</supports_standalone>
+		<supports_keyboard>false</supports_keyboard>
+		<supports_mouse>false</supports_keyboard>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary lang="en">{{ system_info.name | e }} {{ system_info.version | default('undefined') | e }}</summary>
+		<description>
+
+Supported files: {{ '.' + system_info.extensions | join(', .') }}</description>
+		<license></license>
+		<platform>@PLATFORM@</platform>
+		<nofanart>true</nofanart>
+		<noicon>true</noicon>
+	</extension>
+</addon>
+

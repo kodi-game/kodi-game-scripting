@@ -1,0 +1,2 @@
+[MESSAGES CONTROL]
+disable=locally-disabled,too-few-public-methods,too-many-locals

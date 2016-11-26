@@ -1,2 +1,6 @@
+**.pyc
+__pycache__
 .tox
+.coverage
+cover/
 working_directory

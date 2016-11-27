@@ -24,10 +24,10 @@ class LibretroWrapper:
     class SystemInfo():
         """ Wrapped system info """
         def __init__(self, retro_system_info=None):
-            self.name = str(retro_system_info.library_name, 'utf-8')
-            self.version = str(retro_system_info.library_version, 'utf-8')
+            self.name = xstr(retro_system_info.library_name)
+            self.version = xstr(retro_system_info.library_version)
             self.extensions = \
-                str(retro_system_info.valid_extensions, 'utf-8').split('|')
+                xstr(retro_system_info.valid_extensions).split('|')
             self.need_fullpath = retro_system_info.need_fullpath
             self.block_extract = retro_system_info.block_extract
             self.supports_no_game = False
@@ -89,14 +89,22 @@ class LibretroWrapper:
     @classmethod
     def parse_libretro_variable(cls, variable):
         """ Parse variable into Variable(id, desc, values, default) """
-        key = str(variable.key, 'utf-8')
-        description, values = str(variable.value, 'utf-8').split(';', 1)
+        key = xstr(variable.key)
+        description, values = xstr(variable.value).split(';', 1)
         values = values.strip().split('|')
         default = values[0]
 
         var = collections.namedtuple('Variable',
                                      'id description values default')
         return var(key, description, values, default)
+
+
+def xstr(string):
+    """ Convert string to UTF-8, (NoneType as '') """
+    if string is None:
+        return ''
+    else:
+        return str(string, 'utf-8')
 
 
 def compile_testlibrary():
@@ -125,3 +133,9 @@ def test_load_library():
     assert lib2.system_info.name == 'libraryname'
     print(lib2.variables)
     assert len(lib2.variables) == 2
+
+
+def test_xstr():
+    """ Test xstr conversion """
+    assert xstr(b'test') == 'test'
+    assert xstr(None) == ''

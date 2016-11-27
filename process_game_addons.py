@@ -96,7 +96,7 @@ class KodiGameAddons:
         print("Processing addon: {}".format(addon))
         addon_name = addon.rsplit('.', 1)[1]  # game.libretro.<addon_name>
         template_vars = {'game': {'name': addon_name},
-                         'makefile': {},
+                         'makefile': {}, 'config': {},
                          'datetime': '{0:%Y-%m-%d %H:%Mi%z}'.format(
                              datetime.datetime.now()),
                          'system_info': {}, 'settings': []}
@@ -107,6 +107,8 @@ class KodiGameAddons:
             template_vars['repo'] = addon_config[0]
             template_vars['makefile'] = {'file': addon_config[1],
                                          'dir': addon_config[2]}
+            if len(addon_config) > 3:
+                template_vars['config'] = addon_config[3]
             print("  Ussing config.py entry")
         except KeyError:
             print("  Addon has no (or incorrect) config.py entry")

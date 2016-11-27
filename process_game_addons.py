@@ -82,7 +82,7 @@ class KodiGameAddons:
         directory = os.path.abspath(directory)
 
         # Loop over all addons in the working directory
-        for addon in next(os.walk(directory))[1]:
+        for addon in sorted(next(os.walk(directory))[1]):
             if self._args.filter in addon:
                 self.process_addon(addon, directory)
             else:

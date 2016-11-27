@@ -198,7 +198,10 @@ class KodiGameAddons:
                         print("Failed to parse {}".format(outfile_path))
 
                 template = template_env.get_template(infile)
-                template.stream(template_vars).dump(outfile_path)
+                content = template.render(template_vars).strip()
+                if content:
+                    with open(outfile_path, 'w') as outfile_ctx:
+                        outfile_ctx.write(content)
 
             # Other files are just copied
             else:

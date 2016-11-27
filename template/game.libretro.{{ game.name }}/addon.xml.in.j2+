@@ -1,26 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon id="game.libretro.{{ game.name }}"
-		name="{{ system_info.name | default(game.name) | e }}"
+	{% set addon_name = xml.addon.name | default(system_info.name) | default(game.name) %}
+		name="{{ addon_name | e }}"
 		version="{{ system_info.version | default('0.0.0') | e }}"
 		provider-name="Libretro">
 	<requires>
 		<import addon="game.libretro" version="1.0.0"/>
+		{% for addon in xml.addon.requires.import %}
+		{% if addon.addon != 'game.libretro' %}
+		<import addon="{{ addon.addon }}" version="{{ addon.version }}"/>
+		{% endif %}
+		{% endfor %}
 	</requires>
 	<extension point="kodi.gameclient"
 			library_@PLATFORM@="@LIBRARY_FILENAME@">
-		<platforms></platforms>
+		<platforms>{{ xml.addon.extension[0].platforms | default('') }}</platforms>
 		<extensions>{{ system_info.extensions | join('|') | e }}</extensions>
-		<supports_vfs>{{ system_info.block_extract | lower }}</supports_vfs>
+		<supports_vfs>{{ system_info.block_extract | lower | default('false') }}</supports_vfs>
 		<supports_standalone>{{ system_info.supports_no_game | lower | default('false') }}</supports_standalone>
 		<supports_keyboard>false</supports_keyboard>
-		<supports_mouse>false</supports_keyboard>
+		<supports_mouse>false</supports_mouse>
 	</extension>
 	<extension point="xbmc.addon.metadata">
-		<summary lang="en">{{ system_info.name | e }} {{ system_info.version | default('undefined') | e }}</summary>
-		<description>
-
-Supported files: {{ '.' + system_info.extensions | join(', .') }}</description>
-		<license></license>
+		{% set summary = addon_name %}
+		{% if system_info.version %}
+			{% set summary = summary + ' ' + system_info.version %}
+		{% endif %}
+		<summary lang="en">{{ summary | e }}</summary>
+		{% set extensions = (system_info.extensions | surround('.', append=False) | join(', ')) %}
+		{% set description = xml.addon.extension[1].description | default('') %}
+		{% if ("Supported files: " in xml.addon.extension[1].description) %}
+			{% set description = xml.addon.extension[1].description | regex_replace('Supported files: .*', 'Supported files: ' + extensions) %}
+		{% elif extensions %}
+			{% set description = xml.addon.extension[1].description + '\n\n' + 'Supported files: ' + extensions %}
+		{% endif %}
+		<description>{{ description | e }}</description>
+		<license>{{ xml.addon.extension[1].license | e }}</license>
 		<platform>@PLATFORM@</platform>
 		<nofanart>true</nofanart>
 		<noicon>true</noicon>

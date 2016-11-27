@@ -22,10 +22,13 @@ import argparse
 import datetime
 import os
 import multiprocessing
+import re
 import shutil
 import subprocess
+import xml.etree.ElementTree
 
 import jinja2
+import xmljson
 
 import git_access
 import libretro_ctypes
@@ -146,6 +149,18 @@ class KodiGameAddons:
             loader=jinja2.FileSystemLoader(template_dir),
             trim_blocks=True, lstrip_blocks=True)
 
+        def surround(items, string, prepend=True, append=True):
+            """ Surrounds each element in a list by the given string """
+            return ['{}{}{}'.format(string if prepend is True else '', element,
+                                    string if append is True else '')
+                    for element in items]
+        template_env.filters["surround"] = surround
+
+        def regex_replace(string, find, replace):
+            """ Replaces regex in string """
+            return re.sub(find, replace, string)
+        template_env.filters["regex_replace"] = regex_replace
+
         # Loop over all templates
         for infile in list_all_files(template_dir):
 
@@ -163,9 +178,27 @@ class KodiGameAddons:
             # Files that end with .j2 are templates
             if extension.startswith('.j2'):
                 print("  Generating {}".format(outfile_name))
+                outfile_path = os.path.join(destination, outfile_name)
+
+                # Make content of already existing XML files available in
+                # the template. That way templates can decide what data to keep
+                # or override.
+                if '.xml' in infile and os.path.isfile(outfile_path):
+                    with open(outfile_path, 'r') as xmlfile_ctx:
+                        xml_content = xmlfile_ctx.read()
+
+                    # Remove variables from xml.in files
+                    xml_content = re.sub(r'@([A-Za-z0-9_]+)@', r'AT_\1_AT',
+                                         xml_content)
+                    try:
+                        root = xml.etree.ElementTree.fromstring(xml_content)
+                        xml_data = xmljson.Yahoo().data(root)
+                        template_vars.update({'xml': xml_data})
+                    except xml.etree.ElementTree.ParseError:
+                        print("Failed to parse {}".format(outfile_path))
+
                 template = template_env.get_template(infile)
-                template.stream(template_vars).dump(
-                    os.path.join(destination, outfile_name))
+                template.stream(template_vars).dump(outfile_path)
 
             # Other files are just copied
             else:

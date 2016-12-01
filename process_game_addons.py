@@ -19,21 +19,19 @@
 """ Process Kodi Game addons and unify project files """
 
 import argparse
+import collections
 import datetime
 import os
 import multiprocessing
 import re
-import shutil
 import subprocess
-import xml.etree.ElementTree
-
-import jinja2
-import xmljson
 
 import git_access
 import libretro_ctypes
 
 import config
+import utils
+import template_processor
 
 ADDONS = config.ADDONS
 DIR = os.path.dirname(os.path.realpath(__file__))
@@ -57,16 +55,12 @@ def main():
 
     args = parser.parse_args()
 
+    args.working_directory = os.path.abspath(args.working_directory)
     if args.git:
-        print("Cloning git repositories")
-        gitaccess = git_access.Git()
-        addon_filter = 'game.libretro' + \
-            '.' + args.filter if args.filter else ''
-        repos = gitaccess.get_repos('kodi-game', addon_filter)
-        gitaccess.clone_repos(repos, os.path.abspath(args.working_directory))
-
+        args.git = git_access.Git(auth=True)
     util = KodiGameAddons(args)
-    util.process_directory(os.path.abspath(args.working_directory))
+    util.process()
+    util.summary()
 
 
 class KodiGameAddons:
@@ -74,188 +68,178 @@ class KodiGameAddons:
     def __init__(self, args):
         """ Initialize instance """
         self._args = args
-        self._template_dir = os.path.join(DIR, 'template')
+        self._prepare_environment()
 
-        self._template_env = jinja2.Environment(
-            loader=jinja2.FileSystemLoader(self._template_dir),
-            trim_blocks=True, lstrip_blocks=True)
+    def _prepare_environment(self):
+        """ Prepare and check the environment (directories and config) """
+        # Check if given filter matches with config.py
+        config.ADDONS = {k: v for k, v in config.ADDONS.items()
+                         if re.search(self._args.filter, k)}
+        if not config.ADDONS:
+            raise ValueError("Filter doesn't match any items in config.py")
 
-    def process_directory(self, directory):
-        """ Process a full directory with Kodi Game addons """
-        directory = os.path.abspath(directory)
+        # Check GitHub repos
+        repos = {}
+        if self._args.git:
+            regex = (self._args.filter if self._args.filter
+                     else config.GITHUB_ADDON_PREFIX)
+            print("Querying repos matching '{}'".format(regex))
+            repos = self._args.git.get_repos(config.GITHUB_ORGANIZATION, regex)
 
-        # Loop over all addons in the working directory
-        for addon in sorted(next(os.walk(directory))[1]):
-            if self._args.filter in addon:
-                self.process_addon(addon, directory)
-            else:
-                print("Skipping addon {} due to filter".format(addon))
+        # Create Addon objects
+        self._addons = collections.OrderedDict()
+        for game_name in sorted(config.ADDONS):
+            addon_name = '{}{}'.format(config.GITHUB_ADDON_PREFIX, game_name)
+            self._addons[game_name] = \
+                Addon(addon_name, game_name,
+                      repos.get(addon_name, None), self._args)
 
-    def process_addon(self, addon, directory):
-        """ Process a single Kodi Game addon """
-        print("Processing addon: {}".format(addon))
-        addon_name = addon.rsplit('.', 1)[1]  # game.libretro.<addon_name>
-        template_vars = {'game': {'name': addon_name},
-                         'makefile': {}, 'config': {},
-                         'datetime': '{0:%Y-%m-%d %H:%Mi%z}'.format(
-                             datetime.datetime.now()),
-                         'system_info': {}, 'settings': []}
+        print("Processing the following addons: {}".format(
+            ', '.join(self._addons)))
 
-        # Read addon config from config.py
-        try:
-            addon_config = config.ADDONS[addon_name]
-            template_vars['repo'] = addon_config[0]
-            template_vars['makefile'] = {'file': addon_config[1],
-                                         'dir': addon_config[2]}
-            if len(addon_config) > 3:
-                template_vars['config'] = addon_config[3]
-            print("  Ussing config.py entry")
-        except KeyError:
-            print("  Addon has no (or incorrect) config.py entry")
+        # Clone/Fetch repos
+        if self._args.git:
+            for addon in self._addons.values():
+                addon.clone()
+
+    def process(self):
+        """ Process list of addons from config """
 
         # First iteration: Makefiles
-        self._process_addon_files(addon, directory, template_vars)
+        print("First iteration: Generate Makefiles")
+        for addon in self._addons.values():
+            print(" Processing addon: {}".format(addon.name))
+            addon.process_addon_files()
+            addon.process_description_files()
 
         # Compile addons to read info from built library
+        # Instead of compiling individual addons we compile all at once to save
+        # time (tinyxml and others would be compiled multiple times).
         if self._args.compile:
-            self._process_addondescription_files(addon, template_vars)
-            library_file = os.path.join(directory, addon, 'install',
-                                        addon, '{}.so'.format(addon))
-            self._compile_addon(addon, directory)
-            try:
-                library = libretro_ctypes.LibretroWrapper(library_file)
-                template_vars['system_info'] = library.system_info
-                template_vars['settings'] = sorted(library.variables,
-                                                   key=lambda x: x.id)
+            if not self._compile_addons():
+                return
 
-                # Second iteration: Read info from built library
-                self._process_addon_files(addon, directory, template_vars)
-            except OSError:
-                print("Failed to compile addon, output library not found.")
+            # Second iteration: Metadata files
+            print("Second iteration: Generate Metadata files")
+            for addon in self._addons.values():
+                print(" Processing addon: {}".format(addon.name))
+                addon.process_addon_files()
 
-    def _process_addondescription_files(self, addon, template_vars):
-        self._process_templates(
-            os.path.join(DIR, 'template_description'),
-            os.path.join(self._args.kodi_directory, 'project', 'cmake',
-                         'addons', 'addons', addon), template_vars)
+        # Create commit
+        if self._args.git:
+            for addon in self._addons.values():
+                addon.commit()
 
-    def _process_addon_files(self, addon, directory, template_vars):
-        self._process_templates(
-            os.path.join(DIR, 'template'),
-            os.path.join(directory, addon), template_vars)
+    def summary(self):
+        """ Print summary """
+        print("Generating summary")
+        template_vars = {'addons': []}
+        for addon in self._addons.values():
+            template_vars['addons'].append(addon.info)
+        template_processor.TemplateProcessor.process(
+            os.path.join(DIR, 'template_summary'),
+            self._args.working_directory,
+            template_vars)
 
-    @classmethod
-    def _process_templates(cls, template_dir, destination, template_vars):
-        """ Process templates """
-        template_env = jinja2.Environment(
-            loader=jinja2.FileSystemLoader(template_dir),
-            trim_blocks=True, lstrip_blocks=True)
-
-        def surround(items, string, prepend=True, append=True):
-            """ Surrounds each element in a list by the given string """
-            return ['{}{}{}'.format(string if prepend is True else '', element,
-                                    string if append is True else '')
-                    for element in items]
-        template_env.filters["surround"] = surround
-
-        def regex_replace(string, find, replace):
-            """ Replaces regex in string """
-            return re.sub(find, replace, string)
-        template_env.filters["regex_replace"] = regex_replace
-
-        # Loop over all templates
-        for infile in list_all_files(template_dir):
-
-            # Files may have templatized names
-            if '{{' in infile and '}}' in infile:
-                outfile = jinja2.Template(infile).render(template_vars)
-            else:
-                outfile = infile
-            outfile_name, extension = os.path.splitext(outfile)
-
-            # Create directories if necessary
-            ensure_directory_exists(
-                os.path.dirname(os.path.join(destination, outfile)))
-
-            # Files that end with .j2 are templates
-            if extension.startswith('.j2'):
-                print("  Generating {}".format(outfile_name))
-                outfile_path = os.path.join(destination, outfile_name)
-
-                # Make content of already existing XML files available in
-                # the template. That way templates can decide what data to keep
-                # or override.
-                if '.xml' in infile and os.path.isfile(outfile_path):
-                    with open(outfile_path, 'r') as xmlfile_ctx:
-                        xml_content = xmlfile_ctx.read()
-
-                    # Remove variables from xml.in files
-                    xml_content = re.sub(r'@([A-Za-z0-9_]+)@', r'AT_\1_AT',
-                                         xml_content)
-                    try:
-                        root = xml.etree.ElementTree.fromstring(xml_content)
-                        xml_data = xmljson.Yahoo().data(root)
-                        template_vars.update({'xml': xml_data})
-                    except xml.etree.ElementTree.ParseError:
-                        print("Failed to parse {}".format(outfile_path))
-
-                template = template_env.get_template(infile)
-                content = template.render(template_vars).strip()
-                if content:
-                    with open(outfile_path, 'w') as outfile_ctx:
-                        outfile_ctx.write(content)
-
-            # Other files are just copied
-            else:
-                print("     Copying {}".format(outfile_name))
-                shutil.copyfile(os.path.join(template_dir, infile),
-                                os.path.join(destination, outfile))
-
-    def _compile_addon(self, addon, directory):
-        """ Compile the addon in order to read system info from the binary """
-        print(" Compiling addon")
-        addon_dir = os.path.join(directory, addon)
-        build_dir = os.path.join(addon_dir, 'build')
-        install_dir = os.path.join(addon_dir, 'install')
+    def _compile_addons(self):
+        """ Compiles the addons in order to read system info from the libs """
+        print("Compiling addons")
+        build_dir = os.path.join(self._args.working_directory, 'build')
+        install_dir = os.path.join(self._args.working_directory, 'install')
         cmake_dir = os.path.join(self._args.kodi_directory,
                                  'project', 'cmake', 'addons')
 
-        ensure_directory_exists(build_dir, clean=True)
-        subprocess.run([os.environ.get('CMAKE', 'cmake'),
-                        '-DADDONS_TO_BUILD={}$'.format(addon),
-                        '-DADDON_SRC_PREFIX={}'.format(directory),
-                        '-DCMAKE_BUILD_TYPE=Debug', '-DPACKAGE_ZIP=1',
-                        '-DCMAKE_INSTALL_PREFIX={}'.format(install_dir),
-                        cmake_dir], cwd=build_dir)
-        subprocess.run([os.environ.get('CMAKE', 'cmake'), '--build', '.',
-                        '--', '-j{}'.format(multiprocessing.cpu_count())],
-                       cwd=build_dir)
+        utils.ensure_directory_exists(build_dir, clean=True)
+        addons = '|'.join(['{}{}$'.format(config.GITHUB_ADDON_PREFIX, a)
+                           for a in config.ADDONS])
+        try:
+            subprocess.run([os.environ.get('CMAKE', 'cmake'),
+                            '-DADDONS_TO_BUILD={}'.format(addons),
+                            '-DADDON_SRC_PREFIX={}'
+                            .format(self._args.working_directory),
+                            '-DCMAKE_BUILD_TYPE=Debug', '-DPACKAGE_ZIP=1',
+                            '-DCMAKE_INSTALL_PREFIX={}'.format(install_dir),
+                            cmake_dir], cwd=build_dir)
+            subprocess.run([os.environ.get('CMAKE', 'cmake'), '--build', '.',
+                            '--', '-j{}'.format(multiprocessing.cpu_count())],
+                           cwd=build_dir)
+        except subprocess.CalledProcessError:
+            print("Compilation failed!")
+            return False
+        return True
 
 
-def ensure_directory_exists(path, clean=False):
-    """ Ensure that the given path exists """
-    try:
-        if clean and os.path.exists(path):
-            shutil.rmtree(path)
+class Addon():
+    """ Process a single Kodi Game addon """
+    def __init__(self, addon_name, game_name, repo, args):
+        self.name = addon_name
+        self.game_name = game_name
+        self._config = config.ADDONS[game_name]
+        self._repo = repo
+        self._args = args
+        self.path = os.path.join(self._args.working_directory, addon_name)
+        self.library_file = os.path.join(
+            self._args.working_directory, 'install', self.name,
+            '{}.so'.format(self.name))
 
-        if not os.path.exists(path):
-            os.makedirs(path)
-    except OSError:
-        pass
+        if not os.path.isdir(self.path):
+            print("Initializing empty addon directory: {}".format(
+                addon_name))
+            utils.ensure_directory_exists(self.path)
 
+        self.info = {
+            'game': {'name': self.game_name, 'addon': self.name},
+            'datetime': '{0:%Y-%m-%d %H:%Mi%z}'.format(
+                datetime.datetime.now()),
+            'system_info': {}, 'settings': [],
+            'repo': self._config[0],
+            'makefile': {'file': self._config[1], 'dir': self._config[2]},
+            'library': {'file': self.library_file, 'loaded': False}}
+        if len(self._config) > 3:
+            self.info['config'] = self._config[3]
 
-def list_all_files(path):
-    """ Get a list with relative paths for all files in the given path """
-    all_files = []
-    for dirpath, dirs, filenames in os.walk(path):
-        # Don't process hidden files
-        dirs[:] = [d for d in dirs if not d[0] == '.']
-        filenames = [f for f in filenames if not f[0] == '.']
+    def process_description_files(self):
+        """ Generate addon description files """
+        template_processor.TemplateProcessor.process(
+            os.path.join(DIR, 'template_description'),
+            os.path.join(self._args.kodi_directory, 'project', 'cmake',
+                         'addons', 'addons', self.name),
+            self.info)
 
-        relpath = os.path.relpath(dirpath, path)
-        for filename in filenames:
-            all_files.append(os.path.normpath(os.path.join(relpath, filename)))
-    return all_files
+    def load_library_file(self):
+        """ Load the compiled library file """
+        library = None
+        if os.path.isfile(self.library_file):
+            try:
+                library = libretro_ctypes.LibretroWrapper(self.library_file)
+                self.info['library']['loaded'] = True
+                self.info['system_info'] = library.system_info
+                self.info['settings'] = sorted(library.variables,
+                                               key=lambda x: x.id)
+            except OSError as err:
+                self.info['library']['error'] = err
+                print("Failed to read output library.")
+        return library
+
+    def process_addon_files(self):
+        """ Generate addon files """
+        self.load_library_file()
+        template_processor.TemplateProcessor.process(
+            os.path.join(DIR, 'template'), self.path, self.info)
+
+    def clone(self):
+        """ Clone / reset Git repository """
+        print("  Fetching & resetting Git repo {}".format(self.name))
+        if self._repo:
+            self._args.git.clone_repo(self._repo, self._args.working_directory)
+
+    def commit(self):
+        """ Commit changes to Git repository """
+        print("  Commiting changes to Git repo {}".format(self.name))
+        if self._repo:
+            self._args.git.commit_repo(self._repo,
+                                       self._args.working_directory,
+                                       "Updated by kodi-game-scripting")
 
 
 if __name__ == '__main__':

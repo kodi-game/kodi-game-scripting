@@ -1,4 +1,5 @@
 gitpython
 jinja2
+keyring
 PyGithub
 xmljson

@@ -19,27 +19,50 @@
 """ Access GitHub API and Git Repos """
 
 import collections
+import functools
 import os
-import shutil
+import re
 
-import github
 import git
+import github
 
+import credentials
+import utils
 
 GitRepo = collections.namedtuple('GitRepo', 'name url')
 
 
 class Git:
     """ Access GitHub API and Git Repos """
-    def __init__(self):
+    def __init__(self, auth=False):
         """ Initialize Git instance """
-        self._github = github.Github()
+        try:
+            if auth:
+                cred = credentials.Credentials('github')
+                username, password = cred.load()
+            else:
+                username, password = None, None
+            self._github = github.Github(username, password)
+            rate = self._github.get_rate_limit().rate
+            print("GitHub API Rate: limit: {}, remaining: {}, reset: {}"
+                  .format(rate.limit, rate.remaining, rate.reset.isoformat()))
+            if auth:
+                cred.save(username, password)
+        except github.BadCredentialsException:
+            if auth:
+                cred.clean()
+            raise ValueError("Authentication to GitHub failed")
 
+    @functools.lru_cache()
     def get_repos(self, organization, repo_filter):
-        """ Get all repos of the given organization """
-        return [GitRepo(repo.name, repo.clone_url) for repo in
-                self._github.get_organization(organization).get_repos()
-                if repo_filter in repo.name]
+        """ Query all GitHub repos of the given organization that matches
+            the given filter. Since API calls are limited, cache results. """
+        repos = {
+            repo.name: GitRepo(repo.name, repo.clone_url)
+            for repo in self._github.get_organization(organization).get_repos()
+            if re.search(repo_filter, repo.name)
+        }
+        return repos
 
     def clone_repos(self, repos, directory):
         """ Clone list of repos into directory
@@ -49,24 +72,42 @@ class Git:
             self.clone_repo(repo, directory)
 
     @classmethod
-    def clone_repo(cls, repo, directory):
+    def is_git_repo(cls, path):
+        """ Determine if a path is a Git repository """
+        try:
+            _ = git.Repo(path).git_dir  # flake8: noqa
+            return True
+        except git.exc.InvalidGitRepositoryError:
+            return False
+
+    @classmethod
+    def clone_repo(cls, repo, path):
         """ Clone repo into directory
 
             If the repo exists all changes will be discarded. """
-        git_dir = os.path.join(directory, repo.name)
-        if not os.path.isdir(git_dir):
+        git_dir = os.path.join(path, repo.name)
+        utils.ensure_directory_exists(git_dir)
+        if not cls.is_git_repo(git_dir):
+            print("New repo, creating {}".format(repo.name))
             gitrepo = git.Repo.init(git_dir)
             origin = gitrepo.create_remote('origin', repo.url)
         else:
+            print("Existing repo, updating {}".format(repo.name))
             gitrepo = git.Repo(git_dir)
             origin = gitrepo.remotes.origin
+        print("Fetching {}".format(repo.name))
         origin.fetch()
+        print("Resetting {}".format(repo.name))
         gitrepo.git.reset('--hard', 'origin/master')
         gitrepo.git.clean('-xffd')
 
-
-ORGANIZATION = 'kodi-game'
-FILTER = 'game.libretro.'
+    @classmethod
+    def commit_repo(cls, repo, path, message):
+        """ Create commit in repo """
+        git_dir = os.path.join(path, repo.name)
+        gitrepo = git.Repo(git_dir)
+        gitrepo.git.add(update=True)
+        gitrepo.index.commit(message)
 
 
 def test_clone_single_repo():
@@ -74,8 +115,7 @@ def test_clone_single_repo():
     test_dir = os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
         "tests", os.path.splitext(os.path.basename(__file__))[0])
-    if os.path.exists(test_dir):  # pragma: no cover
-        shutil.rmtree(test_dir)
+    utils.ensure_directory_exists(test_dir, clean=True)
 
     gitaccess = Git()
     gitaccess.clone_repo(
@@ -89,6 +129,6 @@ def test_clone_single_repo():
 def test_github_repos():
     """ Tests getting a repo list """
     gitaccess = Git()
-    repos = gitaccess.get_repos(ORGANIZATION, FILTER)
+    repos = gitaccess.get_repos('kodi-game', r'game\.libretro\.')
     print(repos)
     assert len(repos) > 0

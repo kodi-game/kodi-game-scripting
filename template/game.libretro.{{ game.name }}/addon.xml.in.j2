@@ -6,7 +6,7 @@
 		provider-name="Libretro">
 	<requires>
 		<import addon="game.libretro" version="1.0.0"/>
-		{% for addon in xml.addon.requires.import %}
+		{% for addon in xml.addon.requires.import | default([]) | get_list %}
 		{% if addon.addon != 'game.libretro' %}
 		<import addon="{{ addon.addon }}" version="{{ addon.version }}"/>
 		{% endif %}
@@ -16,8 +16,8 @@
 			library_@PLATFORM@="@LIBRARY_FILENAME@">
 		<platforms>{{ xml.addon.extension[0].platforms | default('') }}</platforms>
 		<extensions>{{ system_info.extensions | join('|') | e }}</extensions>
-		<supports_vfs>{{ system_info.block_extract | lower | default('false') }}</supports_vfs>
-		<supports_standalone>{{ system_info.supports_no_game | lower | default('false') }}</supports_standalone>
+		<supports_vfs>{{ 'true' if system_info.block_extract == 'false' else 'false' }}</supports_vfs>
+		<supports_standalone>{{ system_info.supports_no_game | default('false') | lower }}</supports_standalone>
 		<supports_keyboard>false</supports_keyboard>
 		<supports_mouse>false</supports_mouse>
 	</extension>
@@ -32,10 +32,10 @@
 		{% if ("Supported files: " in xml.addon.extension[1].description) %}
 			{% set description = xml.addon.extension[1].description | regex_replace('Supported files: .*', 'Supported files: ' + extensions) %}
 		{% elif extensions %}
-			{% set description = xml.addon.extension[1].description + '\n\n' + 'Supported files: ' + extensions %}
+			{% set description = xml.addon.extension[1].description | default('') + '\n\n' + 'Supported files: ' + extensions %}
 		{% endif %}
 		<description>{{ description | e }}</description>
-		<license>{{ xml.addon.extension[1].license | e }}</license>
+		<license>{{ xml.addon.extension[1].license | default('') | e }}</license>
 		<platform>@PLATFORM@</platform>
 		<nofanart>true</nofanart>
 		<noicon>true</noicon>

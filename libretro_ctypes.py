@@ -4,6 +4,7 @@ import collections
 import ctypes
 import os
 import subprocess
+import sys
 
 
 class LibretroWrapper:
@@ -32,7 +33,7 @@ class LibretroWrapper:
             self.block_extract = retro_system_info.block_extract
             self.supports_no_game = False
 
-        def __str__(self):
+        def __repr__(self):
             return '(name={}, version={}, extensions={}, need_fullpath={},' \
                    ' block_extract={}, supports_no_game={})'.format(
                        self.name, self.version, self.extensions,
@@ -139,3 +140,8 @@ def test_xstr():
     """ Test xstr conversion """
     assert xstr(b'test') == 'test'
     assert xstr(None) == ''
+
+
+# pragma: no cover
+if __name__ == '__main__':
+    LIB = LibretroWrapper(sys.argv[1])

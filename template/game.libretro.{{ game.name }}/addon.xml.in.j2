@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon id="game.libretro.{{ game.name }}"
 	{% set addon_name = xml.addon.name | default(system_info.name) | default(game.name) %}
-		name="{{ addon_name | e }}"
+		name="{{ libretro_info.display_name | default(addon_name) | e }}"
 		version="{{ game.version | default(xml.addon.version) | default('0.0.0') }}"
 		provider-name="Libretro">
 	<requires>
@@ -35,7 +35,7 @@
 			{% set description = xml.addon.extension[1].description | default('') + '\n\n' + 'Supported files: ' + extensions %}
 		{% endif %}
 		<description>{{ description | e }}</description>
-		<license>{{ xml.addon.extension[1].license | default('') | e }}</license>
+		<license>{{ libretro_info.license | default(xml.addon.extension[1].license) | default('') | e }}</license>
 		<platform>@PLATFORM@</platform>
 		<nofanart>true</nofanart>
 		<noicon>true</noicon>

@@ -24,6 +24,7 @@ import datetime
 import os
 import multiprocessing
 import re
+import shlex
 import subprocess
 
 import git_access
@@ -82,6 +83,13 @@ class KodiGameAddons:
         # Check GitHub repos
         repos = {}
         if self._args.git:
+            print("Fetching libretro-super repo")
+            self._args.git.clone_repo(
+                git_access.GitRepo(
+                    'libretro-super',
+                    'https://github.com/libretro/libretro-super.git'),
+                self._args.working_directory)
+
             regex = (self._args.filter if self._args.filter
                      else config.GITHUB_ADDON_PREFIX)
             print("Querying repos matching '{}'".format(regex))
@@ -182,6 +190,7 @@ class Addon():
         self.library_file = os.path.join(
             self._args.working_directory, 'install', self.name,
             '{}.so'.format(self.name))
+        self.libretro_soname = '{}_libretro'.format(game_name)
 
         if not os.path.isdir(self.path):
             print("Initializing empty addon directory: {}".format(
@@ -196,8 +205,14 @@ class Addon():
             'repo': self._config[0],
             'makefile': {'file': self._config[1], 'dir': self._config[2]},
             'library': {'file': self.library_file, 'loaded': False}}
+
         if len(self._config) > 3:
             self.info['config'] = self._config[3]
+            if self._config[3]['soname']:
+                self.libretro_soname = '{}_libretro'.format(
+                    self._config[3]['soname'])
+        self.info['makefile']['soname'] = self.libretro_soname
+        self.load_info_file()
 
     def process_description_files(self):
         """ Generate addon description files """
@@ -223,6 +238,19 @@ class Addon():
                 self.info['library']['error'] = err
                 print("Failed to read output library.")
         return library
+
+    def load_info_file(self):
+        """ Load libretro-info file """
+        path = os.path.join(self._args.working_directory, 'libretro-super',
+                            'dist', 'info',
+                            '{}.info'.format(self.libretro_soname))
+        if os.path.isfile(path):
+            with open(path, 'r') as info_ctx:
+                self.info['libretro_info'] = {}
+                for line in info_ctx:
+                    name, var = line.partition('=')[::2]
+                    self.info['libretro_info'][name.strip()] = \
+                            shlex.split(var)[0]
 
     def process_addon_files(self):
         """ Generate addon files """

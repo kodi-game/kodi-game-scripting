@@ -36,7 +36,7 @@ $(document).ready(function() {
 		<tr>
 			<td>{{ addon.game.name }} / {{ addon.game.addon }}</td>
 			<td></td>
-			<td>{{ addon.system_info.version }}</td>
+			<td>{{ addon.game.version | default('0.0.0') }} / {{ addon.system_info.version | default('-') }}</td>
 			<td></td>
 			<td></td>
 			<td></td>

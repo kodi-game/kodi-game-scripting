@@ -32,6 +32,7 @@ import libretro_ctypes
 import config
 import utils
 import template_processor
+import versions
 
 ADDONS = config.ADDONS
 DIR = os.path.dirname(os.path.realpath(__file__))
@@ -216,6 +217,8 @@ class Addon():
                 self.info['system_info'] = library.system_info
                 self.info['settings'] = sorted(library.variables,
                                                key=lambda x: x.id)
+                self.info['game']['version'] = versions.AddonVersion.get(
+                    library.system_info.version)
             except OSError as err:
                 self.info['library']['error'] = err
                 print("Failed to read output library.")

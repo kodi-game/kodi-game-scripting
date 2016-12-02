@@ -106,7 +106,7 @@ class Git:
         """ Create commit in repo """
         git_dir = os.path.join(path, repo.name)
         gitrepo = git.Repo(git_dir)
-        gitrepo.git.add(update=True)
+        gitrepo.git.add(all=True)
         gitrepo.index.commit(message)
 
 

@@ -24,6 +24,7 @@ $(document).ready(function() {
 <table id="table" class="table table-striped table-bordered" width="100%" cellspacing="0">
 	<thead>
 		<tr>
+			<th>Icon</th>
 			<th>Libretro core</th>
 			<th>Name</th>
 			<th>Platform emulated</th>
@@ -36,6 +37,14 @@ $(document).ready(function() {
 	<tbody>
 		{% for addon in addons %}
 		<tr>
+			{% set image_path = addon.game.addon + '/' + addon.game.addon + '/' %}
+            {{ addon.assets.screenshots  }}
+			<td><a href="{{ image_path + 'icon.png' }}"><img src="{{ image_path + 'icon.png' }}" width="32" height="32"></a>
+				<a href="{{ image_path + 'fanart.jpg' }}"><img src="{{ image_path + 'fanart.jpg' }}" width="32" height="32"></a>
+				{% for screenshot in addon.assets.screenshots %}
+				<a href="{{ image_path + screenshot }}"><img src="{{ image_path + screenshot }}" width="32" height="32"></a>
+				{% endfor %}
+			</td>
 			<td>{{ addon.game.name }} / {{ addon.game.addon }}</td>
 			<td>{{ addon.libretro_info.display_name | default('') }}</td>
 			<td>{{ addon.libretro_info.systemname | default('') }}</td>

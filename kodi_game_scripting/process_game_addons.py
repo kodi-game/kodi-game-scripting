@@ -200,7 +200,8 @@ class Addon():
             'system_info': {}, 'settings': [],
             'repo': self._config[0],
             'makefile': {'file': self._config[1], 'dir': self._config[2]},
-            'library': {'file': self.library_file, 'loaded': False}}
+            'library': {'file': self.library_file, 'loaded': False},
+            'assets': {'screenshots': []}}
 
         if len(self._config) > 3:
             self.info['config'] = self._config[3]
@@ -209,6 +210,7 @@ class Addon():
                     self._config[3]['soname'])
         self.info['makefile']['soname'] = self.libretro_soname
         self.load_info_file()
+        self.load_assets()
 
     def process_description_files(self):
         """ Generate addon description files """
@@ -249,6 +251,23 @@ class Addon():
                     name, var = line.partition('=')[::2]
                     self.info['libretro_info'][name.strip()] = \
                         shlex.split(var)[0]
+
+    def load_assets(self):
+        """ Process assets """
+        # Loop over all images files in the repo
+        for asset in sorted(utils.list_all_files(self.path)):
+            if os.path.splitext(asset)[1] not in ['.png', '.jpg', '.svg']:
+                continue
+
+            if asset == os.path.join(self.name, 'icon.png'):
+                self.info['assets']['icon'] = 'icon.png'
+            elif asset == os.path.join(self.name, 'fanart.jpg'):
+                self.info['assets']['fanart'] = 'fanart.png'
+            elif asset.startswith(os.path.join(self.name, 'screenshot')):
+                self.info['assets']['screenshots'].append(
+                    os.path.basename(asset))
+            else:
+                print("Unrecognized image detected: {}".format(asset))
 
     def process_addon_files(self):
         """ Generate addon files """

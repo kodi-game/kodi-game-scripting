@@ -37,8 +37,19 @@
 		<description>{{ description | e }}</description>
 		<license>{{ libretro_info.license | default(xml.addon.extension[1].license) | default('') | e }}</license>
 		<platform>@PLATFORM@</platform>
-		<nofanart>true</nofanart>
-		<noicon>true</noicon>
+		{% if assets %}
+		<assets>
+			{% if assets.icon %}
+			<icon>{{ assets.icon }}</icon>
+			{% endif %}
+			{% if assets.fanart %}
+			<fanart>{{ assets.fanart }}</fanart>
+			{% endif %}
+			{% for screenshot in assets.screenshots %}
+			<screenshot>{{ screenshot }}</screenshot>
+			{% endfor %}
+		</assets>
+		{% endif %}
 	</extension>
 </addon>
 

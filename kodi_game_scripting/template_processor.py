@@ -26,7 +26,11 @@ import xmljson
 
 import jinja2
 
-import utils
+from . import utils
+
+TEMPLATE_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
+    'templates')
 
 
 class TemplateProcessor:
@@ -43,6 +47,7 @@ class TemplateProcessor:
             def __getattr__(self, key):
                 return self
 
+        template_dir = os.path.join(TEMPLATE_DIR, template_dir)
         template_env = jinja2.Environment(
             loader=jinja2.FileSystemLoader(template_dir),
             trim_blocks=True, lstrip_blocks=True, undefined=_TreeUndefined)

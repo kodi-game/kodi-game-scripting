@@ -26,8 +26,8 @@ import re
 import git
 import github
 
-import credentials
-import utils
+from . import credentials
+from . import utils
 
 GitRepo = collections.namedtuple('GitRepo', 'name url')
 

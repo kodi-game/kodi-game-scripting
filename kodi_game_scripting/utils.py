@@ -39,7 +39,7 @@ def ensure_directory_exists(path, clean=False):
 def list_all_files(path):
     """ Get a list with relative paths for all files in the given path """
     all_files = []
-    for dirpath, dirs, filenames in os.walk(path):
+    for dirpath, _, filenames in os.walk(path):
         relpath = os.path.relpath(dirpath, path)
         for filename in filenames:
             all_files.append(os.path.normpath(os.path.join(relpath, filename)))

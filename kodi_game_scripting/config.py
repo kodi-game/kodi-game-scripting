@@ -30,14 +30,14 @@ GITHUB_ADDON_PREFIX = 'game.libretro.'
 ADDONS = {
     '2048':                      ('libretro-2048',              'Makefile.libretro', '.'),
     '4do':                       ('4do-libretro',               'Makefile',          '.'),
-#    'beetle-bsnes':              ('beetle-bsnes-libretro',      'Makefile',          '.', {'soname': 'mednafen_bsnes'}),  # Undefined reference
+    #'beetle-bsnes':              ('beetle-bsnes-libretro',      'Makefile',          '.', {'soname': 'mednafen_bsnes'}),  # Undefined reference
     'beetle-gba':                ('beetle-gba-libretro',        'Makefile',          '.', {'soname': 'mednafen_gba'}),
     'beetle-lynx':               ('beetle-lynx-libretro',       'Makefile',          '.', {'soname': 'mednafen_lynx'}),
     'beetle-ngp':                ('beetle-ngp-libretro',        'Makefile',          '.', {'soname': 'mednafen_ngp'}),
     'beetle-pce-fast':           ('beetle-pce-fast-libretro',   'Makefile',          '.', {'soname': 'mednafen_pce_fast'}),
-#    'beetle-pcfx':               ('beetle-pcfx-libretro',       'Makefile',          '.', {'soname': 'mednafen_pcfx'}),  # Undefined reference
+    #'beetle-pcfx':               ('beetle-pcfx-libretro',       'Makefile',          '.', {'soname': 'mednafen_pcfx'}),  # Undefined reference
     'beetle-psx':                ('beetle-psx-libretro',        'Makefile',          '.', {'soname': 'mednafen_psx'}),
-#    'beetle-supergrafx':         ('beetle-supergrafx-libretro', 'Makefile',          '.', {'soname': 'mednafen_supergrafx'}),  # Undefined reference
+    #'beetle-supergrafx':         ('beetle-supergrafx-libretro', 'Makefile',          '.', {'soname': 'mednafen_supergrafx'}),  # Undefined reference
     'beetle-vb':                 ('beetle-vb-libretro',         'Makefile',          '.', {'soname': 'mednafen_vb'}),
     'beetle-wswan':              ('beetle-wswan-libretro',      'Makefile',          '.', {'soname': 'mednafen_wswan'}),
     'bluemsx':                   ('blueMSX-libretro',           'Makefile',          '.'),
@@ -47,7 +47,7 @@ ADDONS = {
     'bsnes-mercury-performance': ('bsnes-mercury',              'Makefile',          '.', {'binary_dir': 'out', 'soname': 'bsnes_mercury_performance', 'cmake_options': 'profile=performance'}),
     'cap32':                     ('libretro-cap32',             'Makefile',          '.'),
     'desmume':                   ('desmume-libretro',           'Makefile.libretro', '.'),
-#    'dolphin':                   ('dolphin',                    'Makefile',          'libretro'),  # Fails to compile, enet.h not found
+    #'dolphin':                   ('dolphin',                    'Makefile',          'libretro'),  # Fails to compile, enet.h not found
     'dinothawr':                 ('Dinothawr',                  'Makefile',          '.'),
     'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.'),
     'fbalpha2012':               ('fbalpha2012',                'makefile.libretro', 'svn-current/trunk'),  # fba
@@ -60,7 +60,7 @@ ADDONS = {
     'handy':                     ('libretro-handy',             'Makefile',          '.'),
     'hatari':                    ('hatari',                     'Makefile.libretro', '.'),
     'lutro':                     ('libretro-lutro',             'Makefile',          '.'),
-#    'mame':                      ('mame',                       'Makefile.libretro', '.'),  # TODO: Huge + slow
+    #'mame':                      ('mame',                       'Makefile.libretro', '.'),  # Huge checkout, fails to build
     'meteor':                    ('meteor-libretro',            'Makefile',          'libretro'),
     'mgba':                      ('mgba',                       'Makefile',          '.'),
     'mupen64plus':               ('mupen64plus-libretro',       'Makefile',          '.'),
@@ -70,13 +70,13 @@ ADDONS = {
     'pcem':                      ('libretro-pcem',              'Makefile.libretro', 'src'),
     'pcsx-rearmed':              ('pcsx_rearmed',               'Makefile.libretro', '.', {'soname': 'pcsx_rearmed'}),
     'picodrive':                 ('picodrive',                  'Makefile.libretro', '.'),
-#    'ppsspp':                    ('libretro-ppsspp',            'Makefile',          'libretro'),  # Longrunning, working
+    #'ppsspp':                    ('libretro-ppsspp',            'Makefile',          'libretro'),  # Longrunning, working
     'prboom':                    ('libretro-prboom',            'Makefile',          '.'),
     'prosystem':                 ('prosystem-libretro',         'Makefile',          '.'),
     'quicknes':                  ('QuickNES_Core',              'Makefile',          '.'),
     'reicast':                   ('reicast-emulator',           'Makefile',          '.'),
-#    'rustation':                 ('rustation-libretro',         'Makefile',          '.'),  # Checkout fails
-#    'scummvm':                   ('scummvm',                    'Makefile',          'backends/platform/libretro/build', {'binary_dir': 'backends/platform/libretro/build'}),  # Longrunning, working
+    #'rustation':                 ('rustation-libretro',         'Makefile',          '.'),  # Checkout fails
+    #'scummvm':                   ('scummvm',                    'Makefile',          'backends/platform/libretro/build', {'binary_dir': 'backends/platform/libretro/build'}),  # Longrunning, working
     'snes9x':                    ('snes9x',                     'Makefile',          'libretro'),
     'snes9x2002':                ('snes9x2002',                 'Makefile',          '.'),
     'snes9x2010':                ('snes9x2010',                 'Makefile',          '.'),

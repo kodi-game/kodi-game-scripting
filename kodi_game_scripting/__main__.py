@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # Copyright (C) 2016 Christian Fetzer
 #
 # This program is free software; you can redistribute it and/or modify
@@ -18,5 +16,5 @@
 
 """ Process Kodi Game addons and unify project files """
 
-from kodi_game_scripting.process_game_addons import main
+from .process_game_addons import main
 main()

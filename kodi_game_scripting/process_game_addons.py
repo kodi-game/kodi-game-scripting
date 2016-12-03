@@ -184,9 +184,8 @@ class Addon():
         self._repo = repo
         self._args = args
         self.path = os.path.join(self._args.working_directory, addon_name)
-        self.library_file = os.path.join(
-            self._args.working_directory, 'install', self.name,
-            '{}.so'.format(self.name))
+        self.library_file = os.path.join('install', self.name,
+                                         '{}.so'.format(self.name))
         self.libretro_soname = '{}_libretro'.format(game_name)
 
         if not os.path.isdir(self.path):
@@ -222,9 +221,11 @@ class Addon():
     def load_library_file(self):
         """ Load the compiled library file """
         library = None
-        if os.path.isfile(self.library_file):
+        library_path = os.path.join(self._args.working_directory,
+                                    self.library_file)
+        if os.path.isfile(os.path.join(library_path)):
             try:
-                library = libretro_ctypes.LibretroWrapper(self.library_file)
+                library = libretro_ctypes.LibretroWrapper(library_path)
                 self.info['library']['loaded'] = True
                 self.info['system_info'] = library.system_info
                 self.info['settings'] = sorted(library.variables,

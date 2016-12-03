@@ -10,7 +10,10 @@
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript" class="init">
 $(document).ready(function() {
-    $('#table').DataTable();
+    $('#table').DataTable({
+        'paging': false,
+        'info': false
+    });
 });
 </script>
 </head>
@@ -22,12 +25,11 @@ $(document).ready(function() {
 	<thead>
 		<tr>
 			<th>Libretro core</th>
+			<th>Name</th>
 			<th>Platform emulated</th>
 			<th>Version</th>
 			<th>License</th>
 			<th>Supports VFS</th>
-			<th>Supports Rewind</th>
-			<th>Requires GL</th>
 			<th>Status</th>
 		</tr>
 	</thead>
@@ -35,13 +37,17 @@ $(document).ready(function() {
 		{% for addon in addons %}
 		<tr>
 			<td>{{ addon.game.name }} / {{ addon.game.addon }}</td>
-			<td>{{ addon.libretro_info.systemname }}</td>
+			<td>{{ addon.libretro_info.display_name | default('') }}</td>
+			<td>{{ addon.libretro_info.systemname | default('') }}</td>
 			<td>{{ addon.game.version | default('0.0.0') }} / {{ addon.system_info.version | default('-') }}</td>
 			<td>{{ addon.libretro_info.license | default('') }}</td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td>{{ addon.library.loaded }} {{ addon.library.file }} {{ addon.library.error | default('') }}</td>
+			<td>{{ 'false' if addon.system_info.need_fullpath else 'true' }}</td>
+			{% if addon.library.loaded %}
+			<td><span class="text-success">Library available</span><br><span class="text_muted">{{ addon.library.file }}</span></td>
+			{% else %}
+			<td><span class="text-danger">Failed to load library</span><br><span class="text_muted">{{ addon.library.file }}</span><br>
+				<span class="text-danger">{{ addon.library.error }}</span></td>
+			{% endif %}
 		</tr>
 		{% endfor %}
 	</tbody>

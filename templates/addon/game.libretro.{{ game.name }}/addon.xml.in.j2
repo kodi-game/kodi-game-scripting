@@ -16,7 +16,7 @@
 			library_@PLATFORM@="@LIBRARY_FILENAME@">
 		<platforms>{{ xml.addon.extension[0].platforms | default('') }}</platforms>
 		<extensions>{{ system_info.extensions | join('|') | e }}</extensions>
-		<supports_vfs>{{ 'true' if system_info.block_extract == 'false' else 'false' }}</supports_vfs>
+		<supports_vfs>{{ 'false' if system_info.need_fullpath | default('true') else 'true' }}</supports_vfs>
 		<supports_standalone>{{ system_info.supports_no_game | default('false') | lower }}</supports_standalone>
 		<supports_keyboard>false</supports_keyboard>
 		<supports_mouse>false</supports_mouse>

@@ -234,6 +234,12 @@ class Addon():
                                                key=lambda x: x.id)
                 self.info['game']['version'] = versions.AddonVersion.get(
                     library.system_info.version)
+
+                ldd_output = subprocess.run(['ldd', library_path],
+                                            stdout=subprocess.PIPE)
+                if (re.search(r'libgl', str(ldd_output.stdout, 'utf-8'),
+                              re.IGNORECASE)):
+                    self.info['library']['opengl'] = True
             except OSError as err:
                 self.info['library']['error'] = err
                 print("Failed to read output library.")

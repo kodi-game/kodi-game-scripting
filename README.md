@@ -28,7 +28,21 @@ retrieved from a compiled add-on binary. This script can compile add-ons:
 
 Add-ons can be filtered with `--filter` (e.g. `--filter=bnes`).
 
-Afterwards use `git` to check in the changes and push them to the repos.
+The changed add-on files as well as the add-on descriptions necessary to
+build the binary add-ons can be pushed to GitHub.
+
+    ./process_game_addons.py --game-addons-dir=<WORKING_DIRECTORY> \
+                             --compile --kodi-source-dir=<KODI_SOURCE_DIR> \
+                             --git --push-branch testing \
+                             --push-description --clean-description
+
+- `--git` activates Git usage (and clones and resets add-on
+  directories in the given `WORKING_DIRECTORY`.
+- `--push-branch <BRANCH>` pushes the generated add-on files to the given
+  `BRANCH` in *kodi-game*.
+- `--push-description` pushes the add-on description files to the existing
+  remote `origin` of the local `KODI_SOURCE_DIR`.
+- `--clean-description` removes other existing add-on description files.
 
 ## License
 

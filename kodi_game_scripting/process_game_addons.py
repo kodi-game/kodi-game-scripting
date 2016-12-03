@@ -43,7 +43,7 @@ def main():
     parser.add_argument('--game-addons-dir', dest='working_directory',
                         type=str, required=True,
                         help="Directory where the game addons reside")
-    parser.add_argument('--compile', action="store_true",
+    parser.add_argument('--compile', action='store_true',
                         help="Compile libretro cores and read system info")
     parser.add_argument('--kodi-source-dir', dest='kodi_directory',
                         type=str,
@@ -52,6 +52,12 @@ def main():
                         help="Clone / reset libretro cores from GitHub")
     parser.add_argument('--filter', type=str, default='',
                         help="Filter games (e.g. nes)")
+    parser.add_argument('--push-branch', type=str,
+                        help="To which branch to push to GitHub")
+    parser.add_argument('--push-description', action='store_true',
+                        help="Push addon descriptions")
+    parser.add_argument('--clean-description', action='store_true',
+                        help="Clean existing addon descriptions")
 
     args = parser.parse_args()
 
@@ -85,7 +91,7 @@ class KodiGameAddons:
             self._args.git.clone_repo(
                 git_access.GitRepo(
                     'libretro-super',
-                    'https://github.com/libretro/libretro-super.git'),
+                    'https://github.com/libretro/libretro-super.git', ''),
                 self._args.working_directory)
 
             regex = (self._args.filter if self._args.filter
@@ -108,6 +114,12 @@ class KodiGameAddons:
         if self._args.git:
             for addon in self._addons.values():
                 addon.clone()
+
+        # Clean addon descriptions
+        if self._args.clean_description:
+            utils.ensure_directory_exists(os.path.join(
+                self._args.kodi_directory,
+                'project', 'cmake', 'addons', 'addons'), clean=True)
 
     def process(self):
         """ Process list of addons from config """
@@ -137,6 +149,24 @@ class KodiGameAddons:
         if self._args.git:
             for addon in self._addons.values():
                 addon.commit()
+
+            # Push in reversed order so that the repository list on GitHub
+            # stays sorted alphabetically
+            if self._args.push_branch:
+                for addon in reversed(self._addons.values()):
+                    addon.push()
+
+                # Push addon descriptions to kodi repo
+                # Don't specify urls as we use the existing remote origin
+                if self._args.push_description:
+                    path, name = os.path.split(self._args.kodi_directory)
+                    repo = git_access.GitRepo(name, url='', ssh_url='')
+                    print("Commiting descriptions to GitHub repo")
+                    self._args.git.commit_repo(
+                        repo, path, "Updated by kodi-game-scripting")
+                    print("Pushing descriptions to GitHub repo")
+                    self._args.git.push_repo(repo, path,
+                                             self._args.push_branch)
 
     def summary(self):
         """ Print summary """
@@ -198,7 +228,7 @@ class Addon():
             'datetime': '{0:%Y-%m-%d %H:%Mi%z}'.format(
                 datetime.datetime.now()),
             'system_info': {}, 'settings': [],
-            'repo': self._config[0],
+            'repo': self._config[0], 'branch': self._args.push_branch,
             'makefile': {'file': self._config[1], 'dir': self._config[2]},
             'library': {'file': self.library_file, 'loaded': False},
             'assets': {'screenshots': []}}
@@ -294,6 +324,14 @@ class Addon():
             self._args.git.commit_repo(self._repo,
                                        self._args.working_directory,
                                        "Updated by kodi-game-scripting")
+
+    def push(self):
+        """ Push addon chagnes to GitHub repository """
+        print("  Pushing changes to GitHub repo {}".format(self.name))
+        if self._repo and self._args.push_branch:
+            self._args.git.push_repo(self._repo,
+                                     self._args.working_directory,
+                                     self._args.push_branch)
 
 
 if __name__ == '__main__':

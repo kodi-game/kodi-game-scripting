@@ -29,7 +29,7 @@ import github
 from . import credentials
 from . import utils
 
-GitRepo = collections.namedtuple('GitRepo', 'name url')
+GitRepo = collections.namedtuple('GitRepo', 'name url ssh_url')
 
 
 class Git:
@@ -58,7 +58,7 @@ class Git:
         """ Query all GitHub repos of the given organization that matches
             the given filter. Since API calls are limited, cache results. """
         repos = {
-            repo.name: GitRepo(repo.name, repo.clone_url)
+            repo.name: GitRepo(repo.name, repo.clone_url, repo.ssh_url)
             for repo in self._github.get_organization(organization).get_repos()
             if re.search(repo_filter, repo.name)
         }
@@ -95,8 +95,9 @@ class Git:
             print("Existing repo, updating {}".format(repo.name))
             gitrepo = git.Repo(git_dir)
             origin = gitrepo.remotes.origin
+        origin.set_url(repo.ssh_url, push=True)
         print("Fetching {}".format(repo.name))
-        origin.fetch()
+        origin.fetch('master')
         print("Resetting {}".format(repo.name))
         gitrepo.git.reset('--hard', 'origin/master')
         gitrepo.git.clean('-xffd')
@@ -109,6 +110,19 @@ class Git:
         gitrepo.git.add(all=True)
         gitrepo.index.commit(message)
 
+    @classmethod
+    def push_repo(cls, repo, path, branch):
+        """ Create commit in repo """
+        if branch == 'master':
+            raise ValueError("Currently not allowed")
+
+        git_dir = os.path.join(path, repo.name)
+        gitrepo = git.Repo(git_dir)
+        if gitrepo.is_dirty():
+            raise ValueError("Skipping, repository is dirty")
+        origin = gitrepo.remotes.origin
+        origin.push('HEAD:{}'.format(branch),
+                    force=False if branch == 'master' else True)
 
 def test_clone_single_repo():
     """ Tests cloning a single repo """

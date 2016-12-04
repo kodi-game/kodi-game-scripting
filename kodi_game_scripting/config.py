@@ -30,14 +30,14 @@ GITHUB_ADDON_PREFIX = 'game.libretro.'
 ADDONS = {
     '2048':                      ('libretro-2048',              'Makefile.libretro', '.'),
     '4do':                       ('4do-libretro',               'Makefile',          '.'),
-    #'beetle-bsnes':              ('beetle-bsnes-libretro',      'Makefile',          '.', {'soname': 'mednafen_bsnes'}),  # Undefined reference
+    'beetle-bsnes':              ('beetle-bsnes-libretro',      'Makefile',          '.', {'soname': 'mednafen_snes'}),
     'beetle-gba':                ('beetle-gba-libretro',        'Makefile',          '.', {'soname': 'mednafen_gba'}),
     'beetle-lynx':               ('beetle-lynx-libretro',       'Makefile',          '.', {'soname': 'mednafen_lynx'}),
     'beetle-ngp':                ('beetle-ngp-libretro',        'Makefile',          '.', {'soname': 'mednafen_ngp'}),
     'beetle-pce-fast':           ('beetle-pce-fast-libretro',   'Makefile',          '.', {'soname': 'mednafen_pce_fast'}),
-    #'beetle-pcfx':               ('beetle-pcfx-libretro',       'Makefile',          '.', {'soname': 'mednafen_pcfx'}),  # Undefined reference
+    'beetle-pcfx':               ('beetle-pcfx-libretro',       'Makefile',          '.', {'soname': 'mednafen_pcfx'}),
     'beetle-psx':                ('beetle-psx-libretro',        'Makefile',          '.', {'soname': 'mednafen_psx'}),
-    #'beetle-supergrafx':         ('beetle-supergrafx-libretro', 'Makefile',          '.', {'soname': 'mednafen_supergrafx'}),  # Undefined reference
+    'beetle-supergrafx':         ('beetle-supergrafx-libretro', 'Makefile',          '.', {'soname': 'mednafen_supergrafx'}),
     'beetle-vb':                 ('beetle-vb-libretro',         'Makefile',          '.', {'soname': 'mednafen_vb'}),
     'beetle-wswan':              ('beetle-wswan-libretro',      'Makefile',          '.', {'soname': 'mednafen_wswan'}),
     'bluemsx':                   ('blueMSX-libretro',           'Makefile',          '.'),

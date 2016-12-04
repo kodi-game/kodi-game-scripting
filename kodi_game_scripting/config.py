@@ -70,6 +70,7 @@ ADDONS = {
     'pcem':                      ('libretro-pcem',              'Makefile.libretro', 'src'),
     'pcsx-rearmed':              ('pcsx_rearmed',               'Makefile.libretro', '.', {'soname': 'pcsx_rearmed'}),
     'picodrive':                 ('picodrive',                  'Makefile.libretro', '.'),
+    'pokemini':                  ('PokeMini',                   'Makefile.libretro', '.'),
     #'ppsspp':                    ('libretro-ppsspp',            'Makefile',          'libretro'),  # Longrunning, working
     'prboom':                    ('libretro-prboom',            'Makefile',          '.'),
     'prosystem':                 ('prosystem-libretro',         'Makefile',          '.'),

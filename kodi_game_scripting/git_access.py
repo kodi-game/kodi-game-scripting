@@ -64,6 +64,12 @@ class Git:
         }
         return repos
 
+    def create_repo(self, organization, name):
+        """ Create a new repo on GitHub """
+        repo = self._github.get_organization(organization).create_repo(name)
+        self.get_repos.cache_clear()  # pylint: disable=no-member
+        return GitRepo(repo.name, repo.clone_url, repo.ssh_url)
+
     def clone_repos(self, repos, directory):
         """ Clone list of repos into directory
 
@@ -81,6 +87,12 @@ class Git:
             return False
 
     @classmethod
+    def has_remote_branch(cls, path, branch):
+        """ Determines if a branch exists on the remote origin """
+        gitrepo = git.Repo(path)
+        return gitrepo.git.ls_remote('origin', branch, heads=True)
+
+    @classmethod
     def clone_repo(cls, repo, path):
         """ Clone repo into directory
 
@@ -96,10 +108,12 @@ class Git:
             gitrepo = git.Repo(git_dir)
             origin = gitrepo.remotes.origin
         origin.set_url(repo.ssh_url, push=True)
-        print("Fetching {}".format(repo.name))
-        origin.fetch('master')
-        print("Resetting {}".format(repo.name))
-        gitrepo.git.reset('--hard', 'origin/master')
+        if cls.has_remote_branch(git_dir, 'master'):
+            print("Fetching {}".format(repo.name))
+            origin.fetch('master')
+            print("Resetting {}".format(repo.name))
+            gitrepo.git.reset('--hard', 'origin/master')
+        print("Cleaning local changes {}".format(repo.name))
         gitrepo.git.clean('-xffd')
 
     @classmethod

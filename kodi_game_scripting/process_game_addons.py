@@ -103,9 +103,13 @@ class KodiGameAddons:
         self._addons = collections.OrderedDict()
         for game_name in sorted(config.ADDONS):
             addon_name = '{}{}'.format(config.GITHUB_ADDON_PREFIX, game_name)
-            self._addons[game_name] = \
-                Addon(addon_name, game_name,
-                      repos.get(addon_name, None), self._args)
+            repo = repos.get(addon_name, None)
+            if self._args.git and not repo:
+                print("Creating GitHub repository {}".format(addon_name))
+                repo = self._args.git.create_repo(
+                    config.GITHUB_ORGANIZATION, addon_name)
+            self._addons[game_name] = Addon(addon_name, game_name,
+                                            repo, self._args)
 
         print("Processing the following addons: {}".format(
             ', '.join(self._addons)))

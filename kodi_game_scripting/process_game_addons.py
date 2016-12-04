@@ -235,7 +235,7 @@ class Addon():
 
         if len(self._config) > 3:
             self.info['config'] = self._config[3]
-            if self._config[3]['soname']:
+            if 'soname' in self._config[3]:
                 self.libretro_soname = '{}_libretro'.format(
                     self._config[3]['soname'])
         self.info['makefile']['soname'] = self.libretro_soname

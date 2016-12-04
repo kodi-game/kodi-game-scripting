@@ -27,8 +27,9 @@ class LibretroWrapper:
         def __init__(self, retro_system_info=None):
             self.name = xstr(retro_system_info.library_name)
             self.version = xstr(retro_system_info.library_version)
-            self.extensions = \
-                xstr(retro_system_info.valid_extensions).split('|')
+            self.extensions = [ext for ext in xstr(
+                retro_system_info.valid_extensions).split('|')
+                               if ext]
             self.need_fullpath = retro_system_info.need_fullpath
             self.block_extract = retro_system_info.block_extract
             self.supports_no_game = False

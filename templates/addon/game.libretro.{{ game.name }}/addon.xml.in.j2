@@ -1,25 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon id="game.libretro.{{ game.name }}"
-	{% set addon_name = xml.addon.name | default(system_info.name) | default(game.name) %}
-		name="{{ libretro_info.display_name | default(addon_name) | e }}"
+	{% set addon_name = libretro_info.display_name | default(xml.addon.name) | default(system_info.name) | default(game.name) %}
+		name="{{ addon_name | e }}"
 		version="{{ game.version | default(xml.addon.version) | default('0.0.0') }}"
 		provider-name="Libretro">
 	<requires>
 		<import addon="game.libretro" version="1.0.0"/>
 		{% for addon in xml.addon.requires.import | default([]) | get_list %}
 		{% if addon.addon != 'game.libretro' %}
-		<import addon="{{ addon.addon }}" version="{{ addon.version }}"/>
+		{% set optional = ' optional="' + addon.optional + '"' if addon.optional else '' %}
+		<import addon="{{ addon.addon }}" version="{{ addon.version }}"{{ optional }}/>
 		{% endif %}
 		{% endfor %}
 	</requires>
 	<extension point="kodi.gameclient"
 			library_@PLATFORM@="@LIBRARY_FILENAME@">
-		<platforms>{{ xml.addon.extension[0].platforms | default('') }}</platforms>
+		<platforms>{{ xml.addon.extension[0].platforms | default('') | e }}</platforms>
 		<extensions>{{ system_info.extensions | join('|') | e }}</extensions>
 		<supports_vfs>{{ 'false' if system_info.need_fullpath | default('true') else 'true' }}</supports_vfs>
 		<supports_standalone>{{ system_info.supports_no_game | default('false') | lower }}</supports_standalone>
-		<supports_keyboard>false</supports_keyboard>
-		<supports_mouse>false</supports_mouse>
+		<supports_keyboard>{{ xml.addon.extension[0].supports_keyboard | default('false') | lower }}</supports_keyboard>
+		<supports_mouse>{{ xml.addon.extension[0].supports_mouse | default('false') | lower }}</supports_mouse>
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		{% set summary = addon_name %}
@@ -27,14 +28,19 @@
 			{% set summary = summary + ' ' + system_info.version %}
 		{% endif %}
 		<summary lang="en">{{ summary | e }}</summary>
-		{% set extensions = (system_info.extensions | surround('.', append=False) | join(', ')) %}
+		{% if system_info.extensions %}
+			{% set extensions = 'Supported files: ' + system_info.extensions | surround('.', append=False) | join(', ') %}
+		{% endif %}
 		{% set description = xml.addon.extension[1].description | default('') %}
 		{% if ("Supported files: " in xml.addon.extension[1].description) %}
-			{% set description = xml.addon.extension[1].description | regex_replace('Supported files: .*', 'Supported files: ' + extensions) %}
+			{% set description = xml.addon.extension[1].description | regex_replace('Supported files: (?:\.\w+)(?:,\s*\.\w+)*', extensions | default('')) %}
 		{% elif extensions %}
-			{% set description = xml.addon.extension[1].description | default('') + '\n\n' + 'Supported files: ' + extensions %}
+			{% set description = xml.addon.extension[1].description | default('') + '\n\n' + extensions %}
 		{% endif %}
 		<description>{{ description | e }}</description>
+		{% if xml.addon.extension[1].disclaimer %}
+		<disclaimer>{{ xml.addon.extension[1].disclaimer | e }}</disclaimer>
+		{% endif %}
 		<license>{{ libretro_info.license | default(xml.addon.extension[1].license) | default('') | e }}</license>
 		<platform>@PLATFORM@</platform>
 		{% if assets %}

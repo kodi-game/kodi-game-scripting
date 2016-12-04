@@ -231,7 +231,7 @@ class Addon():
             'repo': self._config[0], 'branch': self._args.push_branch,
             'makefile': {'file': self._config[1], 'dir': self._config[2]},
             'library': {'file': self.library_file, 'loaded': False},
-            'assets': {'screenshots': []}}
+            'assets': {}}
 
         if len(self._config) > 3:
             self.info['config'] = self._config[3]
@@ -300,7 +300,7 @@ class Addon():
             elif asset == os.path.join(self.name, 'fanart.jpg'):
                 self.info['assets']['fanart'] = 'fanart.png'
             elif asset.startswith(os.path.join(self.name, 'screenshot')):
-                self.info['assets']['screenshots'].append(
+                self.info['assets'].setdefault('screenshots', []).append(
                     os.path.basename(asset))
             else:
                 print("Unrecognized image detected: {}".format(asset))

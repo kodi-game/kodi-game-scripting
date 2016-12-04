@@ -117,11 +117,15 @@ class Git:
         gitrepo.git.clean('-xffd')
 
     @classmethod
-    def commit_repo(cls, repo, path, message):
+    def commit_repo(cls, repo, path,  # pylint: disable=too-many-arguments
+                    message, directory=None, force=False):
         """ Create commit in repo """
         git_dir = os.path.join(path, repo.name)
         gitrepo = git.Repo(git_dir)
-        gitrepo.git.add(all=True)
+        if directory:
+            gitrepo.git.add(directory, force=force)
+        else:
+            gitrepo.git.add(all=True, force=force)
         gitrepo.index.commit(message)
 
     @classmethod

@@ -167,7 +167,10 @@ class KodiGameAddons:
                     repo = git_access.GitRepo(name, url='', ssh_url='')
                     print("Commiting descriptions to GitHub repo")
                     self._args.git.commit_repo(
-                        repo, path, "Updated by kodi-game-scripting")
+                        repo, path, "Updated by kodi-game-scripting",
+                        directory=os.path.join(
+                            'project', 'cmake', 'addons', 'addons'),
+                        force=True)
                     print("Pushing descriptions to GitHub repo")
                     self._args.git.push_repo(repo, path,
                                              self._args.push_branch)

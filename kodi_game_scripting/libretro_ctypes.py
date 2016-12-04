@@ -112,8 +112,8 @@ def xstr(string):
 def compile_testlibrary():
     """ Compile libretro_test.so """
     test_dir = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)),
-        "tests", os.path.splitext(os.path.basename(__file__))[0])
+        os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
+        'tests', os.path.splitext(os.path.basename(__file__))[0])
     test_file = os.path.join(test_dir, 'libretro_test.so')
 
     subprocess.run(['cmake', test_dir], cwd=test_dir)

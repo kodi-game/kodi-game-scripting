@@ -141,17 +141,19 @@ class Git:
 def test_clone_single_repo():
     """ Tests cloning a single repo """
     test_dir = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)),
-        "tests", os.path.splitext(os.path.basename(__file__))[0])
+        os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
+        'tests', os.path.splitext(os.path.basename(__file__))[0])
     utils.ensure_directory_exists(test_dir, clean=True)
 
     gitaccess = Git()
     gitaccess.clone_repo(
         GitRepo('kodi-game-scripting',
-                'https://github.com/fetzerch/kodi-game-scripting'), test_dir)
-    gitaccess.clone_repos([
-        GitRepo('kodi-game-scripting',
-                'https://github.com/fetzerch/kodi-game-scripting')], test_dir)
+                'https://github.com/fetzerch/kodi-game-scripting', ''),
+        test_dir)
+    gitaccess.clone_repos(
+        [GitRepo('kodi-game-scripting',
+                 'https://github.com/fetzerch/kodi-game-scripting', '')],
+        test_dir)
 
 
 def test_github_repos():

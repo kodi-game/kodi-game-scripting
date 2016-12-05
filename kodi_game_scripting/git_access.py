@@ -126,7 +126,8 @@ class Git:
             gitrepo.git.add(directory, force=force)
         else:
             gitrepo.git.add(all=True, force=force)
-        gitrepo.index.commit(message)
+        if gitrepo.is_dirty():
+            gitrepo.index.commit(message)
 
     @classmethod
     def push_repo(cls, repo, path, branch):

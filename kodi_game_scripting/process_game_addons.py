@@ -25,6 +25,7 @@ import os
 import multiprocessing
 import re
 import shlex
+import shutil
 import subprocess
 
 from . import config
@@ -121,9 +122,11 @@ class KodiGameAddons:
 
         # Clean addon descriptions
         if self._args.clean_description:
-            utils.ensure_directory_exists(os.path.join(
-                self._args.kodi_directory,
-                'project', 'cmake', 'addons', 'addons'), clean=True)
+            desc_dir = os.path.join(self._args.kodi_directory,
+                                    'project', 'cmake', 'addons', 'addons')
+            for path in next(os.walk(desc_dir))[1]:
+                if path.startswith(config.GITHUB_ADDON_PREFIX):
+                    shutil.rmtree(os.path.join(desc_dir, path))
 
     def process(self):
         """ Process list of addons from config """

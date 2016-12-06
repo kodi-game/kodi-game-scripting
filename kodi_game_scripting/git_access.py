@@ -113,7 +113,13 @@ class Git:
             origin.fetch('master')
             print("Resetting {}".format(repo.name))
             gitrepo.git.reset('--hard', 'origin/master')
+        else:
+            print("Recreating {}".format(repo.name))
+            if gitrepo.head.is_valid():
+                gitrepo.git.branch('new_master', move=True, force=True)
+                gitrepo.git.checkout(orphan='master')
         print("Cleaning local changes {}".format(repo.name))
+        gitrepo.git.reset()
         gitrepo.git.clean('-xffd')
 
     @classmethod

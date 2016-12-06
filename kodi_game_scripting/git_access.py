@@ -138,9 +138,6 @@ class Git:
     @classmethod
     def push_repo(cls, repo, path, branch):
         """ Create commit in repo """
-        if branch == 'master':
-            raise ValueError("Currently not allowed")
-
         git_dir = os.path.join(path, repo.name)
         gitrepo = git.Repo(git_dir)
         if gitrepo.is_dirty():

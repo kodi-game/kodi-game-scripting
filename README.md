@@ -13,6 +13,20 @@ maintenance efforts.
 
 Manual porting is explained in this [forum post](http://forum.kodi.tv/showthread.php?tid=224328).
 
+## Dependencies
+You will need the following python packages:
+
+* gitpython
+* pygithub
+* keyring
+* jinja2
+* xmljson
+
+On Ubuntu, these can be installed using:
+
+    sudo apt-get install python3-pip
+    sudo pip3 install gitpython pygithub keyring jinja2 xmljson
+
 ## Usage
 
 Clone [game add-ons](https://github.com/kodi-game) to `<WORKING_DIRECTORY>` or

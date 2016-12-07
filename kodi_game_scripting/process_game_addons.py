@@ -336,7 +336,7 @@ class Addon():
                                        "Updated by kodi-game-scripting")
 
     def push(self):
-        """ Push addon chagnes to GitHub repository """
+        """ Push addon changes to GitHub repository """
         print("  Pushing changes to GitHub repo {}".format(self.name))
         if self._repo and self._args.push_branch:
             self._args.git.push_repo(self._repo,

@@ -136,8 +136,9 @@ class KodiGameAddons:
         for addon in self._addons.values():
             print(" Processing addon: {}".format(addon.name))
             addon.process_addon_files()
-            print(" Processing addon description: {}".format(addon.name))
-            addon.process_description_files()
+            if self._args.push_branch:
+                print(" Processing addon description: {}".format(addon.name))
+                addon.process_description_files()
 
         # Compile addons to read info from built library
         # Instead of compiling individual addons we compile all at once to save

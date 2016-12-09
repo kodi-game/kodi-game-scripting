@@ -27,6 +27,7 @@ import re
 import shlex
 import shutil
 import subprocess
+import sys
 
 from . import config
 from . import git_access
@@ -224,8 +225,9 @@ class Addon():
         self._repo = repo
         self._args = args
         self.path = os.path.join(self._args.working_directory, addon_name)
-        self.library_file = os.path.join('install', self.name,
-                                         '{}.so'.format(self.name))
+        self.library_file = os.path.join(
+            'install', self.name, '{}.{}'.format(
+                self.name, libretro_ctypes.LibretroWrapper.EXT))
         self.libretro_soname = '{}_libretro'.format(game_name)
 
         if not os.path.isdir(self.path):
@@ -275,10 +277,14 @@ class Addon():
                 self.info['game']['version'] = versions.AddonVersion.get(
                     library.system_info.version)
 
-                ldd_output = subprocess.run(['ldd', library_path],
+                if sys.platform != 'darwin':
+                    ldd_command = ['ldd', library_path]
+                else:
+                    ldd_command = ['otool', '-L', library_path]
+                ldd_output = subprocess.run(ldd_command,
                                             stdout=subprocess.PIPE)
-                if (re.search(r'libgl', str(ldd_output.stdout, 'utf-8'),
-                              re.IGNORECASE)):
+                if (re.search(r'(?:libgl|opengl)',
+                              str(ldd_output.stdout, 'utf-8'), re.IGNORECASE)):
                     self.info['library']['opengl'] = True
             except OSError as err:
                 self.info['library']['error'] = err

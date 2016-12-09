@@ -12,6 +12,8 @@ class LibretroWrapper:
 
         Use attributes system_info and settings to access this information. """
 
+    EXT = 'dylib' if sys.platform == 'darwin' else 'so'
+
     class RetroSystemInfo(ctypes.Structure):
         """ struct retro_system_type """
         _fields_ = [
@@ -110,11 +112,12 @@ def xstr(string):
 
 
 def compile_testlibrary():
-    """ Compile libretro_test.so """
+    """ Compile libretro_test """
     test_dir = os.path.join(
         os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
         'tests', os.path.splitext(os.path.basename(__file__))[0])
-    test_file = os.path.join(test_dir, 'libretro_test.so')
+    test_file = os.path.join(test_dir, 'libretro_test.{}'.format(
+        LibretroWrapper.EXT))
 
     subprocess.run(['cmake', test_dir], cwd=test_dir)
     subprocess.run(['cmake', '--build', '.'], cwd=test_dir)

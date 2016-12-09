@@ -3,6 +3,7 @@
 __pycache__
 .tox
 .coverage
+.DS_Store
 coverage.xml
 nosetests.xml
 cover/

@@ -240,11 +240,13 @@ class Addon():
             'datetime': '{0:%Y-%m-%d %H:%Mi%z}'.format(
                 datetime.datetime.now()),
             'system_info': {}, 'settings': [],
-            'repo': self._config[0], 'branch': self._args.push_branch,
+            'repo': self._config[0],
             'makefile': {'file': self._config[1], 'dir': self._config[2]},
             'library': {'file': self.library_file, 'loaded': False},
             'assets': {}}
 
+        if self._args.push_branch:
+            self.info['branch'] = self._args.push_branch
         if len(self._config) > 3:
             self.info['config'] = self._config[3]
             if 'soname' in self._config[3]:

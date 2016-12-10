@@ -38,7 +38,7 @@ $(document).ready(function() {
 	<tbody>
 		{% for addon in addons %}
 		<tr>
-			{% set image_path = addon.game.addon + '/' + addon.game.addon + '/' %}
+			{% set image_path = addon.game.addon + '/' + addon.game.addon + '/resources/' %}
 			<td><a href="{{ image_path + 'icon.png' }}"><img src="{{ image_path + 'icon.png' }}" width="32" height="32"></a>
 				<a href="{{ image_path + 'fanart.jpg' }}"><img src="{{ image_path + 'fanart.jpg' }}" width="32" height="32"></a>
 				{% for screenshot in addon.assets.screenshots %}

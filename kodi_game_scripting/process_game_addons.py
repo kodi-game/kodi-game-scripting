@@ -313,13 +313,14 @@ class Addon():
             if os.path.splitext(asset)[1] not in ['.png', '.jpg', '.svg']:
                 continue
 
-            if asset == os.path.join(self.name, 'icon.png'):
-                self.info['assets']['icon'] = 'icon.png'
-            elif asset == os.path.join(self.name, 'fanart.jpg'):
-                self.info['assets']['fanart'] = 'fanart.png'
-            elif asset.startswith(os.path.join(self.name, 'screenshot')):
+            if asset == os.path.join(self.name, 'resources', 'icon.png'):
+                self.info['assets']['icon'] = 'resources/icon.png'
+            elif asset == os.path.join(self.name, 'resources', 'fanart.jpg'):
+                self.info['assets']['fanart'] = 'resources/fanart.png'
+            elif asset.startswith(os.path.join(self.name, 'resources',
+                                               'screenshot')):
                 self.info['assets'].setdefault('screenshots', []).append(
-                    os.path.basename(asset))
+                    os.path.join('resources', os.path.basename(asset)))
             else:
                 print("Unrecognized image detected: {}".format(asset))
 

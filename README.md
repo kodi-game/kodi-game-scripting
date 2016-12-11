@@ -3,29 +3,69 @@ Status](https://circleci.com/gh/fetzerch/kodi-game-scripting.svg?style=shield)](
 
 # Scripting for Kodi Game addons
 
-[Kodi's RetroPlayer](https://github.com/garbear/xbmc) offers a wrapper to use
-[Libretro](https://www.libretro.com/) game and emulator cores.
+This project supports Team-Kodi members in maintaining the
+[game add-ons](https://github.com/kodi-game/) for
+[Libretro](https://www.libretro.com/) game and emulator cores as
+used by [Kodi's RetroPlayer](https://github.com/garbear/xbmc).
 
-While this offers access to a multitude of platforms and games, it's cumbersome
-to maintain because every Libretro core needs to be built and packaged as a
-Kodi binary add-on. This project tries to add some scripting to simplify the
-maintenance efforts.
+While the direct support of Libretro cores in RetroPlayer offers access to a
+multitude of platforms and games, it's cumbersome to maintain because every
+Libretro core needs to be built and packaged as a Kodi binary add-on. This
+project tries to add some scripting to simplify the maintenance efforts.
 
-Manual porting is explained in this [forum post](http://forum.kodi.tv/showthread.php?tid=224328).
+## How does it work
+
+The Kodi game add-ons that wrap Libretro cores are all very similar in
+the way they are built and in the way the metadata (such as name,
+version or description or version) is maintained.
+
+*kodi-game-scripting* maintains a set of [Jinja2](http://jinja.pocoo.org/docs/)
+templates from which we can completely generate an add-on that wraps a
+Libretro core. The [templates](https://github.com/fetzerch/kodi-game-scripting/tree/master/templates)
+define the overall structure of the add-on files and fill variable fields with
+content from a set of metadata (descriptions from
+[libretro-super](https://github.com/libretro/libretro-super/tree/master/dist/info),
+the compiled Libretro core, and the current version of already existing files).
+
+Additionally to the generation steps, *kodi-game-scripting* automates
+dealing with Git(Hub) repos (creating, cloning, pulling, committing, pushing)
+and also generates overview pages that can be used
+to fill for example [Kodi Wiki - Game_add-ons](http://kodi.wiki/view/Game_add-ons).
+
+## Use-cases
+
+This project was designed to support the following use-cases:
+
+- Fully automatic updates of build and add-on files (e.g. unify CMakeLists.txt,
+  version numbers in addon.xml).
+- Support manual work (e.g. automatic pushing after adding images to a
+  set of add-ons).
+- Create new add-ons for missing Libretro cores (as explained in this
+  [forum post](http://forum.kodi.tv/showthread.php?tid=224328)).
+- Simplify creating test builds for a given set of add-ons.
+- Generate [Kodi Wiki - Game_add-ons](http://kodi.wiki/view/Game_add-ons).
 
 ## Dependencies
-You will need the following python packages:
 
-* gitpython
-* pygithub
-* keyring
-* jinja2
-* xmljson
+*kodi-game-scripting* runs on Linux (and macOS with the constraint that
+not all add-ons compile on macOS) and requires Python 3.
+
+Additionally you will need the following Python packages:
+
+- gitpython
+- keyring
+- jinja2
+- pygithub
+- xmljson
 
 On Ubuntu, these can be installed using:
 
     sudo apt-get install python3-pip
-    sudo pip3 install gitpython pygithub keyring jinja2 xmljson
+    sudo pip3 install gitpython keyring jinja2 pygithub xmljson
+
+The script will ask you for GitHub credentials as GitHub API calls are
+limited when unauthorized. For pushing changes or creating new Repos, you need
+to have write access to <https://github.com/kodi-game/>.
 
 ## Usage
 

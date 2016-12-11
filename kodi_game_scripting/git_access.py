@@ -66,7 +66,8 @@ class Git:
 
     def create_repo(self, organization, name):
         """ Create a new repo on GitHub """
-        repo = self._github.get_organization(organization).create_repo(name)
+        repo = self._github.get_organization(organization).create_repo(
+            name, auto_init=True)
         self.get_repos.cache_clear()  # pylint: disable=no-member
         return GitRepo(repo.name, repo.clone_url, repo.ssh_url)
 
@@ -93,7 +94,7 @@ class Git:
         return gitrepo.git.ls_remote('origin', branch, heads=True)
 
     @classmethod
-    def clone_repo(cls, repo, path):
+    def clone_repo(cls, repo, path, reset=True):
         """ Clone repo into directory
 
             If the repo exists all changes will be discarded. """
@@ -104,27 +105,25 @@ class Git:
             gitrepo = git.Repo.init(git_dir)
             origin = gitrepo.create_remote('origin', repo.url)
         else:
-            print("Existing repo, updating {}".format(repo.name))
+            print("Existing repo {}".format(repo.name))
             gitrepo = git.Repo(git_dir)
             origin = gitrepo.remotes.origin
         origin.set_url(repo.ssh_url, push=True)
-        if cls.has_remote_branch(git_dir, 'master'):
-            print("Fetching {}".format(repo.name))
-            origin.fetch('master')
+        print("Fetching {}".format(repo.name))
+        origin.fetch('master')
+        if reset:
             print("Resetting {}".format(repo.name))
             gitrepo.git.reset('--hard', 'origin/master')
         else:
-            print("Recreating {}".format(repo.name))
-            if gitrepo.head.is_valid():
-                gitrepo.git.branch('new_master', move=True, force=True)
-                gitrepo.git.checkout(orphan='master')
+            print("Rebasing {}".format(repo.name))
+            gitrepo.git.rebase('origin/master')
         print("Cleaning local changes {}".format(repo.name))
         gitrepo.git.reset()
         gitrepo.git.clean('-xffd')
 
     @classmethod
     def commit_repo(cls, repo, path,  # pylint: disable=too-many-arguments
-                    message, directory=None, force=False):
+                    message, directory=None, force=False, squash=False):
         """ Create commit in repo """
         git_dir = os.path.join(path, repo.name)
         gitrepo = git.Repo(git_dir)
@@ -132,6 +131,8 @@ class Git:
             gitrepo.git.add(directory, force=force)
         else:
             gitrepo.git.add(all=True, force=force)
+        if squash:
+            gitrepo.git.reset('origin/master', soft=True)
         if gitrepo.is_dirty():
             gitrepo.index.commit(message)
 

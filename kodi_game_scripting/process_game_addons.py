@@ -52,6 +52,8 @@ def main():
                         help="Kodi's source directory")
     parser.add_argument('--git', action="store_true",
                         help="Clone / reset libretro cores from GitHub")
+    parser.add_argument('--git-noclean', action="store_true",
+                        help="Keep existing commits (rebase and squash)")
     parser.add_argument('--filter', type=str, default='',
                         help="Filter games (e.g. nes)")
     parser.add_argument('--push-branch', type=str,
@@ -334,15 +336,18 @@ class Addon():
         """ Clone / reset Git repository """
         print("  Fetching & resetting Git repo {}".format(self.name))
         if self._repo:
-            self._args.git.clone_repo(self._repo, self._args.working_directory)
+            self._args.git.clone_repo(
+                self._repo, self._args.working_directory,
+                reset=False if self._args.git_noclean else True)
 
     def commit(self):
         """ Commit changes to Git repository """
         print("  Commiting changes to Git repo {}".format(self.name))
         if self._repo:
-            self._args.git.commit_repo(self._repo,
-                                       self._args.working_directory,
-                                       "Updated by kodi-game-scripting")
+            self._args.git.commit_repo(
+                self._repo, self._args.working_directory,
+                "Updated by kodi-game-scripting",
+                squash=self._args.git_noclean)
 
     def push(self):
         """ Push addon changes to GitHub repository """

@@ -59,9 +59,12 @@ class TemplateProcessor:
                     for element in items]
         template_env.filters["surround"] = surround
 
-        def regex_replace(string, find, replace):
+        def regex_replace(string, find, replace, multiline=False):
             """ Replaces regex in string """
-            return re.sub(find, replace, string)
+            flags = 0
+            if multiline:
+                flags += re.MULTILINE
+            return re.sub(find, replace, string, flags=flags)
         template_env.filters["regex_replace"] = regex_replace
 
         def get_list(value):

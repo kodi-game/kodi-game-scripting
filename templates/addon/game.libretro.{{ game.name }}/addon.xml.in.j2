@@ -37,6 +37,10 @@
 		{% elif extensions %}
 			{% set description = xml.addon.extension[1].description | default('') + '\n\n' + extensions %}
 		{% endif %}
+		{% if ("License: " in xml.addon.extension[1].description) %}
+			{% set description = description | regex_replace('License: .*', '') %}
+		{% endif %}
+		{% set description = description | regex_replace('^(\s*\\n){2,}', '\n', multiline=True) | trim %}
 		<description>{{ description | e }}</description>
 		{% if xml.addon.extension[1].disclaimer %}
 		<disclaimer>{{ xml.addon.extension[1].disclaimer | e }}</disclaimer>

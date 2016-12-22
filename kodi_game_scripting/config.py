@@ -46,7 +46,7 @@ ADDONS = {
     'bsnes-mercury-balanced':    ('bsnes-mercury',              'Makefile',          '.', {'binary_dir': 'out', 'soname': 'bsnes_mercury_balanced', 'cmake_options': 'profile=balanced'}),
     'bsnes-mercury-performance': ('bsnes-mercury',              'Makefile',          '.', {'binary_dir': 'out', 'soname': 'bsnes_mercury_performance', 'cmake_options': 'profile=performance'}),
     'cap32':                     ('libretro-cap32',             'Makefile',          '.'),
-    'desmume':                   ('desmume-libretro',           'Makefile.libretro', '.'),
+    'desmume':                   ('desmume',                    'Makefile.libretro', 'desmume'),
     #'dolphin':                   ('dolphin',                    'Makefile',          'libretro'),  # Fails to compile, enet.h not found
     'dinothawr':                 ('Dinothawr',                  'Makefile',          '.'),
     'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.'),

@@ -243,17 +243,22 @@ class Addon():
                 datetime.datetime.now()),
             'system_info': {}, 'settings': [],
             'repo': self._config[0],
-            'makefile': {'file': self._config[1], 'dir': self._config[2]},
+            'makefile': {'file': self._config[1], 'dir': self._config[2],
+                         'jni': self._config[3], 'jnisoname': 'libretro'},
             'library': {'file': self.library_file, 'loaded': False},
             'assets': {}}
 
         if self._args.push_branch:
             self.info['branch'] = self._args.push_branch
-        if len(self._config) > 3:
-            self.info['config'] = self._config[3]
-            if 'soname' in self._config[3]:
+        if len(self._config) > 4:
+            self.info['config'] = self._config[4]
+            if 'soname' in self._config[4]:
                 self.libretro_soname = '{}_libretro'.format(
-                    self._config[3]['soname'])
+                    self._config[4]['soname'])
+            if 'jnisoname' in self._config[4]:
+                self.info['makefile']['jnisoname'] = \
+                    self._config[4]['jnisoname']
+
         self.info['makefile']['soname'] = self.libretro_soname
         self.load_info_file()
         self.load_assets()

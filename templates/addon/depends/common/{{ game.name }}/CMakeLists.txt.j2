@@ -29,6 +29,8 @@ elseif(CORE_SYSTEM_NAME STREQUAL android)
   if(NOT NDKROOT OR NOT SDK_PLATFORM)
     message(FATAL_ERROR "${PROJECT_NAME} needs NDKROOT and SDK_PLATFORM for Android. Missing Toolchain file?")
   endif()
+  {# libretro has different ways to build cores for Android #}
+  {% if makefile.jni %}
   if(CPU STREQUAL armeabi-v7a OR CPU STREQUAL arm64-v8a)
     set(PLATFORM ${CPU})
   elseif(CPU STREQUAL i686)
@@ -39,6 +41,18 @@ elseif(CORE_SYSTEM_NAME STREQUAL android)
   set(BUILD_COMMAND GNUMAKE=$(MAKE) ${NDKROOT}/ndk-build -C {{ makefile.jni }} APP_ABI=${PLATFORM} APP_PLATFORM=${SDK_PLATFORM} V7NEONOPTIMIZATION=1 GIT_VERSION=
                                     NDK_LIBS_OUT=${PROJECT_SOURCE_DIR}/${LIBRETRO_BINARY_DIR} {{ config.cmake_options | default('') }} ${LIBRETRO_DEBUG} V=1
                     && cp ${PROJECT_SOURCE_DIR}/${LIBRETRO_BINARY_DIR}/${PLATFORM}/${LIBRETRO_JNISONAME} ${PROJECT_SOURCE_DIR}/${LIBRETRO_BINARY_DIR}/${LIBRETRO_SONAME})
+  {% else %}
+  if(CPU STREQUAL armeabi-v7a)
+    set(PLATFORM android-armv7)
+  elseif(CPU STREQUAL i686)
+    set(PLATFORM x86)
+  else()
+    message(FATAL_ERROR "${PROJECT_NAME} needs Android ${CPU} build command in CMakeLists.txt!")
+  endif()
+  set(LIBRETRO_SONAME {{ makefile.soname }}_android${CMAKE_SHARED_LIBRARY_SUFFIX})
+  get_filename_component(TOOLCHAIN_DIR ${CMAKE_C_COMPILER} DIRECTORY)
+  set(BUILD_COMMAND PATH=${TOOLCHAIN_DIR}:$ENV{PATH} $(MAKE) -C {{ makefile.dir }} -f {{ makefile.file }} {{ config.cmake_options | default('') }} platform=${PLATFORM} ${LIBRETRO_DEBUG} GIT_VERSION=)
+  {% endif %}
 elseif(CORE_SYSTEM_NAME STREQUAL rbpi)
   message(FATAL_ERROR "${PROJECT_NAME} needs RPi build command in CMakeLists.txt!")
 elseif(CORE_SYSTEM_NAME STREQUAL freebsd)

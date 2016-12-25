@@ -77,7 +77,7 @@ ADDONS = {
     'quicknes':                  ('QuickNES_Core',              'Makefile',          '.',                 'jni'),
     'reicast':                   ('reicast-emulator',           'Makefile',          '.',                 'jni'),
     #'rustation':                 ('rustation-libretro',         'Makefile',          '.',                 'jni'),  # Checkout fails
-    'scummvm':                   ('scummvm',                    'Makefile',          'backends/platform/libretro/build', 'jni', {'binary_dir': 'backends/platform/libretro/build'}),
+    'scummvm':                   ('scummvm',                    'Makefile',          'backends/platform/libretro/build', None, {'binary_dir': 'backends/platform/libretro/build'}),
     'snes9x':                    ('snes9x',                     'Makefile',          'libretro',          'libretro/jni'),
     'snes9x2002':                ('snes9x2002',                 'Makefile',          '.',                 'jni'),
     'snes9x2010':                ('snes9x2010',                 'Makefile',          '.',                 'jni'),

@@ -323,7 +323,7 @@ class Addon():
             if asset == os.path.join(self.name, 'resources', 'icon.png'):
                 self.info['assets']['icon'] = 'resources/icon.png'
             elif asset == os.path.join(self.name, 'resources', 'fanart.jpg'):
-                self.info['assets']['fanart'] = 'resources/fanart.png'
+                self.info['assets']['fanart'] = 'resources/fanart.jpg'
             elif asset.startswith(os.path.join(self.name, 'resources',
                                                'screenshot')):
                 self.info['assets'].setdefault('screenshots', []).append(

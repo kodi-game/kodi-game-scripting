@@ -37,6 +37,7 @@ ADDONS = {
     'beetle-pce-fast':           ('beetle-pce-fast-libretro',   'Makefile',          '.',                 'jni', {'soname': 'mednafen_pce_fast'}),
     'beetle-pcfx':               ('beetle-pcfx-libretro',       'Makefile',          '.',                 'jni', {'soname': 'mednafen_pcfx'}),
     'beetle-psx':                ('beetle-psx-libretro',        'Makefile',          '.',                 'jni', {'soname': 'mednafen_psx'}),
+    'beetle-saturn':             ('beetle-saturn-libretro',     'Makefile',          '.',                 'jni', {'soname': 'mednafen_saturn'}),
     'beetle-supergrafx':         ('beetle-supergrafx-libretro', 'Makefile',          '.',                 'jni', {'soname': 'mednafen_supergrafx'}),
     'beetle-vb':                 ('beetle-vb-libretro',         'Makefile',          '.',                 'jni', {'soname': 'mednafen_vb'}),
     'beetle-wswan':              ('beetle-wswan-libretro',      'Makefile',          '.',                 'jni', {'soname': 'mednafen_wswan'}),
@@ -50,6 +51,7 @@ ADDONS = {
     #'dolphin':                   ('dolphin',                    'Makefile',          'libretro',          'jni'),  # Fails to compile, enet.h not found
     'dinothawr':                 ('Dinothawr',                  'Makefile',          '.',                 'jni'),
     'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.',                 'jni'),
+    'fbalpha':                   ('fbalpha',                    'makefile.libretro', '.',                 'jni'),
     'fbalpha2012':               ('fbalpha2012',                'makefile.libretro', 'svn-current/trunk', 'svn-current/trunk/projectfiles/libretro-android/jni'),
     'fceumm':                    ('libretro-fceumm',            'Makefile',          '.',                 'jni'),
     'fmsx':                      ('fmsx-libretro',              'Makefile',          '.',                 'jni'),
@@ -64,6 +66,7 @@ ADDONS = {
     'meteor':                    ('meteor-libretro',            'Makefile',          'libretro',          'libretro/jni'),
     'mgba':                      ('mgba',                       'Makefile',          '.',                 'jni'),
     'mupen64plus':               ('mupen64plus-libretro',       'Makefile',          '.',                 'jni'),
+    'mrboom':                    ('mrboom-libretro',            'Makefile',          '.',                 'jni'),
     'nestopia':                  ('nestopia',                   'Makefile',          'libretro',          'libretro/jni'),
     'nx':                        ('nxengine-libretro',          'Makefile',          '.',                 'jni', {'soname': 'nxengine'}),
     'o2em':                      ('libretro-o2em',              'Makefile',          '.',                 'jni'),

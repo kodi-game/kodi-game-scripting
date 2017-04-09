@@ -128,7 +128,7 @@ class TemplateProcessor:
                         raise
 
                 template = template_env.get_template(infile)
-                content = template.render(template_vars).strip()
+                content = template.render(template_vars)
                 if content:
                     with open(outfile_path, 'w') as outfile_ctx:
                         outfile_ctx.write(content)

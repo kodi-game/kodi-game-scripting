@@ -57,7 +57,7 @@ ADDONS = {
     'fmsx':                      ('fmsx-libretro',              'Makefile',          '.',                 'jni'),
     'fuse':                      ('fuse-libretro',              'Makefile',          '.',                 'jni'),
     'gambatte':                  ('gambatte-libretro',          'Makefile',          '.',                 'libgambatte/libretro/jni'),
-    'genplus':                   ('Genesis-Plus-GX',            'Makefile',          '.',                 'libretro/jni', {'soname': 'genesis_plus_gx'}),
+    'genplus':                   ('Genesis-Plus-GX',            'Makefile.libretro', '.',                 'libretro/jni', {'soname': 'genesis_plus_gx'}),
     'gw':                        ('gw-libretro',                'Makefile',          '.',                 'jni'),
     'handy':                     ('libretro-handy',             'Makefile',          '.',                 'jni'),
     'hatari':                    ('hatari',                     'Makefile.libretro', '.',                 'jni'),

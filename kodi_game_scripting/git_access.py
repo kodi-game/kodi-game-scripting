@@ -170,4 +170,4 @@ def test_github_repos():
     gitaccess = Git()
     repos = gitaccess.get_repos('kodi-game', r'game\.libretro\.')
     print(repos)
-    assert len(repos) > 0
+    assert repos

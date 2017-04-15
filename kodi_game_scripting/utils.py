@@ -57,8 +57,7 @@ def purify(obj):
     elif isinstance(obj, (list, tuple, set)):
         return type(obj)(purify(v) for v in obj
                          if _is_not_empty(v) and purify(v))
-    else:
-        return obj
+    return obj
 
 
 def test_purify():

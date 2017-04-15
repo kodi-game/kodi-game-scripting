@@ -107,8 +107,7 @@ def xstr(string):
     """ Convert string to UTF-8, (NoneType as '') """
     if string is None:
         return ''
-    else:
-        return str(string, 'utf-8')
+    return str(string, 'utf-8')
 
 
 def compile_testlibrary():
@@ -120,7 +119,8 @@ def compile_testlibrary():
         LibretroWrapper.EXT))
 
     subprocess.run([os.environ.get('CMAKE', 'cmake'), test_dir], cwd=test_dir)
-    subprocess.run([os.environ.get('CMAKE', 'cmake'), '--build', '.'], cwd=test_dir)
+    subprocess.run([os.environ.get('CMAKE', 'cmake'), '--build', '.'],
+                   cwd=test_dir)
     assert os.path.isfile(test_file)
     return test_file
 

@@ -115,8 +115,20 @@ class TemplateProcessor:
                             outfile_path, err))
                     template_vars.update({'xml': xml_data})
 
+                # Make the datetime of strings files the existing datetime
+                if '.po' in infile and os.path.isfile(outfile_path):
+                    with open(outfile_path, 'r') as stringsfile_ctx:
+                        strings_content = stringsfile_ctx.read()
+
+                    p = re.compile(r'"POT-Creation-Date: (.*)\\n"')
+                    try:
+                        dt = p.search(strings_content).group(1)
+                        template_vars.update({'datetime': dt})
+                    except AttributeError:
+                        raise
+
                 template = template_env.get_template(infile)
-                content = template.render(template_vars).strip()
+                content = template.render(template_vars)
                 if content:
                     with open(outfile_path, 'w') as outfile_ctx:
                         outfile_ctx.write(content)

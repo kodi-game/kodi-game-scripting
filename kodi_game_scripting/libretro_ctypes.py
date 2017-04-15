@@ -119,8 +119,8 @@ def compile_testlibrary():
     test_file = os.path.join(test_dir, 'libretro_test.{}'.format(
         LibretroWrapper.EXT))
 
-    subprocess.run(['cmake', test_dir], cwd=test_dir)
-    subprocess.run(['cmake', '--build', '.'], cwd=test_dir)
+    subprocess.run([os.environ.get('CMAKE', 'cmake'), test_dir], cwd=test_dir)
+    subprocess.run([os.environ.get('CMAKE', 'cmake'), '--build', '.'], cwd=test_dir)
     assert os.path.isfile(test_file)
     return test_file
 

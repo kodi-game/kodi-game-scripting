@@ -126,7 +126,7 @@ class KodiGameAddons:
         # Clean addon descriptions
         if self._args.clean_description:
             desc_dir = os.path.join(self._args.kodi_directory,
-                                    'project', 'cmake', 'addons', 'addons')
+                                    'cmake', 'addons', 'addons')
             for path in next(os.walk(desc_dir))[1]:
                 if path.startswith(config.GITHUB_ADDON_PREFIX):
                     shutil.rmtree(os.path.join(desc_dir, path))
@@ -175,7 +175,7 @@ class KodiGameAddons:
                     self._args.git.commit_repo(
                         repo, path, "Updated by kodi-game-scripting",
                         directory=os.path.join(
-                            'project', 'cmake', 'addons', 'addons'),
+                            'cmake', 'addons', 'addons'),
                         force=True)
                     print("Pushing descriptions to GitHub repo")
                     self._args.git.push_repo(repo, path,
@@ -196,7 +196,7 @@ class KodiGameAddons:
         build_dir = os.path.join(self._args.working_directory, 'build')
         install_dir = os.path.join(self._args.working_directory, 'install')
         cmake_dir = os.path.join(self._args.kodi_directory,
-                                 'project', 'cmake', 'addons')
+                                 'cmake', 'addons')
 
         utils.ensure_directory_exists(build_dir, clean=True)
         addons = '|'.join(['{}{}$'.format(config.GITHUB_ADDON_PREFIX, a)
@@ -267,7 +267,7 @@ class Addon():
         """ Generate addon description files """
         template_processor.TemplateProcessor.process(
             'description',
-            os.path.join(self._args.kodi_directory, 'project', 'cmake',
+            os.path.join(self._args.kodi_directory, 'cmake',
                          'addons', 'addons', self.name),
             self.info)
 

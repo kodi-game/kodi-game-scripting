@@ -47,6 +47,8 @@ This project was designed to support the following use-cases:
 
 ## Dependencies
 
+To compile the add-ons, you will need CMake >= 3.6.
+
 *kodi-game-scripting* runs on Linux (and macOS with the constraint that
 not all add-ons compile on macOS) and requires Python 3.
 

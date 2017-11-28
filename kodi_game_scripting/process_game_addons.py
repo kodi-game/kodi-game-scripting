@@ -246,7 +246,7 @@ class Addon():
             'makefile': {'file': self._config[1], 'dir': self._config[2],
                          'jni': self._config[3], 'jnisoname': 'libretro'},
             'library': {'file': self.library_file, 'loaded': False},
-            'assets': {}}
+            'assets': {}, 'git': {}}
 
         if self._args.push_branch:
             self.info['branch'] = self._args.push_branch
@@ -353,6 +353,8 @@ class Addon():
                 self._repo, self._args.working_directory,
                 "Updated by kodi-game-scripting",
                 squash=self._args.git_noclean)
+            self.info['git']['diff'] = self._args.git.diff_repo(
+                self._repo, self._args.working_directory)
 
     def push(self):
         """ Push addon changes to GitHub repository """

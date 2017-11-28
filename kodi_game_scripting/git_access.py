@@ -137,6 +137,13 @@ class Git:
             gitrepo.index.commit(message)
 
     @classmethod
+    def diff_repo(cls, repo, path):
+        """ Diff commits in repo """
+        git_dir = os.path.join(path, repo.name)
+        gitrepo = git.Repo(git_dir)
+        return gitrepo.git.diff("origin/master", gitrepo.head.commit)
+
+    @classmethod
     def push_repo(cls, repo, path, branch):
         """ Create commit in repo """
         git_dir = os.path.join(path, repo.name)

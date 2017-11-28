@@ -55,6 +55,7 @@ ADDONS = {
     'fbalpha2012':               ('fbalpha2012',                'makefile.libretro', 'svn-current/trunk', 'svn-current/trunk/projectfiles/libretro-android/jni'),
     'fceumm':                    ('libretro-fceumm',            'Makefile',          '.',                 'jni'),
     'fmsx':                      ('fmsx-libretro',              'Makefile',          '.',                 'jni'),
+    #'fsuae':                     ('libretro-fsuae',             'Makefile.libretro', '.',                 'jni', {'branch': 'libretro-fsuae'}),  # Fails to build
     'fuse':                      ('fuse-libretro',              'Makefile',          '.',                 'jni'),
     'gambatte':                  ('gambatte-libretro',          'Makefile',          '.',                 'libgambatte/libretro/jni'),
     'genplus':                   ('Genesis-Plus-GX',            'Makefile.libretro', '.',                 'libretro/jni', {'soname': 'genesis_plus_gx'}),
@@ -87,6 +88,8 @@ ADDONS = {
     'stella':                    ('stella-libretro',            'Makefile',          '.',                 'jni'),
     'tgbdual':                   ('tgbdual-libretro',           'Makefile',          '.',                 'jni'),
     'tyrquake':                  ('tyrquake',                   'Makefile',          '.',                 'jni'),
+    'uae':                       ('libretro-uae',               'Makefile',          '.',                 'jni', {'soname': 'puae'}),
+    #'uae4arm':                   ('uae4arm-libretro',           'Makefile',          '.',                 'jni'),  # Fails to build
     'vbam':                      ('vbam-libretro',              'Makefile',          'src/libretro',      'src/libretro/jni'),
     'vba-next':                  ('vba-next',                   'Makefile',          '.',                 'libretro/jni', {'soname': 'vba_next'}),
     'vecx':                      ('libretro-vecx',              'Makefile',          '.',                 'jni'),

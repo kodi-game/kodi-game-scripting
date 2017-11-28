@@ -146,6 +146,5 @@ def test_xstr():
     assert xstr(None) == ''
 
 
-# pragma: no cover
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     LIB = LibretroWrapper(sys.argv[1])

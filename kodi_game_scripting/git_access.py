@@ -84,7 +84,7 @@ class Git:
         try:
             _ = git.Repo(path).git_dir  # flake8: noqa
             return True
-        except git.exc.InvalidGitRepositoryError:
+        except git.exc.InvalidGitRepositoryError:  # pylint: disable=no-member
             return False
 
     @classmethod

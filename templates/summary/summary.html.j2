@@ -33,6 +33,7 @@ $(document).ready(function() {
 			<th>Supports VFS</th>
 			<th>Requires GL</th>
 			<th>Status</th>
+			<th>Git Diff</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -58,6 +59,11 @@ $(document).ready(function() {
 			<td>-</td>
 			<td><span class="text-danger">Failed to load library</span><br><span class="text_muted">{{ addon.library.file }}</span><br>
 				<span class="text-danger">{{ addon.library.error }}</span></td>
+			{% endif %}
+			{% if addon.git.diff %}
+			<td><pre>{{ addon.git.diff | default('') | e }}</pre></td>
+			{% else %}
+			<td>-</td>
 			{% endif %}
 		</tr>
 		{% endfor %}

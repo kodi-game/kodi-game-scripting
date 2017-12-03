@@ -48,7 +48,7 @@ ADDONS = {
     'bsnes-mercury-performance': ('bsnes-mercury',              'Makefile',          '.',                 'target-libretro/jni', {'binary_dir': 'out', 'soname': 'bsnes_mercury_performance', 'jnisoname': 'libretro_bsnes_mercury_performance', 'cmake_options': 'profile=performance'}),
     'cap32':                     ('libretro-cap32',             'Makefile',          '.'  ,               'jni'),
     'desmume':                   ('desmume',                    'Makefile.libretro', 'desmume',           'desmume/src/libretro/jni'),
-    #'dolphin':                   ('dolphin',                    'Makefile',          'libretro',          'jni'),  # Fails to compile, enet.h not found
+    #'dolphin':                   ('dolphin',                    'Makefile',          'Source/Core/DolphinLibretro', 'Source/Core/DolphinLibretro/jni', {'binary_dir': 'Source/Core/DolphinLibretro'}),  # Longrunning
     'dinothawr':                 ('Dinothawr',                  'Makefile',          '.',                 'jni'),
     'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.',                 'jni'),
     'fbalpha':                   ('fbalpha',                    'makefile.libretro', '.',                 'jni'),
@@ -74,7 +74,7 @@ ADDONS = {
     'pcsx-rearmed':              ('pcsx_rearmed',               'Makefile.libretro', '.',                 'jni', {'soname': 'pcsx_rearmed'}),
     'picodrive':                 ('picodrive',                  'Makefile.libretro', '.',                 'jni'),
     'pokemini':                  ('PokeMini',                   'Makefile.libretro', '.',                 'jni'),
-    #'ppsspp':                    ('libretro-ppsspp',            'Makefile',          'libretro',          'jni'),  # Longrunning, working
+    #'ppsspp':                    ('libretro-ppsspp',            'Makefile',          'libretro',          'jni'),  # Longrunning, requires OpenGL
     'prboom':                    ('libretro-prboom',            'Makefile',          '.',                 'jni'),
     'prosystem':                 ('prosystem-libretro',         'Makefile',          '.',                 'jni'),
     'quicknes':                  ('QuickNES_Core',              'Makefile',          '.',                 'jni'),

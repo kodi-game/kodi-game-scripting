@@ -248,6 +248,7 @@ class Addon():
                 datetime.datetime.now()),
             'system_info': {}, 'settings': [],
             'repo': self._config[0],
+            'repo_branch': 'master',
             'makefile': {'file': self._config[1], 'dir': self._config[2],
                          'jni': self._config[3], 'jnisoname': 'libretro'},
             'library': {'file': self.library_file, 'loaded': False},
@@ -257,6 +258,8 @@ class Addon():
             self.info['branch'] = self._args.push_branch
         if len(self._config) > 4:
             self.info['config'] = self._config[4]
+            if 'branch' in self._config[4]:
+                self.info['repo_branch'] = self._config[4]['branch']
             if 'soname' in self._config[4]:
                 self.libretro_soname = '{}_libretro'.format(
                     self._config[4]['soname'])

@@ -47,6 +47,9 @@ def main():
                         help="Directory where the game addons reside")
     parser.add_argument('--compile', action='store_true',
                         help="Compile libretro cores and read system info")
+    parser.add_argument('--buildtype', default='Debug',
+                        type=str, choices=['Debug', 'Release'],
+                        help="Specify build type")
     parser.add_argument('--kodi-source-dir', dest='kodi_directory',
                         type=str,
                         help="Kodi's source directory")
@@ -206,7 +209,9 @@ class KodiGameAddons:
                             '-DADDONS_TO_BUILD={}'.format(addons),
                             '-DADDON_SRC_PREFIX={}'
                             .format(self._args.working_directory),
-                            '-DCMAKE_BUILD_TYPE=Debug', '-DPACKAGE_ZIP=1',
+                            '-DCMAKE_BUILD_TYPE={}'
+                            .format(self._args.buildtype),
+                            '-DPACKAGE_ZIP=1',
                             '-DCMAKE_INSTALL_PREFIX={}'.format(install_dir),
                             cmake_dir], cwd=build_dir)
             subprocess.run([os.environ.get('CMAKE', 'cmake'), '--build', '.',

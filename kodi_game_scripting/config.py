@@ -64,6 +64,7 @@ ADDONS = {
     'hatari':                    ('hatari',                     'Makefile.libretro', '.',                 'jni'),
     'lutro':                     ('libretro-lutro',             'Makefile',          '.',                 'jni'),
     #'mame':                      ('mame',                       'Makefile.libretro', '.',                 'jni'),  # Huge checkout, fails to build
+    'melonds':                   ('melonDS',                    'Makefile',          '.',                 'jni'),
     'meteor':                    ('meteor-libretro',            'Makefile',          'libretro',          'libretro/jni'),
     'mgba':                      ('mgba',                       'Makefile',          '.',                 'jni'),
     'mupen64plus':               ('mupen64plus-libretro',       'Makefile',          '.',                 'jni'),
@@ -80,6 +81,7 @@ ADDONS = {
     'prosystem':                 ('prosystem-libretro',         'Makefile',          '.',                 'jni'),
     'quicknes':                  ('QuickNES_Core',              'Makefile',          '.',                 'jni'),
     'reicast':                   ('reicast-emulator',           'Makefile',          '.',                 'jni'),
+    'sameboy':                   ('SameBoy',                    'Makefile',          'libretro',          'libretro/jni', {'binary_dir': '.'}),
     #'rustation':                 ('rustation-libretro',         'Makefile',          '.',                 'jni'),  # Checkout fails
     'scummvm':                   ('scummvm',                    'Makefile',          'backends/platform/libretro/build', None, {'binary_dir': 'backends/platform/libretro/build'}),
     'snes9x':                    ('snes9x',                     'Makefile',          'libretro',          'libretro/jni'),
@@ -93,6 +95,7 @@ ADDONS = {
     'vbam':                      ('vbam-libretro',              'Makefile',          'src/libretro',      'src/libretro/jni'),
     'vba-next':                  ('vba-next',                   'Makefile',          '.',                 'libretro/jni', {'soname': 'vba_next'}),
     'vecx':                      ('libretro-vecx',              'Makefile',          '.',                 'jni'),
+    'vice':                      ('vice-libretro',              'Makefile.libretro', '.',                 'jni', {'soname': 'vice_x64'}),
     'yabause':                   ('yabause',                    'Makefile',          'libretro',          'libretro/jni'),
     'virtualjaguar':             ('virtualjaguar-libretro',     'Makefile',          '.',                 'jni')
 }

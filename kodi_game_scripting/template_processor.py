@@ -50,7 +50,8 @@ class TemplateProcessor:
         template_dir = os.path.join(TEMPLATE_DIR, template_dir)
         template_env = jinja2.Environment(
             loader=jinja2.FileSystemLoader(template_dir),
-            trim_blocks=True, lstrip_blocks=True, undefined=_TreeUndefined)
+            trim_blocks=True, lstrip_blocks=True, keep_trailing_newline=True,
+            undefined=_TreeUndefined)
 
         def surround(items, string, prepend=True, append=True):
             """ Surrounds each element in a list by the given string """

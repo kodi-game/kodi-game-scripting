@@ -19,8 +19,6 @@
 		<extensions>{{ system_info.extensions | join('|') | e }}</extensions>
 		<supports_vfs>{{ 'false' if system_info.need_fullpath | default('true') else 'true' }}</supports_vfs>
 		<supports_standalone>{{ system_info.supports_no_game | default('false') | lower }}</supports_standalone>
-		<supports_keyboard>{{ xml.addon.extension[0].supports_keyboard | default('false') | lower }}</supports_keyboard>
-		<supports_mouse>{{ xml.addon.extension[0].supports_mouse | default('false') | lower }}</supports_mouse>
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		{% set summary = addon_name %}

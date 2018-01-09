@@ -81,7 +81,7 @@ ADDONS = {
     'prosystem':                 ('prosystem-libretro',         'Makefile',          '.',                 'jni'),
     'quicknes':                  ('QuickNES_Core',              'Makefile',          '.',                 'jni'),
     'reicast':                   ('reicast-emulator',           'Makefile',          '.',                 'jni'),
-    'sameboy':                   ('SameBoy',                    'Makefile',          'libretro',          'libretro/jni', {'binary_dir': '.'}),
+    'sameboy':                   ('SameBoy',                    'Makefile',          'libretro',          'libretro/jni'),
     #'rustation':                 ('rustation-libretro',         'Makefile',          '.',                 'jni'),  # Checkout fails
     'scummvm':                   ('scummvm',                    'Makefile',          'backends/platform/libretro/build', None, {'binary_dir': 'backends/platform/libretro/build'}),
     'snes9x':                    ('snes9x',                     'Makefile',          'libretro',          'libretro/jni'),

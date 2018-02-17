@@ -48,6 +48,7 @@ ADDONS = {
     'bsnes-mercury-performance': ('bsnes-mercury',              'Makefile',          '.',                 'target-libretro/jni', {'binary_dir': 'out', 'soname': 'bsnes_mercury_performance', 'jnisoname': 'libretro_bsnes_mercury_performance', 'cmake_options': 'profile=performance'}),
     'cap32':                     ('libretro-cap32',             'Makefile',          '.'  ,               'jni'),
     'desmume':                   ('desmume',                    'Makefile.libretro', 'desmume/src/frontend/libretro', 'desmume/src/frontend/libretro/jni'),
+    'chailove':                  ('libretro-chailove',          'Makefile',          '.',                 'jni'),
     #'dolphin':                   ('dolphin',                    'Makefile',          'Source/Core/DolphinLibretro', 'Source/Core/DolphinLibretro/jni', {'binary_dir': 'Source/Core/DolphinLibretro'}),  # Longrunning
     'dinothawr':                 ('Dinothawr',                  'Makefile',          '.',                 'jni'),
     'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.',                 'jni'),

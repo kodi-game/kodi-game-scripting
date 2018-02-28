@@ -25,7 +25,7 @@
 		{% if system_info.version %}
 			{% set summary = summary + ' ' + system_info.version %}
 		{% endif %}
-		<summary lang="en">{{ summary | e }}</summary>
+		<summary lang="en_GB">{{ summary | e }}</summary>
 		{% if system_info.extensions %}
 			{% set extensions = 'Supported files: ' + system_info.extensions | surround('.', append=False) | join(', ') %}
 		{% endif %}
@@ -39,7 +39,7 @@
 			{% set description = description | regex_replace('License: .*', '') %}
 		{% endif %}
 		{% set description = description | regex_replace('^(\s*\\n){2,}', '\n', multiline=True) | trim %}
-		<description>{{ description | e }}</description>
+		<description lang="en_GB">{{ description | e }}</description>
 		{% if xml.addon.extension[1].disclaimer %}
 		<disclaimer>{{ xml.addon.extension[1].disclaimer | e }}</disclaimer>
 		{% endif %}

@@ -269,7 +269,6 @@ class Addon():
 
         self.info['makefile']['soname'] = self.libretro_soname
         self.load_info_file()
-        self.load_assets()
 
     def process_description_files(self):
         """ Generate addon description files """
@@ -324,6 +323,7 @@ class Addon():
     def load_assets(self):
         """ Process assets """
         # Loop over all images files in the repo
+        self.info['assets'] = {}
         for asset in sorted(utils.list_all_files(self.path)):
             if os.path.splitext(asset)[1] not in ['.png', '.jpg', '.svg']:
                 continue
@@ -341,6 +341,7 @@ class Addon():
 
     def process_addon_files(self):
         """ Generate addon files """
+        self.load_assets()
         self.load_library_file()
         template_processor.TemplateProcessor.process(
             'addon', self.path, self.info)

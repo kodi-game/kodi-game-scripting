@@ -15,7 +15,7 @@
 	</requires>
 	<extension point="kodi.gameclient"
 			library_@PLATFORM@="@LIBRARY_FILENAME@">
-		<platforms>{{ xml.addon.extension[0].platforms | default('') | e }}</platforms>
+		<platforms>{{ xml.addon.extension[0].platforms.content | default('') | e }}</platforms>
 		<extensions>{{ system_info.extensions | join('|') | e }}</extensions>
 		<supports_vfs>{{ 'false' if system_info.need_fullpath | default('true') else 'true' }}</supports_vfs>
 		<supports_standalone>{{ system_info.supports_no_game | default('false') | lower }}</supports_standalone>
@@ -29,21 +29,21 @@
 		{% if system_info.extensions %}
 			{% set extensions = 'Supported files: ' + system_info.extensions | surround('.', append=False) | join(', ') %}
 		{% endif %}
-		{% set description = xml.addon.extension[1].description | default('') %}
-		{% if ("Supported files: " in xml.addon.extension[1].description) %}
-			{% set description = xml.addon.extension[1].description | regex_replace('Supported files: (?:\.\w+)(?:,\s*\.\w+)*', extensions | default('')) %}
+		{% set description = xml.addon.extension[1].description.content | default('') %}
+		{% if ("Supported files: " in xml.addon.extension[1].description.content) %}
+			{% set description = xml.addon.extension[1].description.content | regex_replace('Supported files: (?:\.\w+)(?:,\s*\.\w+)*', extensions | default('')) %}
 		{% elif extensions %}
-			{% set description = xml.addon.extension[1].description | default('') + '\n\n' + extensions %}
+			{% set description = xml.addon.extension[1].description.content | default('') + '\n\n' + extensions %}
 		{% endif %}
-		{% if ("License: " in xml.addon.extension[1].description) %}
+		{% if ("License: " in xml.addon.extension[1].description.content) %}
 			{% set description = description | regex_replace('License: .*', '') %}
 		{% endif %}
 		{% set description = description | regex_replace('^(\s*\\n){2,}', '\n', multiline=True) | trim %}
 		<description lang="en_GB">{{ description | e }}</description>
 		{% if xml.addon.extension[1].disclaimer %}
-		<disclaimer>{{ xml.addon.extension[1].disclaimer | e }}</disclaimer>
+		<disclaimer>{{ xml.addon.extension[1].disclaimer.content | e }}</disclaimer>
 		{% endif %}
-		<license>{{ libretro_info.license | default(xml.addon.extension[1].license) | default('') | e }}</license>
+		<license>{{ libretro_info.license | default(xml.addon.extension[1].license.content) | default('') | e }}</license>
 		<platform>@PLATFORM@</platform>
 		{% if assets %}
 		<assets>

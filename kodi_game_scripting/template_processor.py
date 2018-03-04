@@ -104,8 +104,15 @@ class TemplateProcessor:
                                          xml_content)
                     xml_data = {}
                     try:
+                        # Like Yahoo converter, but don't omit 'content' if
+                        # there are no attributes.
+                        converter = xmljson.XMLData(
+                            xml_fromstring=False,
+                            simple_text=False,
+                            text_content="content"
+                        )
                         root = xml.etree.ElementTree.fromstring(xml_content)
-                        xml_data = xmljson.Yahoo().data(root)
+                        xml_data = converter.data(root)
 
                         # Parsed XML Data will contain OrderedDict() as empty
                         # value which converts to 'OrderedDict()' instead of ''

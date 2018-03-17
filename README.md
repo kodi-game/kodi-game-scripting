@@ -1,5 +1,4 @@
-[![CircleCI
-Status](https://circleci.com/gh/fetzerch/kodi-game-scripting.svg?style=shield)](https://circleci.com/gh/fetzerch/kodi-game-scripting)
+[![Build Status](https://travis-ci.org/fetzerch/kodi-game-scripting.svg?branch=master)](https://travis-ci.org/fetzerch/kodi-game-scripting)
 
 # Scripting for Kodi Game addons
 

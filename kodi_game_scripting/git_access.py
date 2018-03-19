@@ -37,12 +37,16 @@ class Git:
     def __init__(self, auth=False):
         """ Initialize Git instance """
         try:
-            if auth:
-                cred = credentials.Credentials('github')
-                username, password = cred.load()
+            apitoken = os.environ.get('GITHUB_ACCESS_TOKEN', None)
+            if apitoken:
+                self._github = github.Github(apitoken)
             else:
-                username, password = None, None
-            self._github = github.Github(username, password)
+                if auth:
+                    cred = credentials.Credentials('github')
+                    username, password = cred.load()
+                else:
+                    username, password = None, None
+                self._github = github.Github(username, password)
             rate = self._github.get_rate_limit().rate
             print("GitHub API Rate: limit: {}, remaining: {}, reset: {}"
                   .format(rate.limit, rate.remaining, rate.reset.isoformat()))

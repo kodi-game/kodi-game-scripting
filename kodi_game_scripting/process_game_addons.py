@@ -72,8 +72,10 @@ def main():
     if args.git:
         args.git = git_access.Git(auth=True)
     util = KodiGameAddons(args)
-    util.process()
+    status = util.process()
     util.summary()
+    if not status:
+        sys.exit(1)
 
 
 class KodiGameAddons:
@@ -150,7 +152,7 @@ class KodiGameAddons:
         # time (tinyxml and others would be compiled multiple times).
         if self._args.compile:
             if not self._compile_addons():
-                return
+                return False
 
             # Second iteration: Metadata files
             print("Second iteration: Generate Metadata files")
@@ -183,6 +185,7 @@ class KodiGameAddons:
                     print("Pushing descriptions to GitHub repo")
                     self._args.git.push_repo(repo, path,
                                              self._args.push_branch)
+        return True
 
     def summary(self):
         """ Print summary """
@@ -213,10 +216,10 @@ class KodiGameAddons:
                             .format(self._args.buildtype),
                             '-DPACKAGE_ZIP=1',
                             '-DCMAKE_INSTALL_PREFIX={}'.format(install_dir),
-                            cmake_dir], cwd=build_dir)
+                            cmake_dir], cwd=build_dir, check=True)
             subprocess.run([os.environ.get('CMAKE', 'cmake'), '--build', '.',
                             '--', '-j{}'.format(multiprocessing.cpu_count())],
-                           cwd=build_dir)
+                           cwd=build_dir, check=True)
         except subprocess.CalledProcessError:
             print("Compilation failed!")
             return False

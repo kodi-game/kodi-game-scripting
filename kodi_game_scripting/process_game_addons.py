@@ -319,9 +319,10 @@ class Addon():
             with open(path, 'r') as info_ctx:
                 self.info['libretro_info'] = {}
                 for line in info_ctx:
-                    name, var = line.partition('=')[::2]
-                    self.info['libretro_info'][name.strip()] = \
-                        shlex.split(var)[0]
+                    if '=' in line:
+                        name, var = line.partition('=')[::2]
+                        self.info['libretro_info'][name.strip()] = \
+                            shlex.split(var)[0]
 
     def load_assets(self):
         """ Process assets """

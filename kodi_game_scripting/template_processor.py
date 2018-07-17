@@ -129,11 +129,8 @@ class TemplateProcessor:
                         strings_content = stringsfile_ctx.read()
 
                     datere = re.compile(r'"POT-Creation-Date: (.*)\\n"')
-                    try:
-                        timestamp = datere.search(strings_content).group(1)
-                        template_vars.update({'datetime': timestamp})
-                    except AttributeError:
-                        raise
+                    timestamp = datere.search(strings_content).group(1)
+                    template_vars.update({'datetime': timestamp})
 
                 template = template_env.get_template(infile)
                 content = template.render(template_vars)

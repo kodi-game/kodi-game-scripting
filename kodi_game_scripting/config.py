@@ -49,7 +49,7 @@ ADDONS = {
     'cap32':                     ('libretro-cap32',             'Makefile',          '.'  ,               'jni'),
     'desmume':                   ('desmume',                    'Makefile.libretro', 'desmume/src/frontend/libretro', 'desmume/src/frontend/libretro/jni'),
     'chailove':                  ('libretro-chailove',          'Makefile',          '.',                 'jni'),
-    #'dolphin':                   ('dolphin',                    'Makefile',          'Source/Core/DolphinLibretro', 'Source/Core/DolphinLibretro/jni', {'binary_dir': 'Source/Core/DolphinLibretro'}),  # Longrunning
+    #'dolphin':                   ('dolphin',                    'Makefile',          'Source/Core/DolphinLibretro', 'Source/Core/DolphinLibretro/jni', {'binary_dir': 'Source/Core/DolphinLibretro'}),  # Longrunning, Switched to CMake
     'dinothawr':                 ('Dinothawr',                  'Makefile',          '.',                 'jni'),
     'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.',                 'jni'),
     'fbalpha':                   ('fbalpha',                    'makefile.libretro', '.',                 'jni'),
@@ -64,7 +64,7 @@ ADDONS = {
     'handy':                     ('libretro-handy',             'Makefile',          '.',                 'jni'),
     'hatari':                    ('hatari',                     'Makefile.libretro', '.',                 'jni'),
     'lutro':                     ('libretro-lutro',             'Makefile',          '.',                 'jni'),
-    #'mame':                      ('mame',                       'Makefile.libretro', '.',                 'jni'),  # Huge checkout, fails to build
+    #'mame':                      ('mame',                       'Makefile.libretro', '.',                 'jni', {'cmake_options': 'PTR64=1'}),  # Huge checkout, fails to link (undefined symbol XINPUT)
     'melonds':                   ('melonDS',                    'Makefile',          '.',                 'jni'),
     'meteor':                    ('meteor-libretro',            'Makefile',          'libretro',          'libretro/jni'),
     'mgba':                      ('mgba',                       'Makefile',          '.',                 'jni'),
@@ -77,7 +77,7 @@ ADDONS = {
     'pcsx-rearmed':              ('pcsx_rearmed',               'Makefile.libretro', '.',                 'jni', {'soname': 'pcsx_rearmed'}),
     'picodrive':                 ('picodrive',                  'Makefile.libretro', '.',                 'jni'),
     'pokemini':                  ('PokeMini',                   'Makefile.libretro', '.',                 'jni'),
-    #'ppsspp':                    ('libretro-ppsspp',            'Makefile',          'libretro',          'jni'),  # Longrunning, requires OpenGL
+    #'ppsspp':                    ('ppsspp',                     'Makefile',          'libretro',          'jni'),  # Longrunning, requires OpenGL
     'prboom':                    ('libretro-prboom',            'Makefile',          '.',                 'jni'),
     'prosystem':                 ('prosystem-libretro',         'Makefile',          '.',                 'jni'),
     'quicknes':                  ('QuickNES_Core',              'Makefile',          '.',                 'jni'),
@@ -92,11 +92,11 @@ ADDONS = {
     'tgbdual':                   ('tgbdual-libretro',           'Makefile',          '.',                 'jni'),
     'tyrquake':                  ('tyrquake',                   'Makefile',          '.',                 'jni'),
     'uae':                       ('libretro-uae',               'Makefile',          '.',                 'jni', {'soname': 'puae'}),
-    #'uae4arm':                   ('uae4arm-libretro',           'Makefile',          '.',                 'jni'),  # Fails to build
+    #'uae4arm':                   ('uae4arm-libretro',           'Makefile',          '.',                 'jni'),  # Fails to build on non arm system
     'vbam':                      ('vbam-libretro',              'Makefile',          'src/libretro',      'src/libretro/jni'),
     'vba-next':                  ('vba-next',                   'Makefile',          '.',                 'libretro/jni', {'soname': 'vba_next'}),
     'vecx':                      ('libretro-vecx',              'Makefile',          '.',                 'jni'),
     'vice':                      ('vice-libretro',              'Makefile.libretro', '.',                 'jni', {'soname': 'vice_x64'}),
-    'yabause':                   ('yabause',                    'Makefile',          'libretro',          'libretro/jni'),
+    #'yabause':                   ('yabause',                    'Makefile',          'libretro',          'libretro/jni'),  # undefined reference to pthread_ (PRed)
     'virtualjaguar':             ('virtualjaguar-libretro',     'Makefile',          '.',                 'jni')
 }

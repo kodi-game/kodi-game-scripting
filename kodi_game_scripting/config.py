@@ -97,6 +97,6 @@ ADDONS = {
     'vba-next':                  ('vba-next',                   'Makefile',          '.',                 'libretro/jni', {'soname': 'vba_next'}),
     'vecx':                      ('libretro-vecx',              'Makefile',          '.',                 'jni'),
     'vice':                      ('vice-libretro',              'Makefile.libretro', '.',                 'jni', {'soname': 'vice_x64'}),
-    #'yabause':                   ('yabause',                    'Makefile',          'libretro',          'libretro/jni'),  # undefined reference to pthread_ (PRed)
+    'yabause':                   ('yabause',                    'Makefile',          'libretro',          'libretro/jni'),
     'virtualjaguar':             ('virtualjaguar-libretro',     'Makefile',          '.',                 'jni')
 }

@@ -37,6 +37,8 @@ from . import template_processor
 from . import versions
 
 ADDONS = config.ADDONS
+COMMIT_MSG = "Updated by [kodi-game-scripting]" \
+             "(https://github.com/fetzerch/kodi-game-scripting/)"
 
 
 def main():
@@ -178,7 +180,7 @@ class KodiGameAddons:
                     repo = git_access.GitRepo(name, url='', ssh_url='')
                     print("Commiting descriptions to GitHub repo")
                     self._args.git.commit_repo(
-                        repo, path, "Updated by kodi-game-scripting",
+                        repo, path, COMMIT_MSG,
                         directory=os.path.join(
                             'cmake', 'addons', 'addons'),
                         force=True)
@@ -363,8 +365,7 @@ class Addon():
         print("  Commiting changes to Git repo {}".format(self.name))
         if self._repo:
             self._args.git.commit_repo(
-                self._repo, self._args.working_directory,
-                "Updated by kodi-game-scripting",
+                self._repo, self._args.working_directory, COMMIT_MSG,
                 squash=self._args.git_noclean)
             self.info['git']['diff'] = self._args.git.diff_repo(
                 self._repo, self._args.working_directory)

@@ -64,7 +64,13 @@ ADDONS = {
     'handy':                     ('libretro-handy',             'Makefile',          '.',                 'jni'),
     'hatari':                    ('hatari',                     'Makefile.libretro', '.',                 'jni'),
     'lutro':                     ('libretro-lutro',             'Makefile',          '.',                 'jni'),
-    #'mame':                      ('mame',                       'Makefile.libretro', '.',                 'jni', {'cmake_options': 'PTR64=1'}),  # Huge checkout, fails to link (undefined symbol XINPUT)
+    'mame2000':                  ('mame2000-libretro',          'Makefile',          '.',                 'jni'),
+    'mame2003':                  ('mame2003-libretro',          'Makefile',          '.',                 'jni'),
+    'mame2003_plus':             ('mame2003-plus-libretro',     'Makefile',          '.',                 'jni'),
+    #'mame2010':                  ('mame2010-libretro',          'Makefile',          '.',                 'jni', {'cmake_options': 'VRENDER=soft PTR64=1'}),  # Huge and longrunning
+    #'mame2014':                  ('mame2014-libretro',          'Makefile',          '.',                 'jni', {'cmake_options': 'PTR64=1 TARGET=mame'}),  # Huge and longrunning
+    #'mame2016':                  ('mame2016-libretro',          'Makefile.libretro', '.',                 'jni', {'cmake_options': 'PTR64=1'}),  # Huge and longrunning
+    #'mame':                      ('mame',                       'Makefile.libretro', '.',                 'jni', {'cmake_options': 'PTR64=1'}),  # Huge and longrunning
     'melonds':                   ('melonDS',                    'Makefile',          '.',                 'jni'),
     'meteor':                    ('meteor-libretro',            'Makefile',          'libretro',          'libretro/jni'),
     'mgba':                      ('mgba',                       'Makefile',          '.',                 'jni'),

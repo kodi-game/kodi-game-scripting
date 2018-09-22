@@ -49,7 +49,7 @@ def main():
                         help="Directory where the game addons reside")
     parser.add_argument('--compile', action='store_true',
                         help="Compile libretro cores and read system info")
-    parser.add_argument('--buildtype', default='Debug',
+    parser.add_argument('--buildtype', default='Release',
                         type=str, choices=['Debug', 'Release'],
                         help="Specify build type")
     parser.add_argument('--kodi-source-dir', dest='kodi_directory',

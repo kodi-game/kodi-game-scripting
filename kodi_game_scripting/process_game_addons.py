@@ -37,8 +37,8 @@ from . import template_processor
 from . import versions
 
 ADDONS = config.ADDONS
-COMMIT_MSG = "Updated by [kodi-game-scripting]" \
-             "(https://github.com/fetzerch/kodi-game-scripting/)"
+COMMIT_MSG = "Updated by kodi-game-scripting\n\n" \
+             "https://github.com/fetzerch/kodi-game-scripting/"
 
 
 def main():

@@ -54,15 +54,22 @@ not all add-ons compile on macOS) and requires Python 3.
 Additionally you will need the following Python packages:
 
 - gitpython
-- keyring
 - jinja2
-- pygithub
+- keyring
+- PyGithub>=1.43.2
 - xmljson
 
 On Ubuntu, these can be installed using:
 
     sudo apt-get install python3-pip
-    sudo pip3 install gitpython keyring jinja2 pygithub xmljson
+    sudo pip3 install -r requirements.txt
+
+In addition you can also install the script through its `setup.py`. The
+most convenient way is a development installation that even let's you modify
+the files in this repo. Note that the script is then executed with the
+globally available `process_game_addons.py`:
+
+    sudo pip3 install -e .
 
 The script will ask you for GitHub credentials as GitHub API calls are
 limited when unauthorized. For pushing changes or creating new Repos, you need

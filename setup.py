@@ -1,4 +1,4 @@
-# Copyright (C) 2016 Christian Fetzer
+# Copyright (C) 2016-2018 Christian Fetzer
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,7 +14,11 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-""" Process Kodi Game addons and unify project files """
+"""Installs kodi-game-scripting"""
 
-from .process_game_addons import main
-main()
+from setuptools import setup
+
+setup(
+    setup_requires=['pbr'],
+    pbr=True
+)

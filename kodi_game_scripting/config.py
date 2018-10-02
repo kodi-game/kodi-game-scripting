@@ -51,7 +51,7 @@ ADDONS = {
     'chailove':                  ('libretro-chailove',          'Makefile',          '.',                 'jni'),
     #'dolphin':                   ('dolphin',                    'Makefile',          'Source/Core/DolphinLibretro', 'Source/Core/DolphinLibretro/jni', {'binary_dir': 'Source/Core/DolphinLibretro'}),  # Longrunning, Switched to CMake
     'dinothawr':                 ('Dinothawr',                  'Makefile',          '.',                 'jni'),
-    #'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.',                 'jni'),  # fails to compile
+    'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.',                 'jni'),
     'fbalpha':                   ('fbalpha',                    'makefile.libretro', '.',                 'jni'),
     'fbalpha2012':               ('fbalpha2012',                'makefile.libretro', 'svn-current/trunk', 'svn-current/trunk/projectfiles/libretro-android/jni'),
     'fceumm':                    ('libretro-fceumm',            'Makefile',          '.',                 'jni'),

@@ -102,7 +102,7 @@ ADDONS = {
     'vbam':                      ('vbam-libretro',              'Makefile',          'src/libretro',      'src/libretro/jni'),
     'vba-next':                  ('vba-next',                   'Makefile',          '.',                 'libretro/jni', {'soname': 'vba_next'}),
     'vecx':                      ('libretro-vecx',              'Makefile',          '.',                 'jni'),
-    #'vice':                      ('vice-libretro',              'Makefile.libretro', '.',                 'jni', {'soname': 'vice_x64'}),  # Fails to build
+    'vice':                      ('vice-libretro',              'Makefile.libretro', '.',                 'jni', {'soname': 'vice_x64'}),
     'yabause':                   ('yabause',                    'Makefile',          'libretro',          'libretro/jni'),
     'virtualjaguar':             ('virtualjaguar-libretro',     'Makefile',          '.',                 'jni')
 }

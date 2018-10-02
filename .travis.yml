@@ -1,13 +1,12 @@
 language: python
-install: pip install tox coveralls
-matrix:
-  fast_finish: true
+install: pip install tox
+script: tox
+
+jobs:
   include:
     - python: 3.5
-      env: TOXENV=flake8
-    - python: 3.5
-      env: TOXENV=pylint
-    - python: 3.5
-      env: TOXENV=py35-cover
-script: tox
-after_success: coveralls
+      env: TOXENV=py35
+    - python: 3.6
+      env: TOXENV=py36
+      install: pip install tox coveralls
+      after_success: coveralls

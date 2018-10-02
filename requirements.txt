@@ -1,5 +1,5 @@
 gitpython
 jinja2
 keyring
-PyGithub
+PyGithub>=1.43.2
 xmljson

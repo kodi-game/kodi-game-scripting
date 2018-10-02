@@ -47,7 +47,7 @@ class Git:
                 else:
                     username, password = None, None
                 self._github = github.Github(username, password)
-            rate = self._github.get_rate_limit().rate
+            rate = self._github.get_rate_limit().core
             print("GitHub API Rate: limit: {}, remaining: {}, reset: {}"
                   .format(rate.limit, rate.remaining, rate.reset.isoformat()))
             if auth:

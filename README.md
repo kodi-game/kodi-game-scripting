@@ -44,7 +44,9 @@ This project was designed to support the following use-cases:
 - Simplify creating test builds for a given set of add-ons.
 - Generate [Kodi Wiki - Game_add-ons](http://kodi.wiki/view/Game_add-ons).
 
-## Dependencies
+## Dependencies and installation
+
+First of all you'll need the Kodi sources checked out to a local directory.
 
 To compile the add-ons, you will need CMake >= 3.6.
 
@@ -77,34 +79,63 @@ to have write access to <https://github.com/kodi-game/>.
 
 ## Usage
 
-Clone [game add-ons](https://github.com/kodi-game) to `<WORKING_DIRECTORY>` or
-specify the `--git` parameter and then run:
+The most typical use case is to generate updates for all cores.
+WORKING_D:
 
-    ./process_game_addons.py --game-addons-dir=<WORKING_DIRECTORY>
-
-Some of the information (such as version or supported extensions) can only be
-retrieved from a compiled add-on binary. This script can compile add-ons:
-
-    ./process_game_addons.py --game-addons-dir=<WORKING_DIRECTORY> \
-                             --compile --kodi-source-dir=<KODI_SOURCE_DIR>
-
-Add-ons can be filtered with `--filter` (e.g. `--filter=bnes`).
-
-The changed add-on files as well as the add-on descriptions necessary to
-build the binary add-ons can be pushed to GitHub.
-
-    ./process_game_addons.py --game-addons-dir=<WORKING_DIRECTORY> \
-                             --compile --kodi-source-dir=<KODI_SOURCE_DIR> \
-                             --git --push-branch testing \
-                             --push-description --clean-description
+    ./process_game_addons.py --game-addons-dir=working_directory \
+                             --kodi-source-dir=<KODI_SOURCE_DIR> \
+                             --git --compile
 
 - `--git` activates Git usage (and clones and resets add-on
   directories in the given `WORKING_DIRECTORY`.
+- `--compile` compiles the add-ons (as some of the information such as version
+  or supported extensions can only be retrieved from a compiled add-on binary).
+  As the compilation takes a lot of time it's recommended to first compile the
+  add-ons and then push the changes in a second step.
+- `--filter` allows to filter the add-ons (e.g. `--filter=bnes`).
+
+Once the generation is done the script creates a summary html page in
+`working_directory/summary.html`. This shows an overview of all add-ons
+and also shows a diff of changes to their upstream versions.
+
+The changed add-on files can now be pushed to GitHub:
+
+    ./process_game_addons.py --game-addons-dir=working_directory \
+                             --kodi-source-dir=<KODI_SOURCE_DIR> \
+                             --git --push-branch=master
+
 - `--push-branch <BRANCH>` pushes the generated add-on files to the given
   `BRANCH` in *kodi-game*.
+
+It's also possible to push changes to a separate branch and update the
+add-on description files as well that are required for compiling the
+add-ons as part of Kodi. This allows to easily trigger a test-build with
+modified add-ons.
+
+    ./process_game_addons.py --game-addons-dir=working_directory \
+                             --kodi-source-dir=<KODI_SOURCE_DIR> \
+                             --git --push-branch=testing \
+                             --push-description --clean-description
+
 - `--push-description` pushes the add-on description files to the existing
   remote `origin` of the local `KODI_SOURCE_DIR`.
 - `--clean-description` removes other existing add-on description files.
+
+The script can also be used to create the add-on files for currently missing
+Libretro cores. First update `kodi-game-scripting/config.py`, and then run:
+
+    ./process_game_addons.py --game-addons-dir=working_directory \
+                             --kodi-source-dir=<KODI_SOURCE_DIR> \
+                             --git --compile --filter=<NEWCORE>
+
+Then once the compilation succeeded and you have verified the results in
+`working_directory/summary.html`, run the following command to push the
+add-on files and build descriptions:
+
+    ./process_game_addons.py --game-addons-dir=working_directory \
+                             --kodi-source-dir=<KODI_SOURCE_DIR> \
+                             --git --filter=<NEWCORE> \
+                             --push-branch=master --push-description
 
 ## License
 

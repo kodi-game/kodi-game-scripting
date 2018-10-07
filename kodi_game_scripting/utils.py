@@ -21,8 +21,6 @@
 import os
 import shutil
 
-import collections
-
 
 def ensure_directory_exists(path, clean=False):
     """ Ensure that the given path exists """
@@ -60,10 +58,8 @@ def purify(obj):
     return obj
 
 
-def test_purify():
-    """ Test purify function """
-    assert purify(['test', [None, None]]) == ['test']
-    assert purify({'l1': {'l2': 'v2'}, 'l3': {}}) == {'l1': {'l2': 'v2'}}
-    assert purify({'l1': [{}, {}], 'l2': {}}) == {}
-    assert purify([]) == []
-    assert purify(collections.OrderedDict()) == collections.OrderedDict()
+def xstr(string):
+    """ Convert string to UTF-8, (NoneType as '') """
+    if string is None:
+        return ''
+    return str(string, 'utf-8')

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (C) 2016 Christian Fetzer
+# Copyright (C) 2016-2018 Christian Fetzer
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,19 +16,23 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-""" Convert addon version into Kodi format """
+""" Test common utility functions """
 
-import re
+import collections
+
+from kodi_game_scripting import utils
 
 
-class AddonVersion():
-    """ Convert addon version into Kodi format """
+def test_purify():
+    """ Test purify function """
+    assert utils.purify(['test', [None, None]]) == ['test']
+    assert utils.purify({'l1': {'l2': 'v2'}, 'l3': {}}) == {'l1': {'l2': 'v2'}}
+    assert utils.purify({'l1': [{}, {}], 'l2': {}}) == {}
+    assert utils.purify([]) == []
+    assert utils.purify(collections.OrderedDict()) == collections.OrderedDict()
 
-    @classmethod
-    def get(cls, version):
-        """ Convert addon version into Kodi format """
-        result = re.sub(r'^[vr \t]', '', version)
-        match = re.search(r'^(0|[1-9]*0?)\.?([0-9]*)\.?([0-9]*)', result)
-        result = [x if x else '0' for x in match.groups()]
-        result = '.'.join(result)
-        return result if result != '0.0.0' else '1.0.0'
+
+def test_xstr():
+    """ Test xstr conversion """
+    assert utils.xstr(b'test') == 'test'
+    assert utils.xstr(None) == ''

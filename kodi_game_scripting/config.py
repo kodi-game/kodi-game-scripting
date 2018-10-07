@@ -97,7 +97,7 @@ ADDONS = {
     'stella':                    ('stella-libretro',            'Makefile',          '.',                 'jni'),
     'tgbdual':                   ('tgbdual-libretro',           'Makefile',          '.',                 'jni'),
     'tyrquake':                  ('tyrquake',                   'Makefile',          '.',                 'jni'),
-    #'uae':                       ('libretro-uae',               'Makefile',          '.',                 'jni', {'soname': 'puae'}),  # Fails to build
+    'uae':                       ('libretro-uae',               'Makefile',          '.',                 'jni', {'soname': 'puae'}),
     #'uae4arm':                   ('uae4arm-libretro',           'Makefile',          '.',                 'jni'),  # Fails to build on non arm system
     'vbam':                      ('vbam-libretro',              'Makefile',          'src/libretro',      'src/libretro/jni'),
     'vba-next':                  ('vba-next',                   'Makefile',          '.',                 'libretro/jni', {'soname': 'vba_next'}),

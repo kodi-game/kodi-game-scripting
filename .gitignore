@@ -12,3 +12,5 @@ nosetests.xml
 cover/
 htmlcov/
 working_directory
+AUTHORS
+ChangeLog

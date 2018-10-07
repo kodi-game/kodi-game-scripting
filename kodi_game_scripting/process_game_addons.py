@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-
-# Copyright (C) 2016 Christian Fetzer
+# Copyright (C) 2016-2018 Christian Fetzer
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -377,7 +375,3 @@ class Addon():
             self._args.git.push_repo(self._repo,
                                      self._args.working_directory,
                                      self._args.push_branch)
-
-
-if __name__ == '__main__':
-    main()

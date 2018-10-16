@@ -1,1 +1,5 @@
+{% if config.download_type == 'git' %}
 {{ game.name }} https://github.com/libretro/{{ repo | default(game.name) }} {{ repo_branch | default('master') }}
+{% else %}
+{{ game.name }} https://github.com/libretro/{{ repo | default(game.name) }}/archive/{{ repo_branch | default('master') }}.zip
+{% endif %}

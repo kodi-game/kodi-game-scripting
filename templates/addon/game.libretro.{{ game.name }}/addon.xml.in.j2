@@ -45,6 +45,7 @@
 		{% endif %}
 		<license>{{ libretro_info.license | default(xml.addon.extension[1].license.content) | default('') | e }}</license>
 		<platform>@PLATFORM@</platform>
+		<source>https://github.com/kodi-game/game.libretro.{{ game.name }}</source>
 		{% if assets %}
 		<assets>
 			{% if assets.icon %}

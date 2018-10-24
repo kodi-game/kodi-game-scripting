@@ -28,11 +28,12 @@ import subprocess
 import sys
 
 from . import config
-from . import git_access
 from . import libretro_ctypes
 from . import utils
 from . import template_processor
 from . import versions
+
+from .git_access import GitHubOrg, GitHubRepo, GitRepo
 
 ADDONS = config.ADDONS
 COMMIT_MSG = "Updated by kodi-game-scripting\n\n" \
@@ -69,8 +70,6 @@ def main():
     args = parser.parse_args()
 
     args.working_directory = os.path.abspath(args.working_directory)
-    if args.git:
-        args.git = git_access.Git(auth=True)
     util = KodiGameAddons(args)
     status = util.process()
     util.summary()
@@ -96,17 +95,19 @@ class KodiGameAddons:
         # Check GitHub repos
         repos = {}
         if self._args.git:
-            print("Fetching libretro-super repo")
-            self._args.git.clone_repo(
-                git_access.GitRepo(
-                    'libretro-super',
-                    'https://github.com/libretro/libretro-super.git', ''),
-                self._args.working_directory)
-
             regex = (self._args.filter if self._args.filter
                      else config.GITHUB_ADDON_PREFIX)
-            print("Querying repos matching '{}'".format(regex))
-            repos = self._args.git.get_repos(config.GITHUB_ORGANIZATION, regex)
+            print("Querying GitHub repos matching '{}'".format(regex))
+            self._github = GitHubOrg(config.GITHUB_ORGANIZATION, auth=True)
+            repos = self._github.get_repos(regex)
+
+            print("Fetching libretro-super repo")
+            self._repo_libretrosuper = GitRepo(
+                GitHubRepo('libretro-super',
+                           'https://github.com/libretro/libretro-super.git',
+                           ''),
+                self._args.working_directory)
+            self._repo_libretrosuper.clone()
 
         # Create Addon objects
         self._addons = collections.OrderedDict()
@@ -115,8 +116,7 @@ class KodiGameAddons:
             repo = repos.get(addon_name, None)
             if self._args.git and not repo:
                 print("Creating GitHub repository {}".format(addon_name))
-                repo = self._args.git.create_repo(
-                    config.GITHUB_ORGANIZATION, addon_name)
+                repo = self._github.create_repo(addon_name)
             self._addons[game_name] = Addon(addon_name, game_name,
                                             repo, self._args)
 
@@ -174,17 +174,13 @@ class KodiGameAddons:
                 # Push addon descriptions to kodi repo
                 # Don't specify urls as we use the existing remote origin
                 if self._args.push_description:
-                    path, name = os.path.split(self._args.kodi_directory)
-                    repo = git_access.GitRepo(name, url='', ssh_url='')
                     print("Commiting descriptions to GitHub repo")
-                    self._args.git.commit_repo(
-                        repo, path, COMMIT_MSG,
-                        directory=os.path.join(
-                            'cmake', 'addons', 'addons'),
-                        force=True)
+                    path, name = os.path.split(self._args.kodi_directory)
+                    repo = GitRepo(GitHubRepo(name, '', ''), path)
+                    repo.commit(COMMIT_MSG, directory=os.path.join(
+                        'cmake', 'addons', 'addons'), force=True)
                     print("Pushing descriptions to GitHub repo")
-                    self._args.git.push_repo(repo, path,
-                                             self._args.push_branch)
+                    repo.push(self._args.push_branch)
         return True
 
     def summary(self):
@@ -232,8 +228,9 @@ class Addon():
         self.name = addon_name
         self.game_name = game_name
         self._config = config.ADDONS[game_name]
-        self._repo = repo
         self._args = args
+        if repo:
+            self._repo = GitRepo(repo, self._args.working_directory)
         self.path = os.path.join(self._args.working_directory, addon_name)
         self.library_file = os.path.join(
             'install', self.name, '{}.{}'.format(
@@ -354,24 +351,17 @@ class Addon():
         """ Clone / reset Git repository """
         print("  Fetching & resetting Git repo {}".format(self.name))
         if self._repo:
-            self._args.git.clone_repo(
-                self._repo, self._args.working_directory,
-                reset=False if self._args.git_noclean else True)
+            self._repo.clone(reset=False if self._args.git_noclean else True)
 
     def commit(self):
         """ Commit changes to Git repository """
         print("  Commiting changes to Git repo {}".format(self.name))
         if self._repo:
-            self._args.git.commit_repo(
-                self._repo, self._args.working_directory, COMMIT_MSG,
-                squash=self._args.git_noclean)
-            self.info['git']['diff'] = self._args.git.diff_repo(
-                self._repo, self._args.working_directory)
+            self._repo.commit(COMMIT_MSG, squash=self._args.git_noclean)
+            self.info['git']['diff'] = self._repo.diff()
 
     def push(self):
         """ Push addon changes to GitHub repository """
         print("  Pushing changes to GitHub repo {}".format(self.name))
         if self._repo and self._args.push_branch:
-            self._args.git.push_repo(self._repo,
-                                     self._args.working_directory,
-                                     self._args.push_branch)
+            self._repo.push(self._args.push_branch)

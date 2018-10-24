@@ -27,13 +27,13 @@ import github
 from . import credentials
 from . import utils
 
-GitRepo = collections.namedtuple('GitRepo', 'name url ssh_url')
+GitHubRepo = collections.namedtuple('GitHubRepo', 'name clone_url ssh_url')
 
 
-class Git:
-    """ Access GitHub API and Git Repos """
-    def __init__(self, auth=False):
-        """ Initialize Git instance """
+class GitHubOrg:
+    """ Access GitHub Organization API """
+    def __init__(self, org, auth=False):
+        """ Initialize GitHub API instance """
         try:
             apitoken = os.environ.get('GITHUB_ACCESS_TOKEN', None)
             if apitoken:
@@ -48,87 +48,74 @@ class Git:
             rate = self._github.get_rate_limit().core
             print("GitHub API Rate: limit: {}, remaining: {}, reset: {}"
                   .format(rate.limit, rate.remaining, rate.reset.isoformat()))
-            if auth:
+            if auth and not apitoken:
                 cred.save(username, password)
+            self._org = self._github.get_organization(org)
         except github.BadCredentialsException:
-            if auth:
+            if auth and not apitoken:
                 cred.clean()
             raise ValueError("Authentication to GitHub failed")
 
     @functools.lru_cache()
-    def get_repos(self, organization, repo_filter):
+    def get_repos(self, regex):
         """ Query all GitHub repos of the given organization that matches
-            the given filter. Since API calls are limited, cache results. """
+            the given regex. Since API calls are limited, cache results. """
         repos = {
-            repo.name: GitRepo(repo.name, repo.clone_url, repo.ssh_url)
-            for repo in self._github.get_organization(organization).get_repos()
-            if re.search(repo_filter, repo.name)
+            repo.name: GitHubRepo(repo.name, repo.clone_url, repo.ssh_url)
+            for repo in self._org.get_repos() if re.search(regex, repo.name)
         }
         return repos
 
-    def create_repo(self, organization, name):
+    def create_repo(self, name):
         """ Create a new repo on GitHub """
-        repo = self._github.get_organization(organization).create_repo(
-            name, auto_init=True)
+        repo = self._org.create_repo(name, auto_init=True)
         self.get_repos.cache_clear()  # pylint: disable=no-member
-        return GitRepo(repo.name, repo.clone_url, repo.ssh_url)
+        return GitHubRepo(repo.name, repo.clone_url, repo.ssh_url)
 
-    def clone_repos(self, repos, directory):
-        """ Clone list of repos into directory
 
-            If the repos exist all changes will be discarded. """
-        for repo in repos:
-            self.clone_repo(repo, directory)
+class GitRepo:
+    """ Access to Git repository """
+    def __init__(self, repo, path):
+        self._repo = repo
+        self._path = os.path.join(path, repo.name)
 
-    @classmethod
-    def is_git_repo(cls, path):
-        """ Determine if a path is a Git repository """
+    def is_git_repo(self):
+        """ Determine if repo is a Git repository """
         try:
-            _ = git.Repo(path).git_dir  # flake8: noqa
+            _ = git.Repo(self._path).git_dir  # noqa
             return True
         except git.exc.InvalidGitRepositoryError:  # pylint: disable=no-member
             return False
 
-    @classmethod
-    def has_remote_branch(cls, path, branch):
-        """ Determines if a branch exists on the remote origin """
-        gitrepo = git.Repo(path)
-        return gitrepo.git.ls_remote('origin', branch, heads=True)
-
-    @classmethod
-    def clone_repo(cls, repo, path, reset=True):
+    def clone(self, reset=True):
         """ Clone repo into directory
 
             If the repo exists all changes will be discarded. """
-        git_dir = os.path.join(path, repo.name)
-        utils.ensure_directory_exists(git_dir)
-        if not cls.is_git_repo(git_dir):
-            print("New repo, creating {}".format(repo.name))
-            gitrepo = git.Repo.init(git_dir)
-            origin = gitrepo.create_remote('origin', repo.url)
+        utils.ensure_directory_exists(self._path)
+        if not self.is_git_repo():
+            print("New repo, creating {}".format(self._repo.name))
+            gitrepo = git.Repo.init(self._path)
+            origin = gitrepo.create_remote('origin', self._repo.clone_url)
         else:
-            print("Existing repo {}".format(repo.name))
-            gitrepo = git.Repo(git_dir)
+            print("Existing repo {}".format(self._repo.name))
+            gitrepo = git.Repo(self._path)
             origin = gitrepo.remotes.origin
-        origin.set_url(repo.ssh_url, push=True)
-        print("Fetching {}".format(repo.name))
+        origin.set_url(self._repo.ssh_url, push=True)
+        print("Fetching {}".format(self._repo.name))
         origin.fetch('master')
         if reset:
-            print("Resetting {}".format(repo.name))
+            print("Resetting {}".format(self._repo.name))
             gitrepo.git.reset('--hard', 'origin/master')
         else:
-            print("Rebasing {}".format(repo.name))
+            print("Rebasing {}".format(self._repo.name))
             gitrepo.git.rebase('origin/master')
-        print("Cleaning local changes {}".format(repo.name))
+        print("Cleaning local changes {}".format(self._repo.name))
         gitrepo.git.reset()
         gitrepo.git.clean('-xffd')
 
-    @classmethod
-    def commit_repo(cls, repo, path,  # pylint: disable=too-many-arguments
-                    message, directory=None, force=False, squash=False):
+    def commit(self, message, directory=None, force=False, squash=False):
         """ Create commit in repo """
-        git_dir = os.path.join(path, repo.name)
-        gitrepo = git.Repo(git_dir)
+        gitrepo = git.Repo(self._path)
         if directory:
             gitrepo.git.add(directory, force=force)
         else:
@@ -138,18 +125,14 @@ class Git:
         if gitrepo.is_dirty():
             gitrepo.index.commit(message)
 
-    @classmethod
-    def diff_repo(cls, repo, path):
+    def diff(self):
         """ Diff commits in repo """
-        git_dir = os.path.join(path, repo.name)
-        gitrepo = git.Repo(git_dir)
+        gitrepo = git.Repo(self._path)
         return gitrepo.git.diff("origin/master", gitrepo.head.commit)
 
-    @classmethod
-    def push_repo(cls, repo, path, branch):
-        """ Create commit in repo """
-        git_dir = os.path.join(path, repo.name)
-        gitrepo = git.Repo(git_dir)
+    def push(self, branch):
+        """ Push commit in remote """
+        gitrepo = git.Repo(self._path)
         if gitrepo.is_dirty():
             raise ValueError("Skipping, repository is dirty")
         origin = gitrepo.remotes.origin

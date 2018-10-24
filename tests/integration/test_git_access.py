@@ -18,8 +18,9 @@
 
 import os
 
+from kodi_game_scripting import config
 from kodi_game_scripting import utils
-from kodi_game_scripting.git_access import Git, GitRepo
+from kodi_game_scripting.git_access import GitHubOrg, GitHubRepo, GitRepo
 
 
 def test_clone_single_repo():
@@ -29,20 +30,16 @@ def test_clone_single_repo():
         'test_data', os.path.splitext(os.path.basename(__file__))[0])
     utils.ensure_directory_exists(test_dir, clean=True)
 
-    gitaccess = Git()
-    gitaccess.clone_repo(
-        GitRepo('kodi-game-scripting',
-                'https://github.com/fetzerch/kodi-game-scripting', ''),
+    gitrepo = GitRepo(
+        GitHubRepo('kodi-game-scripting',
+                   'https://github.com/fetzerch/kodi-game-scripting', ''),
         test_dir)
-    gitaccess.clone_repos(
-        [GitRepo('kodi-game-scripting',
-                 'https://github.com/fetzerch/kodi-game-scripting', '')],
-        test_dir)
+    gitrepo.clone()
 
 
 def test_github_repos():
     """ Tests getting a repo list """
-    gitaccess = Git()
-    repos = gitaccess.get_repos('kodi-game', r'game\.libretro\.')
+    github = GitHubOrg(config.GITHUB_ORGANIZATION)
+    repos = github.get_repos(config.GITHUB_ADDON_PREFIX)
     print(repos)
     assert repos

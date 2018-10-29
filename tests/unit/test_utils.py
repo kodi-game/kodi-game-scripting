@@ -24,6 +24,8 @@ import pytest
 
 from kodi_game_scripting import utils
 
+pytestmark = [pytest.mark.unit]
+
 
 # pylint: disable=redefined-outer-name
 

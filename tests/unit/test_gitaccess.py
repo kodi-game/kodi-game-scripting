@@ -24,6 +24,8 @@ import pytest
 
 from kodi_game_scripting.git_access import GitHubOrg, GitHubRepo, GitRepo
 
+pytestmark = [pytest.mark.unit]
+
 
 # pylint: disable=redefined-outer-name
 

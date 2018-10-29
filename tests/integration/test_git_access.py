@@ -18,9 +18,13 @@
 
 import os
 
+import pytest
+
 from kodi_game_scripting import config
 from kodi_game_scripting import utils
 from kodi_game_scripting.git_access import GitHubOrg, GitHubRepo, GitRepo
+
+pytestmark = [pytest.mark.integration]
 
 
 def test_clone_single_repo():

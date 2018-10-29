@@ -19,7 +19,11 @@
 import os
 import subprocess
 
+import pytest
+
 from kodi_game_scripting.libretro_ctypes import LibretroWrapper
+
+pytestmark = [pytest.mark.integration]
 
 
 def compile_testlibrary():

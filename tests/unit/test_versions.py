@@ -16,7 +16,11 @@
 
 """ Test converting addon version into Kodi format """
 
+import pytest
+
 from kodi_game_scripting.versions import AddonVersion
+
+pytestmark = [pytest.mark.unit]
 
 
 def test_versions():

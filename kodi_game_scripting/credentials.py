@@ -26,27 +26,29 @@ class Credentials:
         Uses system keyring if available, asks user if not.
         For convenience also the username is saved in the keyring. """
     def __init__(self, service):
-        self._username_service = '{}_username'.format(service)
-        self._password_service = '{}_password'.format(service)
+        self._service = service
+        self._username_service = '{}_username'.format(service.lower())
+        self._password_service = '{}_password'.format(service.lower())
         self._username_key = '_username'
+        self._username = ''
 
     def load(self):
         """ Load saved credentials from keyring or ask user """
-        username = ''
-        password = ''
-
         username = keyring.get_password(self._username_service,
                                         self._username_key)
         if not username:
-            username = input("GitHub User [{}]: ".format(getpass.getuser()))
+            env_user = getpass.getuser()
+            username = input("{} User [{}]: ".format(self._service, env_user))
             if not username:
-                username = getpass.getuser()
+                username = env_user
+        self._username = username
 
+        password = ''
         if username:
             password = keyring.get_password(self._password_service, username)
-
             if not password:
-                password = getpass.getpass("GitHub Password: ")
+                password = getpass.getpass(
+                    "{} Password: ".format(self._service))
 
         return username, password
 
@@ -58,7 +60,5 @@ class Credentials:
 
     def clean(self):
         """ Remove saved credentials """
-        username = keyring.get_password(self._username_service,
-                                        self._username_key)
-        self.save(username, '')
         keyring.set_password(self._username_service, self._username_key, '')
+        keyring.set_password(self._password_service, self._username, '')

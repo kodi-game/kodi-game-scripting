@@ -46,11 +46,13 @@ def test_load_library():
     lib = LibretroWrapper(compile_testlibrary())
     print(lib.system_info)
     assert lib.system_info.name == 'libraryname'
+    assert lib.system_info['name'] == 'libraryname'
     print(lib.variables)
     assert len(lib.variables) == 2
 
     lib2 = LibretroWrapper(compile_testlibrary())
     print(lib2.system_info)
     assert lib2.system_info.name == 'libraryname'
+    assert lib.system_info['name'] == 'libraryname'
     print(lib2.variables)
     assert len(lib2.variables) == 2

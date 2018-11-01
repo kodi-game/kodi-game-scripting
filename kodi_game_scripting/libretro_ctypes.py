@@ -52,6 +52,9 @@ class LibretroWrapper:
             self.block_extract = retro_system_info.block_extract
             self.supports_no_game = False
 
+        def __getitem__(self, item):
+            return getattr(self, item)
+
         def __repr__(self):
             return '(name={}, version={}, extensions={}, need_fullpath={},' \
                    ' block_extract={}, supports_no_game={})'.format(

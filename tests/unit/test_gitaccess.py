@@ -142,7 +142,7 @@ def test_gitrepo_clone(gitrepo):
     """ Test cloning a repository """
     gitrepo.clone()
     gitrepo.gitmock.return_value.remotes.origin.fetch.assert_called_once_with(
-        'master')
+        'master', tags=True)
     gitrepo.gitmock.return_value.git.reset.assert_any_call(
         '--hard', 'origin/master')
     gitrepo.gitmock.return_value.git.reset.assert_any_call()
@@ -157,7 +157,7 @@ def test_gitrepo_cloneinit(gitrepo):
     gitrepo.gitmock.init.assert_called_once_with(
         os.path.join(str(gitrepo.tmpdir), 'name'))
     gitrepo.gitmock.init.return_value.create_remote.return_value \
-        .fetch.assert_called_once_with('master')
+        .fetch.assert_called_once_with('master', tags=True)
     gitrepo.gitmock.init.return_value.git.reset.assert_any_call(
         '--hard', 'origin/master')
     gitrepo.gitmock.init.return_value.git.reset.assert_any_call()
@@ -169,10 +169,16 @@ def test_gitrepo_clonenoreset(gitrepo):
     """ Test clone a repo, don't reset """
     gitrepo.clone(reset=False)
     gitrepo.gitmock.return_value.remotes.origin.fetch.assert_called_once_with(
-        'master')
+        'master', tags=True)
     gitrepo.gitmock.return_value.git.rebase.assert_any_call('origin/master')
     gitrepo.gitmock.return_value.git.reset.assert_any_call()
     gitrepo.gitmock.return_value.git.clean.assert_called_once_with('-xffd')
+
+
+def test_gitrepo_gethexsha(gitrepo):
+    """ Test getting the hexsha """
+    gitrepo.gitmock.return_value.head.object.hexsha = '1234567'
+    assert gitrepo.get_hexsha() == '1234567'
 
 
 def test_gitrepo_commit(gitrepo):
@@ -218,11 +224,25 @@ def test_gitrepo_commitskip(gitrepo):
     gitrepo.gitmock.return_value.index.commit.assert_not_called()
 
 
+def test_gitrepo_tag(gitrepo):
+    """ Test creating a tag """
+    gitrepo.tag('1.0.0', 'message')
+    gitrepo.gitmock.return_value.create_tag.assert_called_once_with(
+        '1.0.0', 'message', force=True)
+
+
 def test_gitrepo_diff(gitrepo):
     """ Test Git diff """
     gitrepo.diff()
     gitrepo.gitmock.return_value.git.diff.assert_called_once_with(
         'origin/master', gitrepo.gitmock.return_value.head.commit)
+
+
+def test_gitrepo_describe(gitrepo):
+    """ Test describing current version """
+    gitrepo.describe()
+    gitrepo.gitmock.return_value.git.describe.assert_called_once_with(
+        '--tags', '--always')
 
 
 def test_gitrepo_push(gitrepo):
@@ -238,3 +258,11 @@ def test_gitrepo_pushdirty(gitrepo):
     gitrepo.gitmock.return_value.is_dirty.return_value = True
     with pytest.raises(ValueError):
         gitrepo.push('branch')
+
+
+def test_gitrepo_pushtags(gitrepo):
+    """ Test push tags """
+    gitrepo.gitmock.return_value.is_dirty.return_value = False
+    gitrepo.push('branch', tags=True)
+    gitrepo.gitmock.return_value.git.push.assert_called_once_with(
+        '--tags')

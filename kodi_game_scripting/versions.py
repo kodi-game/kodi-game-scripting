@@ -29,4 +29,4 @@ class AddonVersion():
         match = re.search(r'^(0|[1-9]*0?)\.?([0-9]*)\.?([0-9]*)', result)
         result = [x if x else '0' for x in match.groups()]
         result = '.'.join(result)
-        return result if result != '0.0.0' else '1.0.0'
+        return result if result != '0.0.0' else '0.0.1'

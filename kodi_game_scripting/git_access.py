@@ -84,7 +84,8 @@ class GitRepo:
         try:
             _ = git.Repo(self._path).git_dir  # noqa
             return True
-        except git.exc.InvalidGitRepositoryError:  # pylint: disable=no-member
+        except (git.exc.InvalidGitRepositoryError,  # pylint: disable=no-member
+                git.exc.NoSuchPathError):  # pylint: disable=no-member
             return False
 
     def clone(self, reset=True):
@@ -102,7 +103,7 @@ class GitRepo:
             origin = gitrepo.remotes.origin
         origin.set_url(self._repo.ssh_url, push=True)
         print("Fetching {}".format(self._repo.name))
-        origin.fetch('master')
+        origin.fetch('master', tags=True)
         if reset:
             print("Resetting {}".format(self._repo.name))
             gitrepo.git.reset('--hard', 'origin/master')
@@ -112,6 +113,11 @@ class GitRepo:
         print("Cleaning local changes {}".format(self._repo.name))
         gitrepo.git.reset()
         gitrepo.git.clean('-xffd')
+
+    def get_hexsha(self):
+        """ Get HEAD revision """
+        gitrepo = git.Repo(self._path)
+        return gitrepo.head.object.hexsha
 
     def commit(self, message, directory=None, force=False, squash=False):
         """ Create commit in repo """
@@ -125,16 +131,28 @@ class GitRepo:
         if gitrepo.is_dirty():
             gitrepo.index.commit(message)
 
+    def tag(self, tag, message=None):
+        """ Create tag in repo """
+        gitrepo = git.Repo(self._path)
+        gitrepo.create_tag(tag, message, force=True)
+
     def diff(self):
         """ Diff commits in repo """
         gitrepo = git.Repo(self._path)
         return gitrepo.git.diff("origin/master", gitrepo.head.commit)
 
-    def push(self, branch):
-        """ Push commit in remote """
+    def describe(self):
+        """ Describe current version """
+        gitrepo = git.Repo(self._path)
+        return gitrepo.git.describe('--tags', '--always')
+
+    def push(self, branch, tags=False):
+        """ Push commit to remote """
         gitrepo = git.Repo(self._path)
         if gitrepo.is_dirty():
             raise ValueError("Skipping, repository is dirty")
-        origin = gitrepo.remotes.origin
-        origin.push('HEAD:{}'.format(branch),
-                    force=False if branch == 'master' else True)
+        gitrepo.remotes.origin.push(
+            'HEAD:{}'.format(branch),
+            force=(branch != 'master'))
+        if tags:
+            gitrepo.git.push('--tags')

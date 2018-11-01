@@ -25,7 +25,7 @@ pytestmark = [pytest.mark.unit]
 
 def test_versions():
     """ Test some verson patterns """
-    assert AddonVersion.get('GIT') == '1.0.0'
+    assert AddonVersion.get('GIT') == '0.0.1'
     assert AddonVersion.get('v081') == '0.81.0'
     assert AddonVersion.get('v10BETAXY') == '10.0.0'
     assert AddonVersion.get('v1.3e') == '1.3.0'

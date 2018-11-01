@@ -154,16 +154,30 @@ class KodiGameAddons:
             if not self._compile_addons():
                 return False
 
-            # Second iteration: Metadata files
-            print("Second iteration: Generate Metadata files")
-            for addon in self._addons.values():
-                print(" Processing addon: {}".format(addon.name))
-                addon.process_addon_files()
+        # Second iteration: Metadata files
+        print("Second iteration: Generate Metadata files")
+        for addon in self._addons.values():
+            print(" Processing addon: {}".format(addon.name))
+            addon.load_assets()
+            addon.load_library_file()
+            addon.load_git_revision()
+            addon.load_game_version()
+            addon.process_addon_files()
 
         # Create commit
         if self._args.git:
             for addon in self._addons.values():
                 addon.commit()
+
+            # Third iteration: Update package version if there are changes
+            print("Third iteration: Update version")
+            for addon in self._addons.values():
+                if addon.info['git']['diff']:
+                    print(" Processing addon: {}".format(addon.name))
+                    addon.bump_version()
+                    addon.process_addon_files()
+                    addon.commit(squash=True)
+                    addon.tag()
 
             # Push in reversed order so that the repository list on GitHub
             # stays sorted alphabetically
@@ -243,12 +257,14 @@ class Addon():
             utils.ensure_directory_exists(self.path)
 
         self.info = {
-            'game': {'name': self.game_name, 'addon': self.name},
+            'game': {'name': self.game_name, 'addon': self.name,
+                     'version': '0.0.0'},
             'datetime': '{0:%Y-%m-%d %H:%Mi%z}'.format(
                 datetime.datetime.now()),
             'system_info': {}, 'settings': [],
             'repo': self._config[0],
             'repo_branch': 'master',
+            'repo_hexsha': '',
             'makefile': {'file': self._config[1], 'dir': self._config[2],
                          'jni': self._config[3], 'jnisoname': 'libretro'},
             'library': {'file': self.library_file, 'loaded': False},
@@ -290,8 +306,6 @@ class Addon():
                 self.info['system_info'] = library.system_info
                 self.info['settings'] = sorted(library.variables,
                                                key=lambda x: x.id)
-                self.info['game']['version'] = versions.AddonVersion.get(
-                    library.system_info.version)
 
                 if sys.platform != 'darwin':
                     ldd_command = ['ldd', library_path]
@@ -340,10 +354,34 @@ class Addon():
             else:
                 print("Unrecognized image detected: {}".format(asset))
 
+    def load_git_revision(self):
+        """ Get the revision of the libretro core from the Git checkout """
+        gitrepo = GitRepo(GitHubRepo(self.game_name, '', ''),
+                          os.path.join(self._args.working_directory, 'build',
+                                       'build', self.game_name, 'src'))
+        if gitrepo.is_git_repo():
+            self.info['repo_hexsha'] = gitrepo.get_hexsha()
+
+    def load_game_version(self):
+        """ Load game version """
+        self.info['game']['version'] = versions.AddonVersion.get(
+            self.info['system_info']['version'])
+        if self._repo:
+            git_tag = self._repo.describe()
+            match = re.search(r'^(?:[0-9]+\.){3}([0-9]+)', git_tag)
+            pkg_version = match.group(1) if match else '-1'
+            self.info['game']['version'] = '{}.{}'.format(
+                self.info['game']['version'], pkg_version)
+
+    def bump_version(self):
+        """ Bump game version """
+        version, pkg_version = self.info['game']['version'].rsplit('.', 1)
+        self.info['game']['version'] = '{}.{}'.format(
+            version, int(pkg_version) + 1)
+        print("  Version bumped to {}".format(self.info['game']['version']))
+
     def process_addon_files(self):
         """ Generate addon files """
-        self.load_assets()
-        self.load_library_file()
         template_processor.TemplateProcessor.process(
             'addon', self.path, self.info)
 
@@ -353,15 +391,24 @@ class Addon():
         if self._repo:
             self._repo.clone(reset=False if self._args.git_noclean else True)
 
-    def commit(self):
+    def commit(self, squash=False):
         """ Commit changes to Git repository """
         print("  Commiting changes to Git repo {}".format(self.name))
         if self._repo:
-            self._repo.commit(COMMIT_MSG, squash=self._args.git_noclean)
+            self._repo.commit(COMMIT_MSG,
+                              squash=self._args.git_noclean or squash)
             self.info['git']['diff'] = self._repo.diff()
+
+    def tag(self):
+        """ Create a tag in Git repository """
+        if self._repo:
+            print("  Creating tag in Git repo {}: {}".format(
+                self.name, self.info['game']['version']))
+            self._repo.tag('{}-Leia'.format(self.info['game']['version']))
 
     def push(self):
         """ Push addon changes to GitHub repository """
         print("  Pushing changes to GitHub repo {}".format(self.name))
         if self._repo and self._args.push_branch:
-            self._repo.push(self._args.push_branch)
+            self._repo.push(self._args.push_branch,
+                            tags=self._args.push_branch == 'master')

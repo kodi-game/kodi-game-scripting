@@ -243,47 +243,48 @@ class Addon():
         self.game_name = game_name
         self._config = config.ADDONS[game_name]
         self._args = args
+        self._path = os.path.join(self._args.working_directory, addon_name)
         if repo:
             self._repo = GitRepo(repo, self._args.working_directory)
-        self.path = os.path.join(self._args.working_directory, addon_name)
-        self.library_file = os.path.join(
-            'install', self.name, '{}.{}'.format(
-                self.name, libretro_ctypes.LibretroWrapper.EXT))
-        self.libretro_soname = '{}_libretro'.format(game_name)
 
-        if not os.path.isdir(self.path):
+        if not os.path.isdir(self._path):
             print("Initializing empty addon directory: {}".format(
                 addon_name))
-            utils.ensure_directory_exists(self.path)
+            utils.ensure_directory_exists(self._path)
 
         self.info = {
-            'game': {'name': self.game_name, 'addon': self.name,
-                     'version': '0.0.0'},
+            'game': {
+                'name': self.game_name,
+                'addon': self.name,
+                'branch': self._args.push_branch or 'master',
+                'version': '0.0.0'
+            },
+            'config': self._config[4],
             'datetime': '{0:%Y-%m-%d %H:%Mi%z}'.format(
                 datetime.datetime.now()),
-            'system_info': {}, 'settings': [],
-            'repo': self._config[0],
-            'repo_branch': 'master',
-            'repo_hexsha': '',
-            'makefile': {'file': self._config[1], 'dir': self._config[2],
-                         'jni': self._config[3], 'jnisoname': 'libretro'},
-            'library': {'file': self.library_file, 'loaded': False},
-            'assets': {}, 'git': {}}
-
-        if self._args.push_branch:
-            self.info['branch'] = self._args.push_branch
-        if len(self._config) > 4:
-            self.info['config'] = self._config[4]
-            if 'branch' in self._config[4]:
-                self.info['repo_branch'] = self._config[4]['branch']
-            if 'soname' in self._config[4]:
-                self.libretro_soname = '{}_libretro'.format(
-                    self._config[4]['soname'])
-            if 'jnisoname' in self._config[4]:
-                self.info['makefile']['jnisoname'] = \
-                    self._config[4]['jnisoname']
-
-        self.info['makefile']['soname'] = self.libretro_soname
+            'system_info': {},
+            'settings': [],
+            'libretro_repo': {
+                'name': self._config[0],
+                'branch': self._config[4].get('branch', 'master'),
+                'hexsha': '',
+            },
+            'makefile': {
+                'file': self._config[1],
+                'dir': self._config[2],
+                'jni': self._config[3],
+            },
+            'library': {
+                'file': os.path.join('install', self.name, '{}.{}'.format(
+                    self.name, libretro_ctypes.LibretroWrapper.EXT)),
+                'loaded': False,
+                'soname': '{}_libretro'.format(
+                    self._config[4].get('soname', game_name)),
+                'jnisoname': self._config[4].get('jnisoname', 'libretro'),
+            },
+            'assets': {},
+            'git': {},
+        }
         self.load_info_file()
 
     def process_description_files(self):
@@ -298,7 +299,7 @@ class Addon():
         """ Load the compiled library file """
         library = None
         library_path = os.path.join(self._args.working_directory,
-                                    self.library_file)
+                                    self.info['library']['file'])
         if os.path.isfile(os.path.join(library_path)):
             try:
                 library = libretro_ctypes.LibretroWrapper(library_path)
@@ -325,7 +326,7 @@ class Addon():
         """ Load libretro-info file """
         path = os.path.join(self._args.working_directory, 'libretro-super',
                             'dist', 'info',
-                            '{}.info'.format(self.libretro_soname))
+                            '{}.info'.format(self.info['library']['soname']))
         if os.path.isfile(path):
             with open(path, 'r') as info_ctx:
                 self.info['libretro_info'] = {}
@@ -339,7 +340,7 @@ class Addon():
         """ Process assets """
         # Loop over all images files in the repo
         self.info['assets'] = {}
-        for asset in sorted(utils.list_all_files(self.path)):
+        for asset in sorted(utils.list_all_files(self._path)):
             if os.path.splitext(asset)[1] not in ['.png', '.jpg', '.svg']:
                 continue
 
@@ -360,7 +361,7 @@ class Addon():
                           os.path.join(self._args.working_directory, 'build',
                                        'build', self.game_name, 'src'))
         if gitrepo.is_git_repo():
-            self.info['repo_hexsha'] = gitrepo.get_hexsha()
+            self.info['libretro_repo']['hexsha'] = gitrepo.get_hexsha()
 
     def load_game_version(self):
         """ Load game version """
@@ -383,7 +384,7 @@ class Addon():
     def process_addon_files(self):
         """ Generate addon files """
         template_processor.TemplateProcessor.process(
-            'addon', self.path, self.info)
+            'addon', self._path, self.info)
 
     def clone(self):
         """ Clone / reset Git repository """

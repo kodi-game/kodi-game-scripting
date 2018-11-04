@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="game.libretro.{{ game.name }}"
+<addon id="{{ game.addon }}"
 	{% set addon_name = libretro_info.display_name | default(xml.addon.name) | default(system_info.name) | default(game.name) %}
 		name="{{ addon_name | e }}"
 		version="{{ game.version | default(xml.addon.version) | default('0.0.0') }}"
@@ -45,7 +45,7 @@
 		{% endif %}
 		<license>{{ libretro_info.license | default(xml.addon.extension[1].license.content) | default('') | e }}</license>
 		<platform>@PLATFORM@</platform>
-		<source>https://github.com/kodi-game/game.libretro.{{ game.name }}</source>
+		<source>https://github.com/kodi-game/{{ game.addon }}</source>
 		{% if assets %}
 		<assets>
 			{% if assets.icon %}

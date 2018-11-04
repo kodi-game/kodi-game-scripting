@@ -1,5 +1,5 @@
-{% if repo_hexsha %}
-{{ game.name }} https://github.com/libretro/{{ repo | default(game.name) }}/archive/{{ repo_hexsha }}.zip
+{% if libretro_repo.hexsha %}
+{{ game.name }} https://github.com/libretro/{{ libretro_repo.name | default(game.name) }}/archive/{{ libretro_repo.hexsha }}.zip
 {% else %}
-{{ game.name }} https://github.com/libretro/{{ repo | default(game.name) }} {{ repo_branch | default('master') }}
+{{ game.name }} https://github.com/libretro/{{ libretro_repo.name | default(game.name) }} {{ libretro_repo.branch }}
 {% endif %}

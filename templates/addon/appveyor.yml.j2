@@ -4,10 +4,10 @@ image: Visual Studio 2015
 
 shallow_clone: true
 
-clone_folder: c:\projects\game.libretro.{{ game.name }}
+clone_folder: c:\projects\{{ game.addon }}
 
 environment:
-  app_id: game.libretro.{{ game.name }}
+  app_id: {{ game.addon }}
 
   matrix:
     - GENERATOR: "Visual Studio 14"

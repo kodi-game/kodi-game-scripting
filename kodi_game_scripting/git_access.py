@@ -75,84 +75,99 @@ class GitHubOrg:
 
 class GitRepo:
     """ Access to Git repository """
-    def __init__(self, repo, path):
-        self._repo = repo
-        self._path = os.path.join(path, repo.name)
 
-    def is_git_repo(self):
+    @staticmethod
+    def is_git_repo(path):
         """ Determine if repo is a Git repository """
         try:
-            _ = git.Repo(self._path).git_dir  # noqa
+            _ = git.Repo(path).git_dir  # noqa
             return True
-        except (git.exc.InvalidGitRepositoryError,  # pylint: disable=no-member
-                git.exc.NoSuchPathError):  # pylint: disable=no-member
+        except (git.InvalidGitRepositoryError,
+                git.NoSuchPathError):
             return False
 
-    def clone(self, reset=True):
-        """ Clone repo into directory
+    def __init__(self, repo, path):
+        self._githubrepo = repo
+        self._gitrepo = None
+        self._path = os.path.join(path, repo.name)
 
-            If the repo exists all changes will be discarded. """
-        utils.ensure_directory_exists(self._path)
-        if not self.is_git_repo():
-            print("New repo, creating {}".format(self._repo.name))
-            gitrepo = git.Repo.init(self._path)
-            origin = gitrepo.create_remote('origin', self._repo.clone_url)
+        if not GitRepo.is_git_repo(self._path):
+            utils.ensure_directory_exists(self._path)
+            print("New repo, creating {}".format(self._githubrepo.name))
+            self._gitrepo = git.Repo.init(self._path)
         else:
-            print("Existing repo {}".format(self._repo.name))
-            gitrepo = git.Repo(self._path)
-            origin = gitrepo.remotes.origin
-        origin.set_url(self._repo.ssh_url, push=True)
-        print("Fetching {}".format(self._repo.name))
-        origin.fetch('master', tags=True)
-        if reset:
-            print("Resetting {}".format(self._repo.name))
-            gitrepo.git.reset('--hard', 'origin/master')
-        else:
-            print("Rebasing {}".format(self._repo.name))
-            gitrepo.git.rebase('origin/master')
-        print("Cleaning local changes {}".format(self._repo.name))
-        gitrepo.git.reset()
-        gitrepo.git.clean('-xffd')
+            print("Existing repo {}".format(self._githubrepo.name))
+            self._gitrepo = git.Repo(self._path)
+        if self._githubrepo.clone_url:
+            try:
+                origin = self._gitrepo.remotes.origin
+            except AttributeError:
+                origin = self._gitrepo.create_remote(
+                    'origin', self._githubrepo.clone_url)
+            origin.set_url(self._githubrepo.ssh_url, push=True)
+
+    def fetch_and_reset(self, reset=True):
+        """ Fetch repo and reset it """
+        try:
+            origin = self._gitrepo.remotes.origin
+            print("Fetching {}".format(self._githubrepo.name))
+            origin.fetch('master')
+            origin.fetch(tags=True, prune=True, prune_tags=True)
+            if reset:
+                print("Resetting {}".format(self._githubrepo.name))
+                self._gitrepo.git.reset('--hard', 'origin/master')
+            else:
+                print("Rebasing {}".format(self._githubrepo.name))
+                self._gitrepo.git.rebase('origin/master')
+        except AttributeError:
+            print("Skipping fetching {}".format(self._githubrepo.name))
+        print("Cleaning local changes {}".format(self._githubrepo.name))
+        self._gitrepo.git.reset()
+        self._gitrepo.git.clean('-xffd')
 
     def get_hexsha(self):
         """ Get HEAD revision """
-        gitrepo = git.Repo(self._path)
-        return gitrepo.head.object.hexsha
+        return self._gitrepo.head.object.hexsha
 
     def commit(self, message, directory=None, force=False, squash=False):
         """ Create commit in repo """
-        gitrepo = git.Repo(self._path)
         if directory:
-            gitrepo.git.add(directory, force=force)
+            self._gitrepo.git.add(directory, force=force)
         else:
-            gitrepo.git.add(all=True, force=force)
+            self._gitrepo.git.add(all=True, force=force)
         if squash:
-            gitrepo.git.reset('origin/master', soft=True)
-        if gitrepo.is_dirty():
-            gitrepo.index.commit(message)
+            try:
+                self._gitrepo.git.reset('origin/master', soft=True)
+            except git.GitCommandError:
+                self._gitrepo.git.update_ref('-d', 'HEAD')
+        if self._gitrepo.is_dirty():
+            self._gitrepo.index.commit(message)
 
     def tag(self, tag, message=None):
         """ Create tag in repo """
-        gitrepo = git.Repo(self._path)
-        gitrepo.create_tag(tag, message, force=True)
+        self._gitrepo.create_tag(tag, message, force=True)
 
     def diff(self):
         """ Diff commits in repo """
-        gitrepo = git.Repo(self._path)
-        return gitrepo.git.diff("origin/master", gitrepo.head.commit)
+        try:
+            return self._gitrepo.git.diff("origin/master",
+                                          self._gitrepo.head.commit)
+        except git.GitCommandError:
+            return self._gitrepo.git.show()
 
     def describe(self):
         """ Describe current version """
-        gitrepo = git.Repo(self._path)
-        return gitrepo.git.describe('--tags', '--always')
+        try:
+            return self._gitrepo.git.describe('--tags', '--always')
+        except git.GitCommandError:
+            return ''
 
     def push(self, branch, tags=False):
         """ Push commit to remote """
-        gitrepo = git.Repo(self._path)
-        if gitrepo.is_dirty():
+        if self._gitrepo.is_dirty():
             raise ValueError("Skipping, repository is dirty")
-        gitrepo.remotes.origin.push(
+        self._gitrepo.remotes.origin.push(
             'HEAD:{}'.format(branch),
             force=(branch != 'master'))
         if tags:
-            gitrepo.git.push('--tags')
+            self._gitrepo.git.push('--tags')

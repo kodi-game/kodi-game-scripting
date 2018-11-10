@@ -107,18 +107,21 @@ class KodiGameAddons:
                            'https://github.com/libretro/libretro-super.git',
                            ''),
                 self._args.working_directory)
-            self._repo_libretrosuper.clone()
+            self._repo_libretrosuper.fetch_and_reset()
 
         # Create Addon objects
         self._addons = collections.OrderedDict()
         for game_name in sorted(config.ADDONS):
             addon_name = '{}{}'.format(config.GITHUB_ADDON_PREFIX, game_name)
             repo = repos.get(addon_name, None)
-            if self._args.git and not repo:
-                print("Creating GitHub repository {}".format(addon_name))
-                repo = self._github.create_repo(addon_name)
-            self._addons[game_name] = Addon(addon_name, game_name,
-                                            repo, self._args)
+            if not repo:
+                if self._args.git and self._args.push_branch:
+                    print("Creating GitHub repository {}".format(addon_name))
+                    repo = self._github.create_repo(addon_name)
+                else:
+                    repo = GitHubRepo(addon_name, '', '')
+            self._addons[game_name] = KodiGameAddon(addon_name, game_name,
+                                                    repo, self._args)
 
         print("Processing the following addons: {}".format(
             ', '.join(self._addons)))
@@ -126,7 +129,8 @@ class KodiGameAddons:
         # Clone/Fetch repos
         if self._args.git:
             for addon in self._addons.values():
-                addon.clone()
+                addon.fetch_and_reset(
+                    reset=False if self._args.git_noclean else True)
 
         # Clean addon descriptions
         if self._args.clean_description:
@@ -167,7 +171,7 @@ class KodiGameAddons:
         # Create commit
         if self._args.git:
             for addon in self._addons.values():
-                addon.commit()
+                addon.commit(squash=self._args.git_noclean)
 
             # Third iteration: Update package version if there are changes
             print("Third iteration: Update version")
@@ -236,51 +240,47 @@ class KodiGameAddons:
         return True
 
 
-class Addon():
+class KodiGameAddon():
     """ Process a single Kodi Game addon """
     def __init__(self, addon_name, game_name, repo, args):
         self.name = addon_name
         self.game_name = game_name
-        self._config = config.ADDONS[game_name]
-        self._args = args
-        self._path = os.path.join(self._args.working_directory, addon_name)
-        if repo:
-            self._repo = GitRepo(repo, self._args.working_directory)
 
-        if not os.path.isdir(self._path):
-            print("Initializing empty addon directory: {}".format(
-                addon_name))
-            utils.ensure_directory_exists(self._path)
+        self._repo = GitRepo(repo, args.working_directory)
+        self._kodi_directory = args.kodi_directory
+        self._working_directory = args.working_directory
+        self._path = os.path.join(args.working_directory, addon_name)
 
+        addon_config = config.ADDONS[game_name]
         self.info = {
             'game': {
                 'name': self.game_name,
                 'addon': self.name,
-                'branch': self._args.push_branch or 'master',
+                'branch': args.push_branch or 'master',
                 'version': '0.0.0'
             },
-            'config': self._config[4],
+            'config': addon_config[4],
             'datetime': '{0:%Y-%m-%d %H:%Mi%z}'.format(
                 datetime.datetime.now()),
             'system_info': {},
             'settings': [],
             'libretro_repo': {
-                'name': self._config[0],
-                'branch': self._config[4].get('branch', 'master'),
+                'name': addon_config[0],
+                'branch': addon_config[4].get('branch', 'master'),
                 'hexsha': '',
             },
             'makefile': {
-                'file': self._config[1],
-                'dir': self._config[2],
-                'jni': self._config[3],
+                'file': addon_config[1],
+                'dir': addon_config[2],
+                'jni': addon_config[3],
             },
             'library': {
                 'file': os.path.join('install', self.name, '{}.{}'.format(
                     self.name, libretro_ctypes.LibretroWrapper.EXT)),
                 'loaded': False,
-                'soname': '{}_libretro'.format(
-                    self._config[4].get('soname', game_name)),
-                'jnisoname': self._config[4].get('jnisoname', 'libretro'),
+                'soname': '{}_libretro'.format(addon_config[4].get(
+                    'soname', game_name)),
+                'jnisoname': addon_config[4].get('jnisoname', 'libretro'),
             },
             'assets': {},
             'git': {},
@@ -289,18 +289,22 @@ class Addon():
 
     def process_description_files(self):
         """ Generate addon description files """
+        kodi_addon_dir = os.path.join(self._kodi_directory, 'cmake',
+                                      'addons', 'addons', self.name)
         template_processor.TemplateProcessor.process(
-            'description',
-            os.path.join(self._args.kodi_directory, 'cmake',
-                         'addons', 'addons', self.name),
-            self.info)
+            'description', kodi_addon_dir, self.info)
+
+    def process_addon_files(self):
+        """ Generate addon files """
+        template_processor.TemplateProcessor.process(
+            'addon', self._path, self.info)
 
     def load_library_file(self):
         """ Load the compiled library file """
         library = None
-        library_path = os.path.join(self._args.working_directory,
+        library_path = os.path.join(self._working_directory,
                                     self.info['library']['file'])
-        if os.path.isfile(os.path.join(library_path)):
+        if os.path.isfile(library_path):
             try:
                 library = libretro_ctypes.LibretroWrapper(library_path)
                 self.info['library']['loaded'] = True
@@ -323,8 +327,8 @@ class Addon():
         return library
 
     def load_info_file(self):
-        """ Load libretro-info file """
-        path = os.path.join(self._args.working_directory, 'libretro-super',
+        """ Load info file from libretro-super repository """
+        path = os.path.join(self._working_directory, 'libretro-super',
                             'dist', 'info',
                             '{}.info'.format(self.info['library']['soname']))
         if os.path.isfile(path):
@@ -357,22 +361,21 @@ class Addon():
 
     def load_git_revision(self):
         """ Get the revision of the libretro core from the Git checkout """
-        gitrepo = GitRepo(GitHubRepo(self.game_name, '', ''),
-                          os.path.join(self._args.working_directory, 'build',
-                                       'build', self.game_name, 'src'))
-        if gitrepo.is_git_repo():
+        path = os.path.join(self._working_directory,
+                            'build', 'build', self.game_name, 'src')
+        if GitRepo.is_git_repo(os.path.join(path, self.game_name)):
+            gitrepo = GitRepo(GitHubRepo(self.game_name, '', ''), path)
             self.info['libretro_repo']['hexsha'] = gitrepo.get_hexsha()
 
     def load_game_version(self):
-        """ Load game version """
+        """ Load game version from compiled library and git """
         self.info['game']['version'] = versions.AddonVersion.get(
             self.info['system_info']['version'])
-        if self._repo:
-            git_tag = self._repo.describe()
-            match = re.search(r'^(?:[0-9]+\.){3}([0-9]+)', git_tag)
-            pkg_version = match.group(1) if match else '-1'
-            self.info['game']['version'] = '{}.{}'.format(
-                self.info['game']['version'], pkg_version)
+        git_tag = self._repo.describe()
+        match = re.search(r'^(?:[0-9]+\.){3}([0-9]+)', git_tag)
+        pkg_version = match.group(1) if match else '-1'
+        self.info['game']['version'] = '{}.{}'.format(
+            self.info['game']['version'], pkg_version)
 
     def bump_version(self):
         """ Bump game version """
@@ -381,35 +384,25 @@ class Addon():
             version, int(pkg_version) + 1)
         print("  Version bumped to {}".format(self.info['game']['version']))
 
-    def process_addon_files(self):
-        """ Generate addon files """
-        template_processor.TemplateProcessor.process(
-            'addon', self._path, self.info)
+    def fetch_and_reset(self, reset):
+        """ Fetching & resetting Git repository """
+        print("  Fetching & resetting Git repository {}".format(self.name))
+        self._repo.fetch_and_reset(reset=reset)
 
-    def clone(self):
-        """ Clone / reset Git repository """
-        print("  Fetching & resetting Git repo {}".format(self.name))
-        if self._repo:
-            self._repo.clone(reset=False if self._args.git_noclean else True)
-
-    def commit(self, squash=False):
-        """ Commit changes to Git repository """
-        print("  Commiting changes to Git repo {}".format(self.name))
-        if self._repo:
-            self._repo.commit(COMMIT_MSG,
-                              squash=self._args.git_noclean or squash)
-            self.info['git']['diff'] = self._repo.diff()
+    def commit(self, squash):
+        """ Commiting changes to Git repository """
+        print("  Commiting changes to Git repository {}".format(self.name))
+        self._repo.commit(COMMIT_MSG, squash=squash)
+        self.info['git']['diff'] = self._repo.diff()
 
     def tag(self):
-        """ Create a tag in Git repository """
-        if self._repo:
-            print("  Creating tag in Git repo {}: {}".format(
-                self.name, self.info['game']['version']))
-            self._repo.tag('{}-Leia'.format(self.info['game']['version']))
+        """ Creating tag in Git repository """
+        print("  Creating tag in Git repository {}: {}".format(
+            self.name, self.info['game']['version']))
+        self._repo.tag('{}-Leia'.format(self.info['game']['version']))
 
     def push(self):
-        """ Push addon changes to GitHub repository """
-        print("  Pushing changes to GitHub repo {}".format(self.name))
-        if self._repo and self._args.push_branch:
-            self._repo.push(self._args.push_branch,
-                            tags=self._args.push_branch == 'master')
+        """ Pushing changes to GitHub repository """
+        print("  Pushing changes to GitHub repository {}".format(self.name))
+        branch = self.info['game']['branch']
+        self._repo.push(branch, tags=branch == 'master')

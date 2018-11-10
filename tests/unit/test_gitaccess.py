@@ -18,6 +18,8 @@
 
 import os
 
+from unittest import mock
+
 import git
 import github
 import pytest
@@ -117,152 +119,223 @@ def test_githuborg_createrepo(githuborg_fixture):
 
 
 @pytest.fixture
-def gitrepo(mocker, tmpdir):
-    """ Setup mocked GitRepo """
-    gitmock = mocker.patch('git.Repo')
-    repo = GitRepo(GitHubRepo('name', 'clone_url', 'ssh_url'), str(tmpdir))
-    repo.gitmock = gitmock
-    repo.tmpdir = tmpdir
-    return repo
+def gitmock(mocker):
+    """ Setup mocked git.Repo """
+    mocker.patch('kodi_game_scripting.utils.ensure_directory_exists')
+    return mocker.patch('git.Repo')
 
 
-def test_gitrepo_isgitrepo(gitrepo):
+def test_gitrepo_isgitrepo(gitmock):
     """ Test that repo is a Git repo """
-    assert gitrepo.is_git_repo()
+    assert GitRepo.is_git_repo('testpath')
+    gitmock.assert_called_once_with('testpath')
 
 
-def test_gitrepo_isnogitrepo(gitrepo):
+def test_gitrepo_isnogitrepo(gitmock):
     """ Test that repo is not a Git repo """
-    gitrepo.gitmock.side_effect = \
-        git.exc.InvalidGitRepositoryError()  # pylint: disable=no-member
-    assert not gitrepo.is_git_repo()
+    gitmock.side_effect = git.InvalidGitRepositoryError()
+    assert not GitRepo.is_git_repo('testpath')
+    gitmock.assert_called_once_with('testpath')
 
 
-def test_gitrepo_clone(gitrepo):
-    """ Test cloning a repository """
-    gitrepo.clone()
-    gitrepo.gitmock.return_value.remotes.origin.fetch.assert_called_once_with(
-        'master', tags=True)
-    gitrepo.gitmock.return_value.git.reset.assert_any_call(
-        '--hard', 'origin/master')
-    gitrepo.gitmock.return_value.git.reset.assert_any_call()
-    gitrepo.gitmock.return_value.git.clean.assert_called_once_with('-xffd')
+GITHUBREPO = GitHubRepo('name', 'clone_url', 'ssh_url')
 
 
-def test_gitrepo_cloneinit(gitrepo):
-    """ Test init a new repository """
-    gitrepo.gitmock.side_effect = \
-        git.exc.InvalidGitRepositoryError()  # pylint: disable=no-member
-    gitrepo.clone()
-    gitrepo.gitmock.init.assert_called_once_with(
-        os.path.join(str(gitrepo.tmpdir), 'name'))
-    gitrepo.gitmock.init.return_value.create_remote.return_value \
-        .fetch.assert_called_once_with('master', tags=True)
-    gitrepo.gitmock.init.return_value.git.reset.assert_any_call(
-        '--hard', 'origin/master')
-    gitrepo.gitmock.init.return_value.git.reset.assert_any_call()
-    gitrepo.gitmock.init.return_value.git.clean.assert_called_once_with(
-        '-xffd')
+def test_gitrepo_init(gitmock):
+    """ Test initializing a new repository """
+    with mock.patch('kodi_game_scripting.git_access.GitRepo.is_git_repo',
+                    return_value=False):
+        GitRepo(GITHUBREPO, 'tmpdir')
+    gitmock.init.assert_called_once_with(
+        os.path.join('tmpdir', 'name'))
+    gitmock.init.return_value.remotes.origin.set_url.assert_called_once_with(
+        'ssh_url', push=True)
 
 
-def test_gitrepo_clonenoreset(gitrepo):
-    """ Test clone a repo, don't reset """
-    gitrepo.clone(reset=False)
-    gitrepo.gitmock.return_value.remotes.origin.fetch.assert_called_once_with(
-        'master', tags=True)
-    gitrepo.gitmock.return_value.git.rebase.assert_any_call('origin/master')
-    gitrepo.gitmock.return_value.git.reset.assert_any_call()
-    gitrepo.gitmock.return_value.git.clean.assert_called_once_with('-xffd')
+def test_gitrepo_initexisting(gitmock):
+    """ Test initializing an existing repository """
+    with mock.patch('kodi_game_scripting.git_access.GitRepo.is_git_repo',
+                    return_value=True):
+        GitRepo(GITHUBREPO, 'tmpdir')
+    gitmock.assert_called_once_with(
+        os.path.join('tmpdir', 'name'))
+    gitmock.return_value.remotes.origin.set_url.assert_called_once_with(
+        'ssh_url', push=True)
 
 
-def test_gitrepo_gethexsha(gitrepo):
+def test_gitrepo_initnocloneurl(gitmock):
+    """ Test initializing a new repository without clone url """
+    with mock.patch('kodi_game_scripting.git_access.GitRepo.is_git_repo',
+                    return_value=False):
+        GitRepo(GitHubRepo('empty', '', ''), 'tmpdir')
+    gitmock.init.return_value.remotes.origin.set_url.assert_not_called()
+
+
+def test_gitrepo_initnoorigin(gitmock):
+    """ Test initializing a new repository, create new remote """
+    del gitmock.init.return_value.remotes.origin
+    with mock.patch('kodi_game_scripting.git_access.GitRepo.is_git_repo',
+                    return_value=False):
+        GitRepo(GITHUBREPO, 'tmpdir')
+    gitmock.init.return_value.create_remote.assert_called_once_with(
+        'origin', 'clone_url')
+
+
+@pytest.fixture
+def gitrepo(gitmock, mocker):
+    """ Setup mocked GitRepo """
+    mocker.patch('kodi_game_scripting.git_access.GitRepo.is_git_repo',
+                 return_value=True)
+    gitrepo = GitRepo(GITHUBREPO, 'tmpdir')
+    gitmock.reset_mock()
+    return gitrepo
+
+
+def test_gitrepo_fetchreset(gitrepo, gitmock):
+    """ Test fetching & resetting a repository """
+    gitrepo.fetch_and_reset()
+    gitmock.return_value.remotes.origin.fetch.assert_has_calls([
+        mock.call('master'),
+        mock.call(tags=True, prune=True, prune_tags=True)
+    ])
+    gitmock.return_value.git.reset.assert_has_calls([
+        mock.call('--hard', 'origin/master'),
+        mock.call()
+    ])
+    gitmock.return_value.git.clean.assert_called_once_with('-xffd')
+
+
+def test_gitrepo_fetchresetlocal(gitrepo, gitmock):
+    """ Test resetting a repository that has no remote """
+    del gitmock.return_value.remotes.origin
+    gitrepo.fetch_and_reset()
+    gitmock.return_value.git.reset.assert_called_once_with()
+    gitmock.return_value.git.clean.assert_called_once_with('-xffd')
+
+
+def test_gitrepo_fetchrebase(gitrepo, gitmock):
+    """ Test fetching and rebasing a repo """
+    gitrepo.fetch_and_reset(reset=False)
+    gitmock.return_value.remotes.origin.fetch.assert_has_calls([
+        mock.call('master'),
+        mock.call(tags=True, prune=True, prune_tags=True)
+    ])
+    gitmock.return_value.git.reset.assert_has_calls([
+        mock.call()
+    ])
+    gitmock.return_value.git.rebase.assert_called_once_with('origin/master')
+    gitmock.return_value.git.clean.assert_called_once_with('-xffd')
+
+
+def test_gitrepo_gethexsha(gitrepo, gitmock):
     """ Test getting the hexsha """
-    gitrepo.gitmock.return_value.head.object.hexsha = '1234567'
+    gitmock.return_value.head.object.hexsha = '1234567'
     assert gitrepo.get_hexsha() == '1234567'
 
 
-def test_gitrepo_commit(gitrepo):
+def test_gitrepo_commit(gitrepo, gitmock):
     """ Test commit """
-    gitrepo.gitmock.return_value.is_dirty.return_value = True
+    gitmock.return_value.is_dirty.return_value = True
     gitrepo.commit('msg')
-    gitrepo.gitmock.return_value.git.add.assert_called_once_with(
-        all=True, force=False)
-    gitrepo.gitmock.return_value.index.commit.assert_called_once_with('msg')
+    gitmock.return_value.git.add.assert_called_once_with(all=True, force=False)
+    gitmock.return_value.index.commit.assert_called_once_with('msg')
 
 
-def test_gitrepo_commitpath(gitrepo):
+def test_gitrepo_commitpath(gitrepo, gitmock):
     """ Test commit only a specific directory """
-    gitrepo.gitmock.return_value.is_dirty.return_value = True
+    gitmock.return_value.is_dirty.return_value = True
     gitrepo.commit('msg', directory='dir')
-    gitrepo.gitmock.return_value.git.add.assert_called_once_with(
-        'dir', force=False)
-    gitrepo.gitmock.return_value.index.commit.assert_called_once_with('msg')
+    gitmock.return_value.git.add.assert_called_once_with('dir', force=False)
+    gitmock.return_value.index.commit.assert_called_once_with('msg')
 
 
-def test_gitrepo_commitforce(gitrepo):
+def test_gitrepo_commitforce(gitrepo, gitmock):
     """ Test force commit """
-    gitrepo.gitmock.return_value.is_dirty.return_value = True
+    gitmock.return_value.is_dirty.return_value = True
     gitrepo.commit('msg', force=True)
-    gitrepo.gitmock.return_value.git.add.assert_called_once_with(
-        all=True, force=True)
-    gitrepo.gitmock.return_value.index.commit.assert_called_once_with('msg')
+    gitmock.return_value.git.add.assert_called_once_with(all=True, force=True)
+    gitmock.return_value.index.commit.assert_called_once_with('msg')
 
 
-def test_gitrepo_commitsquash(gitrepo):
+def test_gitrepo_commitsquash(gitrepo, gitmock):
     """ Test commit and squash """
-    gitrepo.gitmock.return_value.is_dirty.return_value = True
+    gitmock.return_value.is_dirty.return_value = True
     gitrepo.commit('msg', squash=True)
-    gitrepo.gitmock.return_value.git.reset.assert_called_once_with(
+    gitmock.return_value.git.reset.assert_called_once_with(
         'origin/master', soft=True)
-    gitrepo.gitmock.return_value.index.commit.assert_called_once_with('msg')
+    gitmock.return_value.index.commit.assert_called_once_with('msg')
 
 
-def test_gitrepo_commitskip(gitrepo):
+def test_gitrepo_commitsquashsingle(gitrepo, gitmock):
+    """ Test commit and squash """
+    gitmock.return_value.is_dirty.return_value = True
+    gitmock.return_value.git.reset.side_effect = git.GitCommandError([''], '')
+    gitrepo.commit('msg', squash=True)
+    gitmock.return_value.git.update_ref.assert_called_once_with('-d', 'HEAD')
+    gitmock.return_value.index.commit.assert_called_once_with('msg')
+
+
+def test_gitrepo_commitskip(gitrepo, gitmock):
     """ Test nothing to commit """
-    gitrepo.gitmock.return_value.is_dirty.return_value = False
+    gitmock.return_value.is_dirty.return_value = False
     gitrepo.commit('msg')
-    gitrepo.gitmock.return_value.index.commit.assert_not_called()
+    gitmock.return_value.index.commit.assert_not_called()
 
 
-def test_gitrepo_tag(gitrepo):
+def test_gitrepo_tag(gitrepo, gitmock):
     """ Test creating a tag """
     gitrepo.tag('1.0.0', 'message')
-    gitrepo.gitmock.return_value.create_tag.assert_called_once_with(
+    gitmock.return_value.create_tag.assert_called_once_with(
         '1.0.0', 'message', force=True)
 
 
-def test_gitrepo_diff(gitrepo):
+def test_gitrepo_diff(gitrepo, gitmock):
     """ Test Git diff """
     gitrepo.diff()
-    gitrepo.gitmock.return_value.git.diff.assert_called_once_with(
-        'origin/master', gitrepo.gitmock.return_value.head.commit)
+    gitmock.return_value.git.diff.assert_called_once_with(
+        'origin/master', gitmock.return_value.head.commit)
 
 
-def test_gitrepo_describe(gitrepo):
+def test_gitrepo_diffnoorigin(gitrepo, gitmock):
+    """ Test Git diff without origin """
+    gitmock.return_value.git.diff.side_effect = git.GitCommandError([''], '')
+    gitrepo.diff()
+    gitmock.return_value.git.show.assert_called_once_with()
+
+
+def test_gitrepo_describe(gitrepo, gitmock):
     """ Test describing current version """
-    gitrepo.describe()
-    gitrepo.gitmock.return_value.git.describe.assert_called_once_with(
+    assert gitrepo.describe() != ''
+    gitmock.return_value.git.describe.assert_called_once_with(
         '--tags', '--always')
 
 
-def test_gitrepo_push(gitrepo):
+def test_gitrepo_describefailure(gitrepo, gitmock):
+    """ Test describing current version """
+    gitmock.return_value.git.describe.side_effect = git.GitCommandError(
+        [''], '')
+    assert gitrepo.describe() == ''
+    gitmock.return_value.git.describe.assert_called_once_with(
+        '--tags', '--always')
+
+
+def test_gitrepo_push(gitrepo, gitmock):
     """ Test push change """
-    gitrepo.gitmock.return_value.is_dirty.return_value = False
+    gitmock.return_value.is_dirty.return_value = False
     gitrepo.push('branch')
-    gitrepo.gitmock.return_value.remotes.origin.push.assert_called_once_with(
+    gitmock.return_value.remotes.origin.push.assert_called_once_with(
         'HEAD:branch', force=True)
 
 
-def test_gitrepo_pushdirty(gitrepo):
+def test_gitrepo_pushdirty(gitrepo, gitmock):
     """ Test nothing to push """
-    gitrepo.gitmock.return_value.is_dirty.return_value = True
+    gitmock.return_value.is_dirty.return_value = True
     with pytest.raises(ValueError):
         gitrepo.push('branch')
 
 
-def test_gitrepo_pushtags(gitrepo):
+def test_gitrepo_pushtags(gitrepo, gitmock):
     """ Test push tags """
-    gitrepo.gitmock.return_value.is_dirty.return_value = False
+    gitmock.return_value.is_dirty.return_value = False
     gitrepo.push('branch', tags=True)
-    gitrepo.gitmock.return_value.git.push.assert_called_once_with(
-        '--tags')
+    gitmock.return_value.git.push.assert_called_once_with('--tags')

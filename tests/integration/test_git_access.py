@@ -16,29 +16,21 @@
 
 """ Test access GitHub API and Git Repos """
 
-import os
-
 import pytest
 
 from kodi_game_scripting import config
-from kodi_game_scripting import utils
 from kodi_game_scripting.git_access import GitHubOrg, GitHubRepo, GitRepo
 
 pytestmark = [pytest.mark.integration]
 
 
-def test_clone_single_repo():
-    """ Tests cloning a single repo """
-    test_dir = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)),
-        'test_data', os.path.splitext(os.path.basename(__file__))[0])
-    utils.ensure_directory_exists(test_dir, clean=True)
-
+def test_git_fetchresetsinglerepo(tmpdir):
+    """ Tests fetching and resetting a single repo """
     gitrepo = GitRepo(
         GitHubRepo('kodi-game-scripting',
                    'https://github.com/fetzerch/kodi-game-scripting', ''),
-        test_dir)
-    gitrepo.clone()
+        str(tmpdir))
+    gitrepo.fetch_and_reset()
 
 
 def test_github_repos():

@@ -193,10 +193,26 @@ def gitrepo(gitmock, mocker):
 
 def test_gitrepo_fetchreset(gitrepo, gitmock):
     """ Test fetching & resetting a repository """
+    gitmock.return_value.git.version_info = (2, 17, 0)
     gitrepo.fetch_and_reset()
     gitmock.return_value.remotes.origin.fetch.assert_has_calls([
         mock.call('master'),
         mock.call(tags=True, prune=True, prune_tags=True)
+    ])
+    gitmock.return_value.git.reset.assert_has_calls([
+        mock.call('--hard', 'origin/master'),
+        mock.call()
+    ])
+    gitmock.return_value.git.clean.assert_called_once_with('-xffd')
+
+
+def test_gitrepo_fetchresetoldgit(gitrepo, gitmock):
+    """ Test fetching & resetting a repository """
+    gitmock.return_value.git.version_info = (2, 16, 0)
+    gitrepo.fetch_and_reset()
+    gitmock.return_value.remotes.origin.fetch.assert_has_calls([
+        mock.call('master'),
+        mock.call(tags=True, prune=True)
     ])
     gitmock.return_value.git.reset.assert_has_calls([
         mock.call('--hard', 'origin/master'),
@@ -215,6 +231,7 @@ def test_gitrepo_fetchresetlocal(gitrepo, gitmock):
 
 def test_gitrepo_fetchrebase(gitrepo, gitmock):
     """ Test fetching and rebasing a repo """
+    gitmock.return_value.git.version_info = (2, 17, 0)
     gitrepo.fetch_and_reset(reset=False)
     gitmock.return_value.remotes.origin.fetch.assert_has_calls([
         mock.call('master'),

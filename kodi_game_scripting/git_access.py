@@ -21,6 +21,8 @@ import functools
 import os
 import re
 
+from pkg_resources import parse_version
+
 import git
 import github
 
@@ -112,7 +114,12 @@ class GitRepo:
             origin = self._gitrepo.remotes.origin
             print("Fetching {}".format(self._githubrepo.name))
             origin.fetch('master')
-            origin.fetch(tags=True, prune=True, prune_tags=True)
+            if (parse_version('.'.join(map(
+                    str, self._gitrepo.git.version_info))) >=
+                    parse_version('2.17.0')):
+                origin.fetch(tags=True, prune=True, prune_tags=True)
+            else:
+                origin.fetch(tags=True, prune=True)
             if reset:
                 print("Resetting {}".format(self._githubrepo.name))
                 self._gitrepo.git.reset('--hard', 'origin/master')

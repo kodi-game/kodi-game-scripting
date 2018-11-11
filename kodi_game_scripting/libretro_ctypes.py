@@ -18,6 +18,8 @@
 
 import collections
 import ctypes
+import re
+import subprocess
 import sys
 
 from .utils import xstr
@@ -29,6 +31,7 @@ class LibretroWrapper:
         Use attributes system_info and settings to access this information. """
 
     EXT = 'dylib' if sys.platform == 'darwin' else 'so'
+    LDD_CMD = ['otool', '-L'] if sys.platform == 'darwin' else ['ldd']
 
     class RetroSystemInfo(ctypes.Structure):
         """ struct retro_system_type """
@@ -109,6 +112,9 @@ class LibretroWrapper:
         retro_environment_cb = retro_environment_t(retro_environment_cb)
         retro_set_environment(retro_environment_cb)
 
+        # opengl linkage
+        self.opengl_linkage = self.has_opengl_linkage(library_path)
+
     @classmethod
     def parse_libretro_variable(cls, variable):
         """ Parse variable into Variable(id, desc, values, default) """
@@ -120,6 +126,14 @@ class LibretroWrapper:
         var = collections.namedtuple('Variable',
                                      'id description values default')
         return var(key, description, values, default)
+
+    @classmethod
+    def has_opengl_linkage(cls, library_path):
+        """ Check if the library links opengl """
+        ldd_output = subprocess.run(
+            cls.LDD_CMD + [library_path], stdout=subprocess.PIPE)
+        return bool(re.search(r'(?:libgl|opengl)',
+                              str(ldd_output.stdout, 'utf-8'), re.IGNORECASE))
 
 
 if __name__ == '__main__':  # pragma: no cover

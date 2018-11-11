@@ -120,8 +120,9 @@ class KodiGameAddons:
                     repo = self._github.create_repo(addon_name)
                 else:
                     repo = GitHubRepo(addon_name, '', '')
-            self._addons[game_name] = KodiGameAddon(addon_name, game_name,
-                                                    repo, self._args)
+            self._addons[game_name] = KodiGameAddon(
+                addon_name, game_name, repo, self._args.working_directory,
+                self._args.push_branch)
 
         print("Processing the following addons: {}".format(
             ', '.join(self._addons)))
@@ -149,7 +150,7 @@ class KodiGameAddons:
             print(" Processing addon: {}".format(addon.name))
             addon.process_addon_files()
             print(" Processing addon description: {}".format(addon.name))
-            addon.process_description_files()
+            addon.process_description_files(self._args.kodi_directory)
 
         # Compile addons to read info from built library
         # Instead of compiling individual addons we compile all at once to save
@@ -162,6 +163,7 @@ class KodiGameAddons:
         print("Second iteration: Generate Metadata files")
         for addon in self._addons.values():
             print(" Processing addon: {}".format(addon.name))
+            addon.load_info_file()
             addon.load_assets()
             addon.load_library_file()
             addon.load_git_revision()
@@ -211,7 +213,6 @@ class KodiGameAddons:
             'summary', self._args.working_directory, template_vars)
 
     def _compile_addons(self):
-        """ Compiles the addons in order to read system info from the libs """
         print("Compiling addons")
         build_dir = os.path.join(self._args.working_directory, 'build')
         install_dir = os.path.join(self._args.working_directory, 'install')
@@ -242,28 +243,31 @@ class KodiGameAddons:
 
 class KodiGameAddon():
     """ Process a single Kodi Game addon """
-    def __init__(self, addon_name, game_name, repo, args):
+    def __init__(self, addon_name,  # pylint: disable=too-many-arguments
+                 game_name, githubrepo, working_directory, push_branch):
         self.name = addon_name
         self.game_name = game_name
 
-        self._repo = GitRepo(repo, args.working_directory)
-        self._kodi_directory = args.kodi_directory
-        self._working_directory = args.working_directory
-        self._path = os.path.join(args.working_directory, addon_name)
+        self._repo = GitRepo(githubrepo, working_directory)
+        self._working_directory = working_directory
+        self._path = os.path.join(working_directory, addon_name)
 
         addon_config = config.ADDONS[game_name]
         self.info = {
             'game': {
                 'name': self.game_name,
                 'addon': self.name,
-                'branch': args.push_branch or 'master',
-                'version': '0.0.0'
+                'branch': push_branch or 'master',
+                'version': '0.0.0',
             },
             'config': addon_config[4],
             'datetime': '{0:%Y-%m-%d %H:%Mi%z}'.format(
                 datetime.datetime.now()),
-            'system_info': {},
+            'system_info': {
+                'version': '0.0.0',
+            },
             'settings': [],
+            'libretro_info': {},
             'libretro_repo': {
                 'name': addon_config[0],
                 'branch': addon_config[4].get('branch', 'master'),
@@ -285,11 +289,10 @@ class KodiGameAddon():
             'assets': {},
             'git': {},
         }
-        self.load_info_file()
 
-    def process_description_files(self):
+    def process_description_files(self, kodi_directory):
         """ Generate addon description files """
-        kodi_addon_dir = os.path.join(self._kodi_directory, 'cmake',
+        kodi_addon_dir = os.path.join(kodi_directory, 'cmake',
                                       'addons', 'addons', self.name)
         template_processor.TemplateProcessor.process(
             'description', kodi_addon_dir, self.info)
@@ -304,26 +307,16 @@ class KodiGameAddon():
         library = None
         library_path = os.path.join(self._working_directory,
                                     self.info['library']['file'])
-        if os.path.isfile(library_path):
-            try:
-                library = libretro_ctypes.LibretroWrapper(library_path)
-                self.info['library']['loaded'] = True
-                self.info['system_info'] = library.system_info
-                self.info['settings'] = sorted(library.variables,
-                                               key=lambda x: x.id)
-
-                if sys.platform != 'darwin':
-                    ldd_command = ['ldd', library_path]
-                else:
-                    ldd_command = ['otool', '-L', library_path]
-                ldd_output = subprocess.run(ldd_command,
-                                            stdout=subprocess.PIPE)
-                if (re.search(r'(?:libgl|opengl)',
-                              str(ldd_output.stdout, 'utf-8'), re.IGNORECASE)):
-                    self.info['library']['opengl'] = True
-            except OSError as err:
-                self.info['library']['error'] = err
-                print("Failed to read output library.")
+        try:
+            library = libretro_ctypes.LibretroWrapper(library_path)
+            self.info['library']['loaded'] = True
+            self.info['system_info'] = library.system_info
+            self.info['settings'] = sorted(library.variables,
+                                           key=lambda x: x.id)
+            self.info['library']['opengl'] = library.opengl_linkage
+        except OSError as err:
+            self.info['library']['error'] = err
+            print("Failed to read output library.")
         return library
 
     def load_info_file(self):
@@ -333,8 +326,7 @@ class KodiGameAddon():
                             '{}.info'.format(self.info['library']['soname']))
         if os.path.isfile(path):
             with open(path, 'r') as info_ctx:
-                self.info['libretro_info'] = {}
-                for line in info_ctx:
+                for line in info_ctx.readlines():
                     if '=' in line:
                         name, var = line.partition('=')[::2]
                         self.info['libretro_info'][name.strip()] = \
@@ -343,7 +335,6 @@ class KodiGameAddon():
     def load_assets(self):
         """ Process assets """
         # Loop over all images files in the repo
-        self.info['assets'] = {}
         for asset in sorted(utils.list_all_files(self._path)):
             if os.path.splitext(asset)[1] not in ['.png', '.jpg', '.svg']:
                 continue
@@ -384,12 +375,12 @@ class KodiGameAddon():
             version, int(pkg_version) + 1)
         print("  Version bumped to {}".format(self.info['game']['version']))
 
-    def fetch_and_reset(self, reset):
+    def fetch_and_reset(self, *, reset):
         """ Fetching & resetting Git repository """
         print("  Fetching & resetting Git repository {}".format(self.name))
         self._repo.fetch_and_reset(reset=reset)
 
-    def commit(self, squash):
+    def commit(self, *, squash):
         """ Commiting changes to Git repository """
         print("  Commiting changes to Git repository {}".format(self.name))
         self._repo.commit(COMMIT_MSG, squash=squash)

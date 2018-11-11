@@ -29,6 +29,9 @@ import github
 from . import credentials
 from . import utils
 
+
+EMPTY_SHA = '4b825dc642cb6eb9a060e54bf8d69288fbee4904'
+
 GitHubRepo = collections.namedtuple('GitHubRepo', 'name clone_url ssh_url')
 
 
@@ -89,17 +92,17 @@ class GitRepo:
             return False
 
     def __init__(self, repo, path):
+        self.path = os.path.join(path, repo.name)
         self._githubrepo = repo
         self._gitrepo = None
-        self._path = os.path.join(path, repo.name)
 
-        if not GitRepo.is_git_repo(self._path):
-            utils.ensure_directory_exists(self._path)
+        if not GitRepo.is_git_repo(self.path):
+            utils.ensure_directory_exists(self.path)
             print("New repo, creating {}".format(self._githubrepo.name))
-            self._gitrepo = git.Repo.init(self._path)
+            self._gitrepo = git.Repo.init(self.path)
         else:
             print("Existing repo {}".format(self._githubrepo.name))
-            self._gitrepo = git.Repo(self._path)
+            self._gitrepo = git.Repo(self.path)
         if self._githubrepo.clone_url:
             try:
                 origin = self._gitrepo.remotes.origin
@@ -110,7 +113,7 @@ class GitRepo:
 
     def fetch_and_reset(self, reset=True):
         """ Fetch repo and reset it """
-        try:
+        if git.Remote('', 'origin') in self._gitrepo.remotes:
             origin = self._gitrepo.remotes.origin
             print("Fetching {}".format(self._githubrepo.name))
             origin.fetch('master')
@@ -119,6 +122,9 @@ class GitRepo:
                     parse_version('2.17.0')):
                 origin.fetch(tags=True, prune=True, prune_tags=True)
             else:
+                tags = self._gitrepo.git.tag(list=True)
+                if tags:
+                    self._gitrepo.git.tag('--delete', tags.splitlines())
                 origin.fetch(tags=True, prune=True)
             if reset:
                 print("Resetting {}".format(self._githubrepo.name))
@@ -126,7 +132,7 @@ class GitRepo:
             else:
                 print("Rebasing {}".format(self._githubrepo.name))
                 self._gitrepo.git.rebase('origin/master')
-        except AttributeError:
+        else:
             print("Skipping fetching {}".format(self._githubrepo.name))
         print("Cleaning local changes {}".format(self._githubrepo.name))
         self._gitrepo.git.reset()
@@ -134,7 +140,9 @@ class GitRepo:
 
     def get_hexsha(self):
         """ Get HEAD revision """
-        return self._gitrepo.head.object.hexsha
+        if self._gitrepo.head.is_valid():
+            return self._gitrepo.head.object.hexsha
+        return ''
 
     def commit(self, message, directory=None, force=False, squash=False):
         """ Create commit in repo """
@@ -143,31 +151,32 @@ class GitRepo:
         else:
             self._gitrepo.git.add(all=True, force=force)
         if squash:
-            try:
+            if git.Remote('', 'origin') in self._gitrepo.remotes:
                 self._gitrepo.git.reset('origin/master', soft=True)
-            except git.GitCommandError:
+            else:
                 self._gitrepo.git.update_ref('-d', 'HEAD')
         if self._gitrepo.is_dirty():
             self._gitrepo.index.commit(message)
 
     def tag(self, tag, message=None):
         """ Create tag in repo """
-        self._gitrepo.create_tag(tag, message, force=True)
+        if self._gitrepo.head.is_valid():
+            self._gitrepo.create_tag(tag, message, force=True)
 
     def diff(self):
         """ Diff commits in repo """
-        try:
-            return self._gitrepo.git.diff("origin/master",
-                                          self._gitrepo.head.commit)
-        except git.GitCommandError:
-            return self._gitrepo.git.show()
+        if self._gitrepo.head.is_valid():
+            if git.Remote('', 'origin') in self._gitrepo.remotes:
+                return self._gitrepo.git.diff('origin/master',
+                                              self._gitrepo.head.commit)
+            return self._gitrepo.git.diff(EMPTY_SHA, self._gitrepo.head.commit)
+        return ''
 
     def describe(self):
         """ Describe current version """
-        try:
+        if self._gitrepo.head.is_valid():
             return self._gitrepo.git.describe('--tags', '--always')
-        except git.GitCommandError:
-            return ''
+        return ''
 
     def push(self, branch, tags=False):
         """ Push commit to remote """

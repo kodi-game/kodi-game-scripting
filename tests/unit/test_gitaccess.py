@@ -25,6 +25,7 @@ import github
 import pytest
 
 from kodi_game_scripting.git_access import GitHubOrg, GitHubRepo, GitRepo
+from kodi_game_scripting.git_access import EMPTY_SHA
 
 pytestmark = [pytest.mark.unit]
 
@@ -193,6 +194,7 @@ def gitrepo(gitmock, mocker):
 
 def test_gitrepo_fetchreset(gitrepo, gitmock):
     """ Test fetching & resetting a repository """
+    gitmock.return_value.remotes.__contains__.return_value = True
     gitmock.return_value.git.version_info = (2, 17, 0)
     gitrepo.fetch_and_reset()
     gitmock.return_value.remotes.origin.fetch.assert_has_calls([
@@ -207,9 +209,37 @@ def test_gitrepo_fetchreset(gitrepo, gitmock):
 
 
 def test_gitrepo_fetchresetoldgit(gitrepo, gitmock):
-    """ Test fetching & resetting a repository """
+    """ Test fetching & resetting a repository (old git) """
+    gitmock.return_value.remotes.__contains__.return_value = True
     gitmock.return_value.git.version_info = (2, 16, 0)
+    gitmock.return_value.git.tag.return_value = 'tag'
     gitrepo.fetch_and_reset()
+    print(gitmock.return_value.mock_calls)
+    gitmock.return_value.git.tag.assert_has_calls([
+        mock.call(list=True),
+        mock.call('--delete', ['tag'])
+    ])
+    gitmock.return_value.remotes.origin.fetch.assert_has_calls([
+        mock.call('master'),
+        mock.call(tags=True, prune=True)
+    ])
+    gitmock.return_value.git.reset.assert_has_calls([
+        mock.call('--hard', 'origin/master'),
+        mock.call()
+    ])
+    gitmock.return_value.git.clean.assert_called_once_with('-xffd')
+
+
+def test_gitrepo_fetchresetoldgitnotag(gitrepo, gitmock):
+    """ Test fetching & resetting a repository (old git, no tags) """
+    gitmock.return_value.remotes.__contains__.return_value = True
+    gitmock.return_value.git.version_info = (2, 16, 0)
+    gitmock.return_value.git.tag.return_value = ''
+    gitrepo.fetch_and_reset()
+    print(gitmock.return_value.mock_calls)
+    gitmock.return_value.git.tag.assert_has_calls([
+        mock.call(list=True),
+    ])
     gitmock.return_value.remotes.origin.fetch.assert_has_calls([
         mock.call('master'),
         mock.call(tags=True, prune=True)
@@ -223,7 +253,7 @@ def test_gitrepo_fetchresetoldgit(gitrepo, gitmock):
 
 def test_gitrepo_fetchresetlocal(gitrepo, gitmock):
     """ Test resetting a repository that has no remote """
-    del gitmock.return_value.remotes.origin
+    gitmock.return_value.remotes.__contains__.return_value = False
     gitrepo.fetch_and_reset()
     gitmock.return_value.git.reset.assert_called_once_with()
     gitmock.return_value.git.clean.assert_called_once_with('-xffd')
@@ -231,6 +261,7 @@ def test_gitrepo_fetchresetlocal(gitrepo, gitmock):
 
 def test_gitrepo_fetchrebase(gitrepo, gitmock):
     """ Test fetching and rebasing a repo """
+    gitmock.return_value.remotes.__contains__.return_value = True
     gitmock.return_value.git.version_info = (2, 17, 0)
     gitrepo.fetch_and_reset(reset=False)
     gitmock.return_value.remotes.origin.fetch.assert_has_calls([
@@ -246,8 +277,15 @@ def test_gitrepo_fetchrebase(gitrepo, gitmock):
 
 def test_gitrepo_gethexsha(gitrepo, gitmock):
     """ Test getting the hexsha """
+    gitmock.return_value.head.is_valid.return_value = True
     gitmock.return_value.head.object.hexsha = '1234567'
     assert gitrepo.get_hexsha() == '1234567'
+
+
+def test_gitrepo_gethexshanohead(gitrepo, gitmock):
+    """ Test getting the hexsha when there is no HEAD """
+    gitmock.return_value.head.is_valid.return_value = False
+    assert gitrepo.get_hexsha() == ''
 
 
 def test_gitrepo_commit(gitrepo, gitmock):
@@ -276,6 +314,7 @@ def test_gitrepo_commitforce(gitrepo, gitmock):
 
 def test_gitrepo_commitsquash(gitrepo, gitmock):
     """ Test commit and squash """
+    gitmock.return_value.remotes.__contains__.return_value = True
     gitmock.return_value.is_dirty.return_value = True
     gitrepo.commit('msg', squash=True)
     gitmock.return_value.git.reset.assert_called_once_with(
@@ -283,8 +322,9 @@ def test_gitrepo_commitsquash(gitrepo, gitmock):
     gitmock.return_value.index.commit.assert_called_once_with('msg')
 
 
-def test_gitrepo_commitsquashsingle(gitrepo, gitmock):
+def test_gitrepo_commitsquashlocal(gitrepo, gitmock):
     """ Test commit and squash """
+    gitmock.return_value.remotes.__contains__.return_value = False
     gitmock.return_value.is_dirty.return_value = True
     gitmock.return_value.git.reset.side_effect = git.GitCommandError([''], '')
     gitrepo.commit('msg', squash=True)
@@ -301,39 +341,58 @@ def test_gitrepo_commitskip(gitrepo, gitmock):
 
 def test_gitrepo_tag(gitrepo, gitmock):
     """ Test creating a tag """
+    gitmock.return_value.head.is_valid.return_value = True
     gitrepo.tag('1.0.0', 'message')
     gitmock.return_value.create_tag.assert_called_once_with(
         '1.0.0', 'message', force=True)
 
 
+def test_gitrepo_tagnohead(gitrepo, gitmock):
+    """ Test creating a tag """
+    gitmock.return_value.head.is_valid.return_value = False
+    gitrepo.tag('1.0.0', 'message')
+    gitmock.return_value.create_tag.assert_not_called()
+
+
 def test_gitrepo_diff(gitrepo, gitmock):
     """ Test Git diff """
-    gitrepo.diff()
+    gitmock.return_value.head.is_valid.return_value = True
+    gitmock.return_value.remotes.__contains__.return_value = True
+    assert gitrepo.diff()
     gitmock.return_value.git.diff.assert_called_once_with(
         'origin/master', gitmock.return_value.head.commit)
 
 
 def test_gitrepo_diffnoorigin(gitrepo, gitmock):
     """ Test Git diff without origin """
-    gitmock.return_value.git.diff.side_effect = git.GitCommandError([''], '')
-    gitrepo.diff()
-    gitmock.return_value.git.show.assert_called_once_with()
+    gitmock.return_value.head.is_valid.return_value = True
+    gitmock.return_value.remotes.__contains__.return_value = False
+    assert gitrepo.diff()
+    gitmock.return_value.git.diff.assert_called_once_with(
+        EMPTY_SHA, gitmock.return_value.head.commit)
+
+
+def test_gitrepo_diffnohead(gitrepo, gitmock):
+    """ Test Git diff without HEAD """
+    gitmock.return_value.head.is_valid.return_value = False
+    gitmock.return_value.remotes.__contains__.return_value = False
+    assert not gitrepo.diff()
+    gitmock.return_value.git.diff.assert_not_called()
 
 
 def test_gitrepo_describe(gitrepo, gitmock):
     """ Test describing current version """
-    assert gitrepo.describe() != ''
+    gitmock.return_value.head.is_valid.return_value = True
+    assert gitrepo.describe()
     gitmock.return_value.git.describe.assert_called_once_with(
         '--tags', '--always')
 
 
-def test_gitrepo_describefailure(gitrepo, gitmock):
+def test_gitrepo_describenohead(gitrepo, gitmock):
     """ Test describing current version """
-    gitmock.return_value.git.describe.side_effect = git.GitCommandError(
-        [''], '')
-    assert gitrepo.describe() == ''
-    gitmock.return_value.git.describe.assert_called_once_with(
-        '--tags', '--always')
+    gitmock.return_value.head.is_valid.return_value = False
+    assert not gitrepo.describe()
+    gitmock.return_value.git.describe.assert_not_called()
 
 
 def test_gitrepo_push(gitrepo, gitmock):

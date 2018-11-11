@@ -22,7 +22,9 @@ from unittest import mock
 
 import pytest
 
-from kodi_game_scripting.process_game_addons import KodiGameAddon
+from kodi_game_scripting import config
+from kodi_game_scripting.process_game_addons import \
+    KodiAddonDescriptions, KodiGameAddon
 from kodi_game_scripting.git_access import GitHubRepo
 
 pytestmark = [pytest.mark.unit]
@@ -53,18 +55,48 @@ def gitrepomock(mocker):
 @pytest.fixture(autouse=True)
 def libretrowrappermock(mocker):
     """ Setup mocked LibretroWrapper """
-    return mocker.patch('kodi_game_scripting.libretro_ctypes.LibretroWrapper',
-                        autospec=True)
+    return mocker.patch('kodi_game_scripting.process_game_addons'
+                        '.LibretroWrapper', autospec=True)
 
 
 @pytest.fixture(autouse=True)
 def templateprocessormock(mocker):
     """ Setup mocked TemplateProcessor """
-    return mocker.patch('kodi_game_scripting.template_processor'
+    return mocker.patch('kodi_game_scripting.process_game_addons'
                         '.TemplateProcessor', autospec=True)
 
 
 GITHUBREPO = GitHubRepo('name', 'clone_url', 'ssh_url')
+
+
+def test_kodiaddondescriptions_clean(mocker):
+    """ Test cleaning addon descriptions """
+    game1 = '{}game1'.format(config.GITHUB_ADDON_PREFIX)
+    game2 = '{}game2'.format(config.GITHUB_ADDON_PREFIX)
+    kodi_directory = os.path.join('path', 'repo')
+    mocker.patch('os.walk', return_value=iter([
+        ('dir', (game1, game2, 'other'), ('file1', 'file2')),
+    ]), autospec=True)
+    rmmock = mocker.patch('shutil.rmtree', autospec=True)
+    KodiAddonDescriptions(kodi_directory).clean()
+    rmmock.assert_has_calls([
+        mock.call(os.path.join(
+            kodi_directory, KodiAddonDescriptions.DESCRIPTION_PATH, game1)),
+        mock.call(os.path.join(
+            kodi_directory, KodiAddonDescriptions.DESCRIPTION_PATH, game2)),
+    ])
+    assert mock.call(os.path.join(
+        kodi_directory, KodiAddonDescriptions.DESCRIPTION_PATH, 'other')) \
+        not in rmmock.mock_calls
+
+
+def test_kodiaddondescriptions_push(gitrepomock):
+    """ Test pushing addon descriptions """
+    KodiAddonDescriptions('path/repo').push('branch')
+    gitrepomock.assert_called_once_with(GitHubRepo('repo', '', ''), 'path')
+    gitrepomock.return_value.commit.assert_called_once_with(
+        mock.ANY, KodiAddonDescriptions.DESCRIPTION_PATH, force=True)
+    gitrepomock.return_value.push.assert_called_once_with('branch')
 
 
 @pytest.fixture
@@ -85,6 +117,8 @@ def test_kodigameaddon_processdescription(kodigameaddon,
                                           templateprocessormock):
     """ Test processing addon description """
     kodigameaddon.process_description_files('kodidir')
+    print(templateprocessormock.mock_calls)
+
     templateprocessormock.process.assert_called_once_with(
         'description',
         os.path.join('kodidir', 'cmake', 'addons', 'addons', 'game.mygame'),
@@ -124,19 +158,11 @@ def test_kodigameaddon_loadlibraryfileerr(kodigameaddon, libretrowrappermock):
 
 def test_kodigameaddon_loadinfofile(kodigameaddon, mocker):
     """ Test loading info files from libretro-super """
-    isfilemock = mocker.patch('os.path.isfile', return_value=True)
-    mocker.patch('builtins.open', mock.mock_open(read_data='#comment\na=1'))
+    libretrosupermock = mocker.patch(
+        'kodi_game_scripting.process_game_addons.LibretroSuper', autspec=True)
     kodigameaddon.load_info_file()
-    assert kodigameaddon.info['libretro_info']['a'] == '1'
-    assert isfilemock.mock_calls
-
-
-def test_kodigameaddon_loadinfofilenofile(kodigameaddon, mocker):
-    """ Test failure loading info files from libretro-super """
-    isfilemock = mocker.patch('os.path.isfile', return_value=False)
-    kodigameaddon.load_info_file()
-    assert not kodigameaddon.info['libretro_info']
-    assert isfilemock.mock_calls
+    libretrosupermock.return_value.parse_info_file \
+        .assert_called_once_with('mygame_libretro')
 
 
 def test_kodigameaddon_loadassets(kodigameaddon, mocker):
@@ -164,12 +190,18 @@ def test_kodigameaddon_gitrevision(kodigameaddon, gitrepomock):
     gitrepomock.is_git_repo.return_value = True
     gitrepomock.return_value.get_hexsha.return_value = '1234567'
     kodigameaddon.load_git_revision()
+    gitrepomock.assert_has_calls([
+        mock.call(GitHubRepo(kodigameaddon.game_name, '', ''), mock.ANY)
+    ])
     assert kodigameaddon.info['libretro_repo']['hexsha'] == '1234567'
 
 
 def test_kodigameaddon_gitrevisionnorepo(kodigameaddon, gitrepomock):
     """ Test loading git revision when not a Git repository """
     gitrepomock.is_git_repo.return_value = False
+    kodigameaddon.load_git_revision()
+    assert mock.call(GitHubRepo(kodigameaddon.game_name, '', ''), mock.ANY) \
+        not in gitrepomock.mock_calls
     assert not kodigameaddon.info['libretro_repo']['hexsha']
 
 

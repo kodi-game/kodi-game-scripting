@@ -17,25 +17,22 @@
 """ Process Kodi Game addons and unify project files """
 
 import argparse
-import collections
 import datetime
 import os
 import multiprocessing
 import re
-import shlex
 import shutil
 import subprocess
 import sys
 
-from . import config
-from . import libretro_ctypes
 from . import utils
-from . import template_processor
-from . import versions
-
+from .config import ADDONS, GITHUB_ADDON_PREFIX, GITHUB_ORGANIZATION
 from .git_access import GitHubOrg, GitHubRepo, GitRepo
+from .libretro_ctypes import LibretroWrapper
+from .template_processor import TemplateProcessor
+from .libretro_super import LibretroSuper
+from .versions import AddonVersion
 
-ADDONS = config.ADDONS
 COMMIT_MSG = "Updated by kodi-game-scripting\n\n" \
              "https://github.com/fetzerch/kodi-game-scripting/"
 
@@ -68,51 +65,78 @@ def main():
                         help="Clean existing addon descriptions")
 
     args = parser.parse_args()
-
     args.working_directory = os.path.abspath(args.working_directory)
-    util = KodiGameAddons(args)
-    status = util.process()
-    util.summary()
+
+    LibretroSuper(args.working_directory).fetch_and_reset()
+    addondescriptions = KodiAddonDescriptions(args.working_directory)
+    if args.clean_description:
+        addondescriptions.clean()
+    gameaddons = KodiGameAddons(args)
+    status = gameaddons.process()
+    gameaddons.summary()
+    if args.push_description:
+        addondescriptions.push(args.push_branch)
     if not status:
         sys.exit(1)
+
+
+class KodiAddonDescriptions:
+    """ Represents addon description files for compiling addons """
+    DESCRIPTION_PATH = os.path.join('cmake', 'addons', 'addons')
+
+    def __init__(self, kodi_directory):
+        self._kodi_directory = kodi_directory
+
+    def clean(self):
+        """ Clean addon descriptions """
+        desc_dir = os.path.join(self._kodi_directory, self.DESCRIPTION_PATH)
+        for path in next(os.walk(desc_dir))[1]:
+            if path.startswith(GITHUB_ADDON_PREFIX):
+                shutil.rmtree(os.path.join(desc_dir, path))
+
+    def push(self, branch):
+        """ Push addon descriptions to kodi repo """
+        # Don't specify urls as we use the existing remote origin
+        print("Commiting descriptions to GitHub repo")
+        path, name = os.path.split(self._kodi_directory)
+        repo = GitRepo(GitHubRepo(name, '', ''), path)
+        repo.commit(COMMIT_MSG, directory=self.DESCRIPTION_PATH, force=True)
+        print("Pushing descriptions to GitHub repo")
+        repo.push(branch)
 
 
 class KodiGameAddons:
     """ Process Kodi Game addons and unify project files """
     def __init__(self, args):
         """ Initialize instance """
+        # The following values are read from args:
+        # filter, git, working_directory, push_branch, git_noclean, compile,
+        # kodi_directory
+
         self._args = args
         self._prepare_environment()
 
     def _prepare_environment(self):
         """ Prepare and check the environment (directories and config) """
         # Check if given filter matches with config.py
-        config.ADDONS = {k: v for k, v in config.ADDONS.items()
-                         if re.search(self._args.filter, k)}
-        if not config.ADDONS:
+        addons = {k: v for k, v in ADDONS.items()
+                  if re.search(self._args.filter, k)}
+        if not addons:
             raise ValueError("Filter doesn't match any items in config.py")
 
         # Check GitHub repos
         repos = {}
         if self._args.git:
             regex = (self._args.filter if self._args.filter
-                     else config.GITHUB_ADDON_PREFIX)
+                     else GITHUB_ADDON_PREFIX)
             print("Querying GitHub repos matching '{}'".format(regex))
-            self._github = GitHubOrg(config.GITHUB_ORGANIZATION, auth=True)
+            self._github = GitHubOrg(GITHUB_ORGANIZATION, auth=True)
             repos = self._github.get_repos(regex)
 
-            print("Fetching libretro-super repo")
-            self._repo_libretrosuper = GitRepo(
-                GitHubRepo('libretro-super',
-                           'https://github.com/libretro/libretro-super.git',
-                           ''),
-                self._args.working_directory)
-            self._repo_libretrosuper.fetch_and_reset()
-
         # Create Addon objects
-        self._addons = collections.OrderedDict()
-        for game_name in sorted(config.ADDONS):
-            addon_name = '{}{}'.format(config.GITHUB_ADDON_PREFIX, game_name)
+        self._addons = []
+        for game_name in sorted(addons):
+            addon_name = '{}{}'.format(GITHUB_ADDON_PREFIX, game_name)
             repo = repos.get(addon_name, None)
             if not repo:
                 if self._args.git and self._args.push_branch:
@@ -120,33 +144,25 @@ class KodiGameAddons:
                     repo = self._github.create_repo(addon_name)
                 else:
                     repo = GitHubRepo(addon_name, '', '')
-            self._addons[game_name] = KodiGameAddon(
+            self._addons.append(KodiGameAddon(
                 addon_name, game_name, repo, self._args.working_directory,
-                self._args.push_branch)
+                self._args.push_branch))
 
         print("Processing the following addons: {}".format(
-            ', '.join(self._addons)))
+            ', '.join([addon.game_name for addon in self._addons])))
 
         # Clone/Fetch repos
         if self._args.git:
-            for addon in self._addons.values():
+            for addon in self._addons:
                 addon.fetch_and_reset(
                     reset=False if self._args.git_noclean else True)
-
-        # Clean addon descriptions
-        if self._args.clean_description:
-            desc_dir = os.path.join(self._args.kodi_directory,
-                                    'cmake', 'addons', 'addons')
-            for path in next(os.walk(desc_dir))[1]:
-                if path.startswith(config.GITHUB_ADDON_PREFIX):
-                    shutil.rmtree(os.path.join(desc_dir, path))
 
     def process(self):
         """ Process list of addons from config """
 
         # First iteration: Makefiles
         print("First iteration: Generate Makefiles")
-        for addon in self._addons.values():
+        for addon in self._addons:
             print(" Processing addon: {}".format(addon.name))
             addon.process_addon_files()
             print(" Processing addon description: {}".format(addon.name))
@@ -161,7 +177,7 @@ class KodiGameAddons:
 
         # Second iteration: Metadata files
         print("Second iteration: Generate Metadata files")
-        for addon in self._addons.values():
+        for addon in self._addons:
             print(" Processing addon: {}".format(addon.name))
             addon.load_info_file()
             addon.load_assets()
@@ -172,12 +188,12 @@ class KodiGameAddons:
 
         # Create commit
         if self._args.git:
-            for addon in self._addons.values():
+            for addon in self._addons:
                 addon.commit(squash=self._args.git_noclean)
 
             # Third iteration: Update package version if there are changes
             print("Third iteration: Update version")
-            for addon in self._addons.values():
+            for addon in self._addons:
                 if addon.info['git']['diff']:
                     print(" Processing addon: {}".format(addon.name))
                     addon.bump_version()
@@ -188,40 +204,26 @@ class KodiGameAddons:
             # Push in reversed order so that the repository list on GitHub
             # stays sorted alphabetically
             if self._args.push_branch:
-                for addon in reversed(self._addons.values()):
+                for addon in reversed(self._addons):
                     addon.push()
-
-                # Push addon descriptions to kodi repo
-                # Don't specify urls as we use the existing remote origin
-                if self._args.push_description:
-                    print("Commiting descriptions to GitHub repo")
-                    path, name = os.path.split(self._args.kodi_directory)
-                    repo = GitRepo(GitHubRepo(name, '', ''), path)
-                    repo.commit(COMMIT_MSG, directory=os.path.join(
-                        'cmake', 'addons', 'addons'), force=True)
-                    print("Pushing descriptions to GitHub repo")
-                    repo.push(self._args.push_branch)
         return True
 
     def summary(self):
         """ Print summary """
         print("Generating summary")
         template_vars = {'addons': []}
-        for addon in self._addons.values():
+        for addon in self._addons:
             template_vars['addons'].append(addon.info)
-        template_processor.TemplateProcessor.process(
-            'summary', self._args.working_directory, template_vars)
+        TemplateProcessor.process('summary', self._args.working_directory,
+                                  template_vars)
 
     def _compile_addons(self):
         print("Compiling addons")
         build_dir = os.path.join(self._args.working_directory, 'build')
         install_dir = os.path.join(self._args.working_directory, 'install')
-        cmake_dir = os.path.join(self._args.kodi_directory,
-                                 'cmake', 'addons')
-
+        cmake_dir = os.path.join(self._args.kodi_directory, 'cmake', 'addons')
         utils.ensure_directory_exists(build_dir, clean=True)
-        addons = '|'.join(['{}{}$'.format(config.GITHUB_ADDON_PREFIX, a)
-                           for a in config.ADDONS])
+        addons = '|'.join(['{}$'.format(addon.name) for addon in self._addons])
         try:
             subprocess.run([os.environ.get('CMAKE', 'cmake'),
                             '-DADDONS_TO_BUILD={}'.format(addons),
@@ -252,7 +254,7 @@ class KodiGameAddon():
         self._working_directory = working_directory
         self._path = os.path.join(working_directory, addon_name)
 
-        addon_config = config.ADDONS[game_name]
+        addon_config = ADDONS[game_name]
         self.info = {
             'game': {
                 'name': self.game_name,
@@ -280,7 +282,7 @@ class KodiGameAddon():
             },
             'library': {
                 'file': os.path.join('install', self.name, '{}.{}'.format(
-                    self.name, libretro_ctypes.LibretroWrapper.EXT)),
+                    self.name, LibretroWrapper.EXT)),
                 'loaded': False,
                 'soname': '{}_libretro'.format(addon_config[4].get(
                     'soname', game_name)),
@@ -292,15 +294,13 @@ class KodiGameAddon():
 
     def process_description_files(self, kodi_directory):
         """ Generate addon description files """
-        kodi_addon_dir = os.path.join(kodi_directory, 'cmake',
-                                      'addons', 'addons', self.name)
-        template_processor.TemplateProcessor.process(
-            'description', kodi_addon_dir, self.info)
+        kodi_addon_dir = os.path.join(
+            kodi_directory, KodiAddonDescriptions.DESCRIPTION_PATH, self.name)
+        TemplateProcessor.process('description', kodi_addon_dir, self.info)
 
     def process_addon_files(self):
         """ Generate addon files """
-        template_processor.TemplateProcessor.process(
-            'addon', self._path, self.info)
+        TemplateProcessor.process('addon', self._path, self.info)
 
     def load_library_file(self):
         """ Load the compiled library file """
@@ -308,7 +308,7 @@ class KodiGameAddon():
         library_path = os.path.join(self._working_directory,
                                     self.info['library']['file'])
         try:
-            library = libretro_ctypes.LibretroWrapper(library_path)
+            library = LibretroWrapper(library_path)
             self.info['library']['loaded'] = True
             self.info['system_info'] = library.system_info
             self.info['settings'] = sorted(library.variables,
@@ -321,16 +321,8 @@ class KodiGameAddon():
 
     def load_info_file(self):
         """ Load info file from libretro-super repository """
-        path = os.path.join(self._working_directory, 'libretro-super',
-                            'dist', 'info',
-                            '{}.info'.format(self.info['library']['soname']))
-        if os.path.isfile(path):
-            with open(path, 'r') as info_ctx:
-                for line in info_ctx.readlines():
-                    if '=' in line:
-                        name, var = line.partition('=')[::2]
-                        self.info['libretro_info'][name.strip()] = \
-                            shlex.split(var)[0]
+        self.info['libretro_info'] = LibretroSuper(self._working_directory) \
+            .parse_info_file(self.info['library']['soname'])
 
     def load_assets(self):
         """ Process assets """
@@ -360,7 +352,7 @@ class KodiGameAddon():
 
     def load_game_version(self):
         """ Load game version from compiled library and git """
-        self.info['game']['version'] = versions.AddonVersion.get(
+        self.info['game']['version'] = AddonVersion.get(
             self.info['system_info']['version'])
         git_tag = self._repo.describe()
         match = re.search(r'^(?:[0-9]+\.){3}([0-9]+)', git_tag)

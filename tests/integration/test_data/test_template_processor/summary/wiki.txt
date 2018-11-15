@@ -1,0 +1,6 @@
+<!-- For http://kodi.wiki/index.php?title=Game_add-ons -->
+
+{| class="prettytable sortable plainlinks"
+! Libretro core !! Platform emulated !! Version !! License * !! Supports VFS !!  Supports Rewind !! Requires GL !! Status
+|-
+|} <!--Keep this at the bottom of the table -->

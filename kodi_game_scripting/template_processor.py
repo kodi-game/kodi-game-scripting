@@ -31,6 +31,19 @@ TEMPLATE_DIR = os.path.join(
     'templates')
 
 
+def get_list(value):
+    """ Filter: Returns a list (existing list or new single elemented list) """
+    return value if isinstance(value, list) else [value]
+
+
+def regex_replace(string, find, replace, *, multiline=False):
+    """ Filter: Replace regex in string """
+    flags = 0
+    if multiline:
+        flags += re.MULTILINE
+    return re.sub(find, replace, string, flags=flags)
+
+
 class TemplateProcessor:
     """ Process Jinja2 templates """
 
@@ -51,17 +64,7 @@ class TemplateProcessor:
             trim_blocks=True, lstrip_blocks=True, keep_trailing_newline=True,
             undefined=_TreeUndefined)
 
-        def regex_replace(string, find, replace, multiline=False):
-            """ Replaces regex in string """
-            flags = 0
-            if multiline:
-                flags += re.MULTILINE
-            return re.sub(find, replace, string, flags=flags)
         template_env.filters["regex_replace"] = regex_replace
-
-        def get_list(value):
-            """ Returns a list (existing list or new single elemented list) """
-            return value if isinstance(value, list) else [value]
         template_env.filters["get_list"] = get_list
 
         # Loop over all templates

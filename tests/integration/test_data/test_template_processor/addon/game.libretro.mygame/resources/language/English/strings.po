@@ -1,0 +1,30 @@
+# game.libretro.mygame language file
+# Addon Name: game.libretro.mygame
+# Addon id: game.libretro.mygame
+# Addon Provider: libretro
+msgid ""
+msgstr ""
+"Project-Id-Version: game.libretro.mygame\n"
+"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Kodi Translation Team\n"
+"Language-Team: English (http://www.transifex.com/projects/p/xbmc-addons/language/en/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "#30000"
+msgid "Settings"
+msgstr ""
+
+msgctxt "#30001"
+msgid "mysetting1"
+msgstr ""
+
+msgctxt "#30002"
+msgid "mysetting2"
+msgstr ""
+

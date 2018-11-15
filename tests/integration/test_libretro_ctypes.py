@@ -26,33 +26,31 @@ from kodi_game_scripting.libretro_ctypes import LibretroWrapper
 pytestmark = [pytest.mark.integration]
 
 
-def compile_testlibrary():
+# pylint: disable=redefined-outer-name
+
+REFERENCE_DIR = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)),
+    'test_data', os.path.splitext(os.path.basename(__file__))[0])
+
+
+def compile_testlibrary(build_dir):
     """ Compile libretro_test """
-    test_dir = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)),
-        'test_data', os.path.splitext(os.path.basename(__file__))[0])
-    test_file = os.path.join(test_dir, 'libretro_test.{}'.format(
+    test_file = os.path.join(build_dir, 'libretro_test.{}'.format(
         LibretroWrapper.EXT))
 
-    subprocess.run([os.environ.get('CMAKE', 'cmake'), test_dir], cwd=test_dir)
+    subprocess.run([os.environ.get('CMAKE', 'cmake'), REFERENCE_DIR],
+                   cwd=build_dir)
     subprocess.run([os.environ.get('CMAKE', 'cmake'), '--build', '.'],
-                   cwd=test_dir)
+                   cwd=build_dir)
     assert os.path.isfile(test_file)
     return test_file
 
 
-def test_load_library():
+def test_load_library(tmpdir):
     """ Test LibretroWrapper """
-    lib = LibretroWrapper(compile_testlibrary())
+    lib = LibretroWrapper(compile_testlibrary(str(tmpdir)))
     print(lib.system_info)
     assert lib.system_info.name == 'libraryname'
     assert lib.system_info['name'] == 'libraryname'
     print(lib.variables)
     assert len(lib.variables) == 2
-
-    lib2 = LibretroWrapper(compile_testlibrary())
-    print(lib2.system_info)
-    assert lib2.system_info.name == 'libraryname'
-    assert lib.system_info['name'] == 'libraryname'
-    print(lib2.variables)
-    assert len(lib2.variables) == 2

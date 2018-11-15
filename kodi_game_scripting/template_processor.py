@@ -74,10 +74,6 @@ class TemplateProcessor:
                 outfile = infile
             outfile_name, extension = os.path.splitext(outfile)
 
-            # Create directories if necessary
-            utils.ensure_directory_exists(
-                os.path.dirname(os.path.join(destination, outfile)))
-
             # Files that end with .j2 are templates
             if extension == '.j2':
                 print("  Generating {}".format(outfile_name))
@@ -126,11 +122,15 @@ class TemplateProcessor:
                 template = template_env.get_template(infile)
                 content = template.render(template_vars)
                 if content:
+                    utils.ensure_directory_exists(
+                        os.path.dirname(os.path.join(destination, outfile)))
                     with open(outfile_path, 'w') as outfile_ctx:
                         outfile_ctx.write(content)
 
             # Other files are just copied
             else:
                 print("     Copying {}{}".format(outfile_name, extension))
+                utils.ensure_directory_exists(
+                    os.path.dirname(os.path.join(destination, outfile)))
                 shutil.copyfile(os.path.join(template_dir, infile),
                                 os.path.join(destination, outfile))

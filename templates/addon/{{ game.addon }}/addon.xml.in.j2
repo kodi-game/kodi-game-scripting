@@ -27,7 +27,7 @@
 		{% endif %}
 		<summary lang="en_GB">{{ summary | e }}</summary>
 		{% if system_info.extensions %}
-			{% set extensions = 'Supported files: ' + system_info.extensions | surround('.', append=False) | join(', ') %}
+			{% set extensions = 'Supported files: ' + system_info.extensions | map('regex_replace', '(.*)', '.\\1') | join(', ') %}
 		{% endif %}
 		{% set description = xml.addon.extension[1].description.content | default('') %}
 		{% if ("Supported files: " in xml.addon.extension[1].description.content) %}

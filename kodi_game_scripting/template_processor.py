@@ -51,13 +51,6 @@ class TemplateProcessor:
             trim_blocks=True, lstrip_blocks=True, keep_trailing_newline=True,
             undefined=_TreeUndefined)
 
-        def surround(items, string, prepend=True, append=True):
-            """ Surrounds each element in a list by the given string """
-            return ['{}{}{}'.format(string if prepend is True else '', element,
-                                    string if append is True else '')
-                    for element in items]
-        template_env.filters["surround"] = surround
-
         def regex_replace(string, find, replace, multiline=False):
             """ Replaces regex in string """
             flags = 0

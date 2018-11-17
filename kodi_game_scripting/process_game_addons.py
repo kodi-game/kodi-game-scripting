@@ -59,6 +59,8 @@ def main():
                         help="Filter games (e.g. nes)")
     parser.add_argument('--push-branch', type=str,
                         help="To which branch to push to GitHub")
+    parser.add_argument('--push-limit', type=int,
+                        help="Limit repos that are pushed to GitHub")
     parser.add_argument('--push-description', action='store_true',
                         help="Push addon descriptions")
     parser.add_argument('--clean-description', action='store_true',
@@ -110,8 +112,8 @@ class KodiGameAddons:
     def __init__(self, args):
         """ Initialize instance """
         # The following values are read from args:
-        # filter, git, working_directory, push_branch, git_noclean, compile,
-        # kodi_directory
+        # filter, git, working_directory, push_branch, push_limit, git_noclean,
+        # compile, kodi_directory
 
         self._args = args
         self._prepare_environment()
@@ -204,8 +206,14 @@ class KodiGameAddons:
             # Push in reversed order so that the repository list on GitHub
             # stays sorted alphabetically
             if self._args.push_branch:
+                count = 0
                 for addon in reversed(self._addons):
-                    addon.push()
+                    if (self._args.push_limit and
+                            count >= self._args.push_limit):
+                        break
+                    if addon.info['git']['diff']:
+                        addon.push()
+                        count += 1
         return True
 
     def summary(self):

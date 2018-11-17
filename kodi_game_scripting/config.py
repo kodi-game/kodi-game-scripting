@@ -94,6 +94,7 @@ ADDONS = {
     'snes9x2010':                ('snes9x2010',                 'Makefile',          '.',                 'jni', {}),
     'stella':                    ('stella-libretro',            'Makefile',          '.',                 'jni', {}),
     'tgbdual':                   ('tgbdual-libretro',           'Makefile',          '.',                 'jni', {}),
+    'thepowdertoy':              ('ThePowderToy',               '',                  '',                  '', {'cmake': True, 'binary_dir': 'src'}),
     'tyrquake':                  ('tyrquake',                   'Makefile',          '.',                 'jni', {}),
     'uae':                       ('libretro-uae',               'Makefile',          '.',                 'jni', {'soname': 'puae'}),
     #'uae4arm':                   ('uae4arm-libretro',           'Makefile',          '.',                 'jni', {}),  # Fails to build on non arm system

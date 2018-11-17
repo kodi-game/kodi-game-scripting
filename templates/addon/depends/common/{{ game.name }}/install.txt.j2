@@ -1,0 +1,3 @@
+{% if makefile.cmake %}
+{{ config.binary_dir | default(makefile.dir) }}/{{ library.soname }}.so lib/libretro
+{% endif %}

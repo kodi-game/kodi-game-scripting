@@ -292,6 +292,7 @@ class KodiGameAddon():
                 'file': addon_config[1],
                 'dir': addon_config[2],
                 'jni': addon_config[3],
+                'cmake': addon_config[4].get('cmake', False),
             },
             'library': {
                 'file': os.path.join('install', self.name, '{}.{}'.format(

@@ -47,7 +47,7 @@ ADDONS = {
     'cap32':                     ('libretro-cap32',             'Makefile',          '.'  ,               'jni', {}),
     'desmume':                   ('desmume',                    'Makefile.libretro', 'desmume/src/frontend/libretro', 'desmume/src/frontend/libretro/jni', {}),
     'chailove':                  ('libretro-chailove',          'Makefile',          '.',                 'jni', {'git_tag': True}),
-    #'dolphin':                   ('dolphin',                    'Makefile',          'Source/Core/DolphinLibretro', 'Source/Core/DolphinLibretro/jni', {'binary_dir': 'Source/Core/DolphinLibretro'}),  # Longrunning, Switched to CMake
+    #'dolphin':                   ('dolphin',                    '',                  '',                  '', {'cmake': True }),  # Uses git submodules
     'dinothawr':                 ('Dinothawr',                  'Makefile',          '.',                 'jni', {}),
     'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.',                 'jni', {}),
     'fbalpha':                   ('fbalpha',                    'makefile.libretro', '.',                 'jni', {}),
@@ -94,6 +94,7 @@ ADDONS = {
     'snes9x2010':                ('snes9x2010',                 'Makefile',          '.',                 'jni', {}),
     'stella':                    ('stella-libretro',            'Makefile',          '.',                 'jni', {}),
     'tgbdual':                   ('tgbdual-libretro',           'Makefile',          '.',                 'jni', {}),
+    'thepowdertoy':              ('ThePowderToy',               '',                  '',                  '', {'cmake': True, 'binary_dir': 'src'}),
     'tyrquake':                  ('tyrquake',                   'Makefile',          '.',                 'jni', {}),
     'uae':                       ('libretro-uae',               'Makefile',          '.',                 'jni', {'soname': 'puae'}),
     #'uae4arm':                   ('uae4arm-libretro',           'Makefile',          '.',                 'jni', {}),  # Fails to build on non arm system

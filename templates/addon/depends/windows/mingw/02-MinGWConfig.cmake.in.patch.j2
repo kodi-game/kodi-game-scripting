@@ -1,4 +1,6 @@
+{% if not makefile.cmake %}
 --- /dev/null
 +++ b/MinGWConfig.cmake.in
 @@ -0,0 +1,1 @@
 +set(MINGW_MAKE @CMAKE_CURRENT_SOURCE_DIR@/@MINGW_PATH@/bin/make.bat)
+{% endif %}

@@ -20,6 +20,7 @@ import collections
 import functools
 import os
 import re
+import time
 
 from pkg_resources import parse_version
 
@@ -178,12 +179,14 @@ class GitRepo:
             return self._gitrepo.git.describe('--tags', '--always')
         return ''
 
-    def push(self, branch, tags=False):
+    def push(self, branch, tags=False, sleep=0):
         """ Push commit to remote """
         if self._gitrepo.is_dirty():
             raise ValueError("Skipping, repository is dirty")
         self._gitrepo.remotes.origin.push(
             'HEAD:{}'.format(branch),
             force=(branch != 'master'))
+        time.sleep(sleep)
         if tags:
             self._gitrepo.git.push('--tags')
+            time.sleep(sleep)

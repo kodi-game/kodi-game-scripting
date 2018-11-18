@@ -252,7 +252,8 @@ def test_kodigameaddon_tag(kodigameaddon, gitrepomock):
 def test_kodigameaddon_push(kodigameaddon, gitrepomock):
     """ Test pushing changes (master branch) """
     kodigameaddon.push()
-    gitrepomock.return_value.push.assert_called_once_with('master', tags=True)
+    gitrepomock.return_value.push.assert_called_once_with(
+        'master', tags=True, sleep=mock.ANY)
 
 
 def test_kodigameaddon_pushbranch(kodigameaddon, gitrepomock):
@@ -260,4 +261,4 @@ def test_kodigameaddon_pushbranch(kodigameaddon, gitrepomock):
     kodigameaddon.info['game']['branch'] = 'testbranch'
     kodigameaddon.push()
     gitrepomock.return_value.push.assert_called_once_with(
-        'testbranch', tags=False)
+        'testbranch', tags=False, sleep=mock.ANY)

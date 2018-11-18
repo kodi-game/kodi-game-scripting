@@ -85,7 +85,7 @@ ADDONS = {
     'prboom':                    ('libretro-prboom',            'Makefile',          '.',                 'jni', {}),
     'prosystem':                 ('prosystem-libretro',         'Makefile',          '.',                 'jni', {}),
     'quicknes':                  ('QuickNES_Core',              'Makefile',          '.',                 'jni', {}),
-    #'reicast':                   ('reicast-emulator',           'Makefile',          '.',                 'jni', {}),  # Fails to compile
+    'reicast':                   ('reicast-emulator',           'Makefile',          '.',                 'jni', {}),
     'sameboy':                   ('SameBoy',                    'Makefile',          'libretro',          'libretro/jni', {'branch': 'buildbot'}),
     #'rustation':                 ('rustation-libretro',         'Makefile',          '.',                 'jni', {}),  # Checkout fails
     'scummvm':                   ('scummvm',                    'Makefile',          'backends/platform/libretro/build', None, {'binary_dir': 'backends/platform/libretro/build'}),

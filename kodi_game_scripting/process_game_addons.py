@@ -18,12 +18,14 @@
 
 import argparse
 import datetime
+import json
 import os
 import multiprocessing
 import re
 import shutil
 import subprocess
 import sys
+import urllib.request
 
 from . import utils
 from .config import ADDONS, GITHUB_ADDON_PREFIX, GITHUB_ORGANIZATION
@@ -166,6 +168,7 @@ class KodiGameAddons:
         print("First iteration: Generate Makefiles")
         for addon in self._addons:
             print(" Processing addon: {}".format(addon.name))
+            addon.load_git_tag()
             addon.process_addon_files()
             print(" Processing addon description: {}".format(addon.name))
             addon.process_description_files(self._args.kodi_directory)
@@ -281,6 +284,7 @@ class KodiGameAddon():
             'libretro_repo': {
                 'name': addon_config[0],
                 'branch': addon_config[4].get('branch', 'master'),
+                'git_tag': addon_config[4].get('git_tag', False),
                 'hexsha': '',
             },
             'makefile': {
@@ -349,6 +353,11 @@ class KodiGameAddon():
                     os.path.join('resources', os.path.basename(asset)))
             else:
                 print("Unrecognized image detected: {}".format(asset))
+
+    def load_git_tag(self):
+        if self.info['libretro_repo']['git_tag']:
+            with urllib.request.urlopen('https://api.github.com/repos/libretro/{}/tags'.format(self.info['libretro_repo']['name'])) as response:
+                self.info['libretro_repo']['branch'] = json.loads(response.read())[0]['name']
 
     def load_git_revision(self):
         """ Get the revision of the libretro core from the Git checkout """

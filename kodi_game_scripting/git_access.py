@@ -72,6 +72,10 @@ class GitHubOrg:
         }
         return repos
 
+    def get_repo(self, repo):
+        """ Get the specified GitHub repo """
+        return self._org.get_repo(repo)
+
     def create_repo(self, name):
         """ Create a new repo on GitHub """
         repo = self._org.create_repo(name, auto_init=True)

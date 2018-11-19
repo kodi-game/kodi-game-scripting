@@ -1,4 +1,4 @@
-{% if libretro_repo.hexsha %}
+{% if not libretro_repo.git_tag and libretro_repo.hexsha %}
 {{ game.name }} https://github.com/libretro/{{ libretro_repo.name | default(game.name) }}/archive/{{ libretro_repo.hexsha }}.zip
 {% else %}
 {{ game.name }} https://github.com/libretro/{{ libretro_repo.name | default(game.name) }} {{ libretro_repo.branch }}

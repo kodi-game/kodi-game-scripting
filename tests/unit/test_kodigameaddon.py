@@ -46,6 +46,13 @@ def configmock(mocker):
 
 
 @pytest.fixture(autouse=True)
+def githuborgmock(mocker):
+    """ Setup mocked GitHubOrg """
+    return mocker.patch('kodi_game_scripting.process_game_addons.GitHubOrg',
+                        autospec=True)
+
+
+@pytest.fixture(autouse=True)
 def gitrepomock(mocker):
     """ Setup mocked GitRepo """
     return mocker.patch('kodi_game_scripting.process_game_addons.GitRepo',
@@ -183,6 +190,22 @@ def test_kodigameaddon_loadassets(kodigameaddon, mocker):
             'resources/screenshot2.jpg',
         ],
     }
+
+
+def test_kodigameaddon_gittag(kodigameaddon, githuborgmock):
+    """ Test loaing git tag """
+    tagmock = mock.MagicMock()
+    tagnamemock = mock.PropertyMock(return_value='mytag')
+    type(tagmock).name = tagnamemock
+    githuborgmock.return_value.get_repo.return_value.get_tags.return_value \
+        .__getitem__.return_value = tagmock
+    kodigameaddon.info['libretro_repo']['git_tag'] = False
+    kodigameaddon.load_git_tag()
+    assert kodigameaddon.info['libretro_repo']['branch'] == 'master'
+    kodigameaddon.info['libretro_repo']['git_tag'] = True
+    kodigameaddon.load_git_tag()
+    tagnamemock.assert_called_once_with()
+    assert kodigameaddon.info['libretro_repo']['branch'] == 'mytag'
 
 
 def test_kodigameaddon_gitrevision(kodigameaddon, gitrepomock):

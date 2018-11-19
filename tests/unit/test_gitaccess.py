@@ -108,6 +108,15 @@ def test_githuborg_getrepos(githuborg_fixture):
     assert repos == {'repo1': githubrepo1}
 
 
+def test_githuborg_getrepo(githuborg_fixture):
+    """ Test getting GitHub repo """
+    githuborg_mock, _, _ = githuborg_fixture
+    GitHubOrg('org').get_repo('repo')
+    print(githuborg_mock.mock_calls)
+    githuborg_mock.return_value.get_organization.return_value \
+        .get_repo.assert_called_once_with('repo')
+
+
 def test_githuborg_createrepo(githuborg_fixture):
     """ Test creating a repo on GitHub """
     githuborg_mock, _, _ = githuborg_fixture

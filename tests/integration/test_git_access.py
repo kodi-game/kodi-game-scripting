@@ -36,6 +36,13 @@ def test_githuborg_getrepos():
     assert repos
 
 
+def test_githuborg_getrepo():
+    """ Test getting a specific repo """
+    github = GitHubOrg(config.GITHUB_ORGANIZATION)
+    repo = github.get_repo('game.libretro')
+    assert repo
+
+
 def create_file(path, content=''):
     """ Create a file """
     utils.ensure_directory_exists(os.path.dirname(path))

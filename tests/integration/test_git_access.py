@@ -29,18 +29,25 @@ pytestmark = [pytest.mark.integration]
 
 # pylint: disable=redefined-outer-name
 
+
 def test_githuborg_getrepos():
     """ Tests getting a repo list """
-    github = GitHubOrg(config.GITHUB_ORGANIZATION)
-    repos = github.get_repos(config.GITHUB_ADDON_PREFIX)
-    assert repos
+    if 'GITHUB_ACCESS_TOKEN' in os.environ:
+        github = GitHubOrg(config.GITHUB_ORGANIZATION)
+        repos = github.get_repos(config.GITHUB_ADDON_PREFIX)
+        assert repos
+    else:
+        pytest.skip("No GitHub API token in GITHUB_ACCESS_TOKEN env variable")
 
 
 def test_githuborg_getrepo():
     """ Test getting a specific repo """
-    github = GitHubOrg(config.GITHUB_ORGANIZATION)
-    repo = github.get_repo('game.libretro')
-    assert repo
+    if 'GITHUB_ACCESS_TOKEN' in os.environ:
+        github = GitHubOrg(config.GITHUB_ORGANIZATION)
+        repo = github.get_repo('game.libretro')
+        assert repo
+    else:
+        pytest.skip("No GitHub API token in GITHUB_ACCESS_TOKEN env variable")
 
 
 def create_file(path, content=''):

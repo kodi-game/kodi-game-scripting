@@ -43,12 +43,16 @@ class GitHubOrg:
         try:
             apitoken = os.environ.get('GITHUB_ACCESS_TOKEN', None)
             if apitoken:
+                print("Authenticating with GitHub API token")
                 self._github = github.Github(apitoken)
             else:
                 if auth:
+                    print("Authenticating with username/password")
                     cred = credentials.Credentials('github')
                     username, password = cred.load()
                 else:
+                    print("Connecting to GitHub without authentication "
+                          "(no username/password set)")
                     username, password = None, None
                 self._github = github.Github(username, password)
             rate = self._github.get_rate_limit().core

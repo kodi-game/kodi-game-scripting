@@ -373,7 +373,7 @@ class KodiGameAddon():
             self.info['system_info']['version'])
         git_tag = self._repo.describe()
         match = re.search(r'^(?:[0-9]+\.){3}([0-9]+)', git_tag)
-        pkg_version = match.group(1) if match else '-1'
+        pkg_version = match.group(1) if match else '0'
         self.info['game']['version'] = '{}.{}'.format(
             self.info['game']['version'], pkg_version)
 

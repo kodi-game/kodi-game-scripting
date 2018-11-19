@@ -4,7 +4,7 @@ project({{ game.addon }})
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
 
 find_package(Kodi REQUIRED)
-find_package(libretro-{{ game.name }} REQUIRED)
+find_library({{ game.name|upper }}_LIB NAMES {{ library.soname }}${CMAKE_SHARED_LIBRARY_SUFFIX} PATH_SUFFIXES libretro)
 
 set({{ game.name|upper }}_CUSTOM_BINARY {{ '${' }}{{ game.name|upper }}_LIB}
     ${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX})

@@ -129,6 +129,8 @@ class TemplateProcessor:
                         os.path.dirname(os.path.join(destination, outfile)))
                     with open(outfile_path, 'w') as outfile_ctx:
                         outfile_ctx.write(content)
+                else:
+                    print("    Skipping empty file")
 
             # Other files are just copied
             else:

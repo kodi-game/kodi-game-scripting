@@ -241,14 +241,14 @@ def test_kodigameaddon_loadgameversioninitial(kodigameaddon, gitrepomock):
     kodigameaddon.info['system_info']['version'] = '1.2.3'
     gitrepomock.return_value.describe.return_value = 'g1234567'
     kodigameaddon.load_game_version()
-    assert kodigameaddon.info['game']['version'] == '1.2.3.-1'
+    assert kodigameaddon.info['game']['version'] == '1.2.3.0'
 
 
 def test_kodigameaddon_bumpversion(kodigameaddon):
     """ Test bumping game version """
-    kodigameaddon.info['game']['version'] = '1.2.3.-1'
+    kodigameaddon.info['game']['version'] = '1.2.3.1'
     kodigameaddon.bump_version()
-    assert kodigameaddon.info['game']['version'] == '1.2.3.0'
+    assert kodigameaddon.info['game']['version'] == '1.2.3.2'
 
 
 def test_kodigameaddon_fetchreset(kodigameaddon, gitrepomock):

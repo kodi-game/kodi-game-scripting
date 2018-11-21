@@ -1,3 +1,4 @@
+{% if not config.nomingw %}
 cmake_minimum_required(VERSION 3.4)
 
 project(mingw)
@@ -34,3 +35,4 @@ configure_file(MinGWConfig.cmake.in MinGWConfig.cmake @ONLY)
 configure_file(make.bat.in ${CMAKE_CURRENT_SOURCE_DIR}/${MINGW_PATH}/bin/make.bat @ONLY)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/MinGWConfig.cmake DESTINATION ${CMAKE_INSTALL_PREFIX})
+{% endif %}

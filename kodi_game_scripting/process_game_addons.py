@@ -187,6 +187,7 @@ class KodiGameAddons:
             addon.load_library_file()
             addon.load_git_revision()
             addon.load_game_version()
+            addon.load_exclude_platforms()
             addon.process_addon_files()
 
         # Create commit
@@ -282,6 +283,8 @@ class KodiGameAddon():
             'libretro_repo': {
                 'name': addon_config[0],
                 'branch': addon_config[4].get('branch', 'master'),
+                'exclude_platforms': addon_config[4].get('exclude_platforms',
+                                                         []),
                 'git_tag': addon_config[4].get('git_tag', False),
                 'hexsha': '',
             },
@@ -376,6 +379,23 @@ class KodiGameAddon():
         pkg_version = match.group(1) if match else '0'
         self.info['game']['version'] = '{}.{}'.format(
             self.info['game']['version'], pkg_version)
+
+    def load_exclude_platforms(self):
+        """ Load excluded platforms """
+        if self.info['makefile']['jni']:
+            filename = os.path.join(self._working_directory, 'build', 'build',
+                                    self.game_name, 'src', self.game_name,
+                                    self.info['makefile']['jni'],
+                                    'Application.mk')
+            try:
+                with open(filename) as file:
+                    if re.search(r"APP_STL\s*:=\s*gnustl_static", file.read()):
+                        self.info['libretro_repo']['exclude_platforms'] \
+                            .append('android-armv7')
+                        self.info['libretro_repo']['exclude_platforms'] \
+                            .append('android-aarch64')
+            except FileNotFoundError:
+                pass
 
     def bump_version(self):
         """ Bump game version """

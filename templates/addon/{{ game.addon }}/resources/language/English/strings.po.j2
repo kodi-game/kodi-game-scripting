@@ -20,11 +20,10 @@ msgstr ""
 msgctxt "#30000"
 msgid "Settings"
 msgstr ""
-
 {% for setting in settings %}
+
 msgctxt "#{{ 30000 + loop.index }}"
 msgid "{{ setting.description }}"
 msgstr ""
-
 {% endfor %}
 {% endif %}

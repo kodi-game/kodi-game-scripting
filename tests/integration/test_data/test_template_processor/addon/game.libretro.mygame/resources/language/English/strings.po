@@ -27,4 +27,3 @@ msgstr ""
 msgctxt "#30002"
 msgid "mysetting2"
 msgstr ""
-

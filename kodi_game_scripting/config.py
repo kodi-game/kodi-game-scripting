@@ -60,7 +60,7 @@ ADDONS = {
     'genplus':                   ('Genesis-Plus-GX',            'Makefile.libretro', '.',                 'libretro/jni', {'soname': 'genesis_plus_gx'}),
     'gw':                        ('gw-libretro',                'Makefile',          '.',                 'jni', {}),
     'handy':                     ('libretro-handy',             'Makefile',          '.',                 'jni', {}),
-    'hatari':                    ('hatari',                     'Makefile.libretro', '.',                 'jni', {}),
+    #'hatari':                    ('hatari',                     'Makefile.libretro', '.',                 'jni', {}),  # Fails to compile
     'lutro':                     ('libretro-lutro',             'Makefile',          '.',                 'jni', {}),
     'mame2000':                  ('mame2000-libretro',          'Makefile',          '.',                 'jni', {}),
     'mame2003':                  ('mame2003-libretro',          'Makefile',          '.',                 'jni', {}),

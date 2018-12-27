@@ -156,8 +156,7 @@ class KodiGameAddons:
         # Clone/Fetch repos
         if self._args.git:
             for addon in self._addons:
-                addon.fetch_and_reset(
-                    reset=False if self._args.git_noclean else True)
+                addon.fetch_and_reset(reset=not self._args.git_noclean)
 
     def process(self):
         """ Process list of addons from config """

@@ -382,6 +382,10 @@ class KodiGameAddon():
 
     def load_exclude_platforms(self):
         """ Load excluded platforms """
+        bad = (r"APP_STL\s*:=\s*"
+               r"(gnustl_static|gnustl_shared|stlport_static|stlport_shared)"
+               r"|"
+               r"NDK_TOOLCHAIN_VERSION\s*:=\s*4\.9")
         if self.info['makefile']['jni']:
             filename = os.path.join(self._working_directory, 'build', 'build',
                                     self.game_name, 'src', self.game_name,
@@ -389,7 +393,7 @@ class KodiGameAddon():
                                     'Application.mk')
             try:
                 with open(filename) as file:
-                    if re.search(r"APP_STL\s*:=\s*gnustl_static", file.read()):
+                    if re.search(bad, file.read()):
                         self.info['libretro_repo']['exclude_platforms'] \
                             .append('android-armv7')
                         self.info['libretro_repo']['exclude_platforms'] \

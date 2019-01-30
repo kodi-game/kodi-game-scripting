@@ -1,5 +1,5 @@
 {% if not libretro_repo.git_tag and libretro_repo.hexsha %}
-{{ game.name }} https://github.com/libretro/{{ libretro_repo.name | default(game.name) }}/archive/{{ libretro_repo.hexsha }}.zip
+{{ game.name }} https://github.com/{{ libretro_repo.org | default('libretro') }}/{{ libretro_repo.name | default(game.name) }}/archive/{{ libretro_repo.hexsha }}.zip
 {% else %}
-{{ game.name }} https://github.com/libretro/{{ libretro_repo.name | default(game.name) }} {{ libretro_repo.branch }}
+{{ game.name }} https://github.com/{{ libretro_repo.org | default('libretro') }}/{{ libretro_repo.name | default(game.name) }} {{ libretro_repo.branch }}
 {% endif %}

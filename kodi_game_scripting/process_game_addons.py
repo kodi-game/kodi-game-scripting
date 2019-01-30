@@ -280,7 +280,8 @@ class KodiGameAddon():
             'settings': [],
             'libretro_info': {},
             'libretro_repo': {
-                'name': addon_config[0],
+                'org': os.path.dirname(addon_config[0]) or 'libretro',
+                'name': os.path.basename(addon_config[0]),
                 'branch': addon_config[4].get('branch', 'master'),
                 'exclude_platforms': addon_config[4].get('exclude_platforms',
                                                          []),
@@ -358,8 +359,9 @@ class KodiGameAddon():
     def load_git_tag(self):
         """ Get the latest git tag from the libretro repository """
         if self.info['libretro_repo']['git_tag']:
-            repo = GitHubOrg('libretro', auth=True).get_repo(
-                self.info['libretro_repo']['name'])
+            repo = GitHubOrg(
+                self.info['libretro_repo']['org'], auth=True).get_repo(
+                    self.info['libretro_repo']['name'])
             self.info['libretro_repo']['branch'] = repo.get_tags()[0].name
 
     def load_git_revision(self):

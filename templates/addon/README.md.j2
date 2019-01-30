@@ -3,4 +3,4 @@
 This is a [Kodi](http://kodi.tv) game addon for {{ libretro_info.display_name | default(xml.addon.name) | default(system_info.name) | default(game.name) }}.
 
 [![Build Status](https://travis-ci.org/kodi-game/{{ game.addon }}.svg?branch=master)](https://travis-ci.org/kodi-game/{{ game.addon }})
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/kodi-game/{{ game.addon }}?svg=true)](https://ci.appveyor.com/project/kodi-game/game-libretro-{{ game.name }})
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/kodi-game/{{ game.addon }}?svg=true)](https://ci.appveyor.com/project/kodi-game/{{ game.addon | regex_replace('[\._]', '-') }})

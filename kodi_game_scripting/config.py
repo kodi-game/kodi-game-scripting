@@ -78,6 +78,7 @@ ADDONS = {
     'nestopia':                  ('nestopia',                   'Makefile',          'libretro',          'libretro/jni', {}),
     'nx':                        ('nxengine-libretro',          'Makefile',          '.',                 'jni', {'soname': 'nxengine'}),
     'o2em':                      ('libretro-o2em',              'Makefile',          '.',                 'jni', {}),
+    'parallel_n64':              ('parallel-n64',               'Makefile',          '.',                 'jni', {}),
     'pcem':                      ('libretro-pcem',              'Makefile.libretro', 'src',               'jni', {}),
     'pcsx-rearmed':              ('pcsx_rearmed',               'Makefile.libretro', '.',                 'jni', {'soname': 'pcsx_rearmed'}),
     'picodrive':                 ('picodrive',                  'Makefile.libretro', '.',                 'jni', {}),

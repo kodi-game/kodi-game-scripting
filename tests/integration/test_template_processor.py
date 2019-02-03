@@ -40,6 +40,7 @@ def test_process_template(tmpdir):
         'game': {
             'name': 'mygame',
             'addon': 'game.libretro.mygame',
+            'debian_package': 'game-libretro-mygame',
             'branch': 'master',
             'version': '2.10.3',
         },

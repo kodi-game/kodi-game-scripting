@@ -1,0 +1,17 @@
+Source: kodi-{{ game.addon | regex_replace('[\._]', '-') }}
+Priority: extra
+Maintainer: wsnipex <wsnipex@a1.net>
+Build-Depends: debhelper (>= 9.0.0),
+               cmake,
+               kodi-addon-dev,
+               {{ game.name }} (>= {{ game.version | regex_replace('\.[^\.]$', '') }})
+Standards-Version: 3.9.8
+Section: libs
+
+Package: kodi-{{ game.addon | regex_replace('[\._]', '-') }}
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, kodi, kodi-game-libretro
+Enhances: kodi
+Description: {{ libretro_info.display_name | default(xml.addon.name) | default(system_info.name) | default(game.name) }} core for kodi's retroplayer
+ {{ libretro_info.display_name | default(xml.addon.name) | default(system_info.name) | default(game.name) }} core for kodi's retroplayer

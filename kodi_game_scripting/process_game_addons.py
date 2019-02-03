@@ -268,6 +268,7 @@ class KodiGameAddon():
             'game': {
                 'name': self.game_name,
                 'addon': self.name,
+                'debian_package': re.sub(r'[\._]', '-', self.name),
                 'branch': push_branch or 'master',
                 'version': '0.0.0',
             },

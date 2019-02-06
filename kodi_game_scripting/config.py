@@ -49,7 +49,7 @@ ADDONS = {
     'chailove':                  ('libretro-chailove',          'Makefile',          '.',                 'jni', {'git_tag': True}),
     #'dolphin':                   ('dolphin',                    '',                  '',                  '', {'cmake': True }),  # Uses git submodules
     'dinothawr':                 ('Dinothawr',                  'Makefile',          '.',                 'jni', {}),
-    'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.',                 'jni', {}),
+    #'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.',                 'jni', {}),
     'fbalpha':                   ('fbalpha',                    'makefile.libretro', '.',                 'jni', {}),
     'fbalpha2012':               ('fbalpha2012',                'makefile.libretro', 'svn-current/trunk', 'svn-current/trunk/projectfiles/libretro-android/jni', {}),
     'fceumm':                    ('libretro-fceumm',            'Makefile',          '.',                 'jni', {}),

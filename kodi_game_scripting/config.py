@@ -73,7 +73,7 @@ ADDONS = {
     'meteor':                    ('meteor-libretro',            'Makefile',          'libretro',          'libretro/jni', {}),
     'mesen':                     ('SourMesen/Mesen',            'Makefile',          'Libretro',          'libretro/jni', {}),
     'mgba':                      ('mgba',                       'Makefile',          '.',                 'jni', {}),
-    'mupen64plus':               ('mupen64plus-libretro',       'Makefile',          '.',                 'jni', {}),
+    #'mupen64plus':               ('mupen64plus-libretro',       'Makefile',          '.',                 'jni', {}),
     'mrboom':                    ('mrboom-libretro',            'Makefile',          '.',                 'jni', {}),
     'nestopia':                  ('nestopia',                   'Makefile',          'libretro',          'libretro/jni', {}),
     'nx':                        ('nxengine-libretro',          'Makefile',          '.',                 'jni', {'soname': 'nxengine'}),

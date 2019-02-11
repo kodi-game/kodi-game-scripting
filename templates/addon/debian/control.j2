@@ -4,7 +4,7 @@ Maintainer: wsnipex <wsnipex@a1.net>
 Build-Depends: debhelper (>= 9.0.0),
                cmake,
                kodi-addon-dev,
-               {{ game.name }} (>= {{ game.version | regex_replace('\.[^\.]$', '') }})
+               libretro-{{ game.name }} (>= {{ game.version | regex_replace('\.[^\.]+$', '') }}) | {{ game.name }} (>= {{ game.version | regex_replace('\.[^\.]+$', '') }})
 Standards-Version: 3.9.8
 Section: libs
 

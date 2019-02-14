@@ -129,6 +129,8 @@ class TemplateProcessor:
                         os.path.dirname(os.path.join(destination, outfile)))
                     with open(outfile_path, 'w') as outfile_ctx:
                         outfile_ctx.write(content)
+                elif os.path.exists(outfile_path):
+                    os.remove(outfile_path)
 
             # Other files are just copied
             else:

@@ -34,7 +34,7 @@ from .libretro_super import LibretroSuper
 from .versions import AddonVersion
 
 COMMIT_MSG = "Updated by kodi-game-scripting\n\n" \
-             "https://github.com/fetzerch/kodi-game-scripting/"
+             "https://github.com/kodi-game/kodi-game-scripting/"
 
 
 def main():

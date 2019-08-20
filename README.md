@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/fetzerch/kodi-game-scripting.svg?branch=master)](https://travis-ci.org/fetzerch/kodi-game-scripting)
+[![Build Status](https://travis-ci.org/kodi-game/kodi-game-scripting.svg?branch=master)](https://travis-ci.org/fetzerch/kodi-game-scripting)
 
 # Scripting for Kodi Game addons
 
@@ -20,7 +20,7 @@ version or description or version) is maintained.
 
 *kodi-game-scripting* maintains a set of [Jinja2](http://jinja.pocoo.org/docs/)
 templates from which we can completely generate an add-on that wraps a
-Libretro core. The [templates](https://github.com/fetzerch/kodi-game-scripting/tree/master/templates)
+Libretro core. The [templates](https://github.com/kodi-game/kodi-game-scripting/tree/master/templates)
 define the overall structure of the add-on files and fill variable fields with
 content from a set of metadata (descriptions from
 [libretro-super](https://github.com/libretro/libretro-super/tree/master/dist/info),

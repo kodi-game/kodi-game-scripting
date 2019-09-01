@@ -106,5 +106,5 @@ ADDONS = {
     'vecx':                      ('libretro-vecx',              'Makefile',          '.',                 'jni', {}),
     #'vice':                      ('vice-libretro',              'Makefile.libretro', '.',                 'jni', {'soname': 'vice_x64'}),  # Settings broken for option API version 0
     'virtualjaguar':             ('virtualjaguar-libretro',     'Makefile',          '.',                 'jni', {}),
-    'yabause':                   ('yabause',                    'Makefile',          'libretro',          'libretro/jni', {}),
+    'yabause':                   ('yabause',                    'Makefile',          'yabause/src/libretro',          'libretro/jni', {}),
 }

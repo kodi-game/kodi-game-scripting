@@ -41,6 +41,7 @@ ADDONS = {
     'beetle-supergrafx':         ('beetle-supergrafx-libretro', 'Makefile',          '.',                 'jni', {'soname': 'mednafen_supergrafx'}),
     'beetle-vb':                 ('beetle-vb-libretro',         'Makefile',          '.',                 'jni', {'soname': 'mednafen_vb'}),
     'beetle-wswan':              ('beetle-wswan-libretro',      'Makefile',          '.',                 'jni', {'soname': 'mednafen_wswan'}),
+    'blastem':                   ('blastem',                    'Makefile',          '.',                 'android/jni', {}),
     'bluemsx':                   ('blueMSX-libretro',           'Makefile',          '.',                 'jni', {}),
     'bnes':                      ('bnes-libretro',              'Makefile',          '.',                 'jni', {}),
     'bsnes-mercury-accuracy':    ('bsnes-mercury',              'Makefile',          '.',                 'target-libretro/jni', {'binary_dir': 'out', 'soname': 'bsnes_mercury_accuracy', 'jnisoname': 'libretro_bsnes_mercury_accuracy', 'cmake_options': 'profile=accuracy'}),

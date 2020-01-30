@@ -61,7 +61,7 @@ ADDONS = {
     'gw':                        ('gw-libretro',                'Makefile',          '.',                 'jni', {}),
     'handy':                     ('libretro-handy',             'Makefile',          '.',                 'jni', {}),
     'hatari':                    ('hatari',                     'Makefile.libretro', '.',                 'jni', {}),
-    'lutro':                     ('libretro-lutro',             'Makefile',          '.',                 'jni', {}),
+    #'lutro':                     ('libretro-lutro',             'Makefile',          '.',                 'jni', {}),  # Build broke due to PR merged on 2020-01-04
     #'mame':                      ('mame',                       'Makefile.libretro', '.',                 'jni', {'cmake_options': 'PTR64=1'}),  # Huge and longrunning
     'mame2000':                  ('mame2000-libretro',          'Makefile',          '.',                 'jni', {}),
     'mame2003':                  ('mame2003-libretro',          'Makefile',          '.',                 'jni', {}),

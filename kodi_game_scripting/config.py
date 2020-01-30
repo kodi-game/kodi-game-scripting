@@ -51,6 +51,7 @@ ADDONS = {
     'cannonball':                ('cannonball',                 'Makefile',          '.'  ,               'jni', {}),
     'cap32':                     ('libretro-cap32',             'Makefile',          '.'  ,               'jni', {}),
     'chailove':                  ('libretro-chailove',          'Makefile',          '.',                 'jni', {'git_tag': True}),
+    'crocods':                   ('libretro-crocods',           'Makefile',          '.',                 'jni', {}),
     'desmume':                   ('desmume',                    'Makefile.libretro', 'desmume/src/frontend/libretro', 'desmume/src/frontend/libretro/jni', {}),  # Fails to build
     'dinothawr':                 ('Dinothawr',                  'Makefile',          '.',                 'jni', {}),
     #'dolphin':                   ('dolphin',                    '',                  '',                  '', {'cmake': True }),  # Uses git submodules

@@ -27,6 +27,7 @@ GITHUB_ADDON_PREFIX = 'game.libretro.'
 # core: {(Libretro repo, Makefile, Directory)}
 ADDONS = {
     '2048':                      ('libretro-2048',              'Makefile.libretro', '.',                 'jni', {}),
+    '81':                        ('81-libretro',                'Makefile',          '.',                 'build/jni', {}),
     'beetle-bsnes':              ('beetle-bsnes-libretro',      'Makefile',          '.',                 'jni', {'soname': 'mednafen_snes'}),
     'beetle-gba':                ('beetle-gba-libretro',        'Makefile',          '.',                 'jni', {'soname': 'mednafen_gba'}),
     'beetle-lynx':               ('beetle-lynx-libretro',       'Makefile',          '.',                 'jni', {'soname': 'mednafen_lynx'}),

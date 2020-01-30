@@ -44,6 +44,7 @@ ADDONS = {
     'blastem':                   ('blastem',                    'Makefile',          '.',                 'android/jni', {}),
     'bluemsx':                   ('blueMSX-libretro',           'Makefile',          '.',                 'jni', {}),
     'bnes':                      ('bnes-libretro',              'Makefile',          '.',                 'jni', {}),
+    'boom3':                     ('boom3',                      'Makefile',          'neo',               'jni', {}),
     'bsnes-mercury-accuracy':    ('bsnes-mercury',              'Makefile',          '.',                 'target-libretro/jni', {'binary_dir': 'out', 'soname': 'bsnes_mercury_accuracy', 'jnisoname': 'libretro_bsnes_mercury_accuracy', 'cmake_options': 'profile=accuracy'}),
     'bsnes-mercury-balanced':    ('bsnes-mercury',              'Makefile',          '.',                 'target-libretro/jni', {'binary_dir': 'out', 'soname': 'bsnes_mercury_balanced', 'jnisoname': 'libretro_bsnes_mercury_balanced', 'cmake_options': 'profile=balanced'}),
     'bsnes-mercury-performance': ('bsnes-mercury',              'Makefile',          '.',                 'target-libretro/jni', {'binary_dir': 'out', 'soname': 'bsnes_mercury_performance', 'jnisoname': 'libretro_bsnes_mercury_performance', 'cmake_options': 'profile=performance'}),

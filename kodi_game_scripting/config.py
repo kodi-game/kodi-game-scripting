@@ -53,6 +53,7 @@ ADDONS = {
     'fbalpha2012':               ('fbalpha2012',                'makefile.libretro', 'svn-current/trunk', 'svn-current/trunk/projectfiles/libretro-android/jni', {}),
     'fbneo':                     ('FBNeo',                      'Makefile',          'src/burner/libretro', 'jni', {}),
     'fceumm':                    ('libretro-fceumm',            'Makefile',          '.',                 'jni', {}),
+    'flycast':                   ('flycast',                    'Makefile',          '.',                 'jni', {}),
     'fmsx':                      ('fmsx-libretro',              'Makefile',          '.',                 'jni', {}),
     #'fsuae':                     ('libretro-fsuae',             'Makefile.libretro', '.',                 'jni', {'branch': 'libretro-fsuae'}),  # Fails to build
     'fuse':                      ('fuse-libretro',              'Makefile',          '.',                 'jni', {}),
@@ -87,7 +88,6 @@ ADDONS = {
     'prboom':                    ('libretro-prboom',            'Makefile',          '.',                 'jni', {}),
     'prosystem':                 ('prosystem-libretro',         'Makefile',          '.',                 'jni', {}),
     'quicknes':                  ('QuickNES_Core',              'Makefile',          '.',                 'jni', {}),
-    'reicast':                   ('reicast-emulator',           'Makefile',          '.',                 'jni', {}),
     #'rustation':                 ('rustation-libretro',         'Makefile',          '.',                 'jni', {}),  # Checkout fails
     'sameboy':                   ('SameBoy',                    'Makefile',          'libretro',          'libretro/jni', {'branch': 'buildbot'}),
     'scummvm':                   ('scummvm',                    'Makefile',          'backends/platform/libretro/build', None, {'binary_dir': 'backends/platform/libretro/build'}),

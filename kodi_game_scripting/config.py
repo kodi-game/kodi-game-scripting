@@ -99,7 +99,7 @@ ADDONS = {
     'theodore':                  ('Zlika/theodore',             'Makefile',          '.',                  'jni', {}),
     'thepowdertoy':              ('ThePowderToy',               '',                  '',                  '', {'cmake': True, 'binary_dir': 'src'}),
     'tyrquake':                  ('tyrquake',                   'Makefile',          '.',                 'jni', {}),
-    #'uae':                       ('libretro-uae',               'Makefile',          '.',                 'jni', {'soname': 'puae'}),  # Build fails due to bad compiler flags
+    'uae':                       ('libretro-uae',               'Makefile',          '.',                 'jni', {'soname': 'puae'}),
     #'uae4arm':                   ('uae4arm-libretro',           'Makefile',          '.',                 'jni', {}),  # Fails to build on non arm system
     'vba-next':                  ('vba-next',                   'Makefile',          '.',                 'libretro/jni', {'soname': 'vba_next'}),
     'vbam':                      ('vbam-libretro',              'Makefile',          'src/libretro',      'src/libretro/jni', {}),

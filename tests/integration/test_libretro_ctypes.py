@@ -39,9 +39,9 @@ def compile_testlibrary(build_dir):
         LibretroWrapper.EXT))
 
     subprocess.run([os.environ.get('CMAKE', 'cmake'), REFERENCE_DIR],
-                   cwd=build_dir)
+                   cwd=build_dir, check=True)
     subprocess.run([os.environ.get('CMAKE', 'cmake'), '--build', '.'],
-                   cwd=build_dir)
+                   cwd=build_dir, check=True)
     assert os.path.isfile(test_file)
     return test_file
 

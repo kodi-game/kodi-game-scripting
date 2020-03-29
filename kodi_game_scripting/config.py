@@ -46,13 +46,14 @@ ADDONS = {
     'bsnes-mercury-performance': ('bsnes-mercury',              'Makefile',          '.',                 'target-libretro/jni', {'binary_dir': 'out', 'soname': 'bsnes_mercury_performance', 'jnisoname': 'libretro_bsnes_mercury_performance', 'cmake_options': 'profile=performance'}),
     'cap32':                     ('libretro-cap32',             'Makefile',          '.'  ,               'jni', {}),
     'chailove':                  ('libretro-chailove',          'Makefile',          '.',                 'jni', {'git_tag': True}),
-    #'desmume':                   ('desmume',                    'Makefile.libretro', 'desmume/src/frontend/libretro', 'desmume/src/frontend/libretro/jni', {}),  # Fails to build
+    'desmume':                   ('desmume',                    'Makefile.libretro', 'desmume/src/frontend/libretro', 'desmume/src/frontend/libretro/jni', {}),  # Fails to build
     'dinothawr':                 ('Dinothawr',                  'Makefile',          '.',                 'jni', {}),
     #'dolphin':                   ('dolphin',                    '',                  '',                  '', {'cmake': True }),  # Uses git submodules
-    #'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.',                 'jni', {}),
-    'fbalpha':                   ('fbalpha',                    'makefile.libretro', '.',                 'jni', {}),
+    'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.',                 'jni', {}),
     'fbalpha2012':               ('fbalpha2012',                'makefile.libretro', 'svn-current/trunk', 'svn-current/trunk/projectfiles/libretro-android/jni', {}),
+    'fbneo':                     ('FBNeo',                      'Makefile',          'src/burner/libretro', 'jni', {}),
     'fceumm':                    ('libretro-fceumm',            'Makefile',          '.',                 'jni', {}),
+    'flycast':                   ('flycast',                    'Makefile',          '.',                 'jni', {}),
     'fmsx':                      ('fmsx-libretro',              'Makefile',          '.',                 'jni', {}),
     #'fsuae':                     ('libretro-fsuae',             'Makefile.libretro', '.',                 'jni', {'branch': 'libretro-fsuae'}),  # Fails to build
     'fuse':                      ('fuse-libretro',              'Makefile',          '.',                 'jni', {}),
@@ -61,7 +62,7 @@ ADDONS = {
     'gw':                        ('gw-libretro',                'Makefile',          '.',                 'jni', {}),
     'handy':                     ('libretro-handy',             'Makefile',          '.',                 'jni', {}),
     'hatari':                    ('hatari',                     'Makefile.libretro', '.',                 'jni', {}),
-    'lutro':                     ('libretro-lutro',             'Makefile',          '.',                 'jni', {}),
+    #'lutro':                     ('libretro-lutro',             'Makefile',          '.',                 'jni', {}),  # Build broke due to PR merged on 2020-01-04
     #'mame':                      ('mame',                       'Makefile.libretro', '.',                 'jni', {'cmake_options': 'PTR64=1'}),  # Huge and longrunning
     'mame2000':                  ('mame2000-libretro',          'Makefile',          '.',                 'jni', {}),
     'mame2003':                  ('mame2003-libretro',          'Makefile',          '.',                 'jni', {}),
@@ -83,28 +84,27 @@ ADDONS = {
     'pcsx-rearmed':              ('pcsx_rearmed',               'Makefile.libretro', '.',                 'jni', {'soname': 'pcsx_rearmed'}),
     'picodrive':                 ('picodrive',                  'Makefile.libretro', '.',                 'jni', {}),
     'pokemini':                  ('PokeMini',                   'Makefile.libretro', '.',                 'jni', {}),
-    #'ppsspp':                    ('ppsspp',                     'Makefile',          'libretro',          'jni', {}),  # Longrunning, requires OpenGL
+    'ppsspp':                    ('ppsspp',                     'Makefile',          'libretro',          'jni', {}),  # Longrunning, requires OpenGL
     'prboom':                    ('libretro-prboom',            'Makefile',          '.',                 'jni', {}),
     'prosystem':                 ('prosystem-libretro',         'Makefile',          '.',                 'jni', {}),
     'quicknes':                  ('QuickNES_Core',              'Makefile',          '.',                 'jni', {}),
-    'reicast':                   ('reicast-emulator',           'Makefile',          '.',                 'jni', {}),
     #'rustation':                 ('rustation-libretro',         'Makefile',          '.',                 'jni', {}),  # Checkout fails
     'sameboy':                   ('SameBoy',                    'Makefile',          'libretro',          'libretro/jni', {'branch': 'buildbot'}),
     'scummvm':                   ('scummvm',                    'Makefile',          'backends/platform/libretro/build', None, {'binary_dir': 'backends/platform/libretro/build'}),
     'snes9x':                    ('snes9x',                     'Makefile',          'libretro',          'libretro/jni', {}),
     'snes9x2002':                ('snes9x2002',                 'Makefile',          '.',                 'jni', {}),
     'snes9x2010':                ('snes9x2010',                 'Makefile',          '.',                 'jni', {}),
-    'stella':                    ('stella-libretro',            'Makefile',          '.',                 'jni', {}),
+    'stella':                    ('stella-libretro',            'Makefile',          '.',                 'jni', {'soname': 'stella2014'}),
     'tgbdual':                   ('tgbdual-libretro',           'Makefile',          '.',                 'jni', {}),
     'theodore':                  ('Zlika/theodore',             'Makefile',          '.',                  'jni', {}),
     'thepowdertoy':              ('ThePowderToy',               '',                  '',                  '', {'cmake': True, 'binary_dir': 'src'}),
     'tyrquake':                  ('tyrquake',                   'Makefile',          '.',                 'jni', {}),
-    'uae':                       ('libretro-uae',               'Makefile',          '.',                 'jni', {'soname': 'puae'}),
+    #'uae':                       ('libretro-uae',               'Makefile',          '.',                 'jni', {'soname': 'puae'}),  # Build fails due to bad compiler flags
     #'uae4arm':                   ('uae4arm-libretro',           'Makefile',          '.',                 'jni', {}),  # Fails to build on non arm system
     'vba-next':                  ('vba-next',                   'Makefile',          '.',                 'libretro/jni', {'soname': 'vba_next'}),
     'vbam':                      ('vbam-libretro',              'Makefile',          'src/libretro',      'src/libretro/jni', {}),
     'vecx':                      ('libretro-vecx',              'Makefile',          '.',                 'jni', {}),
-    'vice':                      ('vice-libretro',              'Makefile.libretro', '.',                 'jni', {'soname': 'vice_x64'}),
+    #'vice':                      ('vice-libretro',              'Makefile.libretro', '.',                 'jni', {'soname': 'vice_x64'}),  # Settings broken for option API version 0
     'virtualjaguar':             ('virtualjaguar-libretro',     'Makefile',          '.',                 'jni', {}),
-    'yabause':                   ('yabause',                    'Makefile',          'libretro',          'libretro/jni', {}),
+    'yabause':                   ('yabause',                    'Makefile',          'yabause/src/libretro',          'libretro/jni', {}),
 }

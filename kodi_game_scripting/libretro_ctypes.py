@@ -131,7 +131,7 @@ class LibretroWrapper:
     def has_opengl_linkage(cls, library_path):
         """ Check if the library links opengl """
         ldd_output = subprocess.run(
-            cls.LDD_CMD + [library_path], stdout=subprocess.PIPE)
+            cls.LDD_CMD + [library_path], stdout=subprocess.PIPE, check=True)
         return bool(re.search(r'(?:libgl|opengl)',
                               str(ldd_output.stdout, 'utf-8'), re.IGNORECASE))
 

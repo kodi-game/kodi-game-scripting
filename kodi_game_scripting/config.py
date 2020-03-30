@@ -27,7 +27,6 @@ GITHUB_ADDON_PREFIX = 'game.libretro.'
 # core: {(Libretro repo, Makefile, Directory)}
 ADDONS = {
     '2048':                      ('libretro-2048',              'Makefile.libretro', '.',                 'jni', {}),
-    '4do':                       ('4do-libretro',               'Makefile',          '.',                 'jni', {}),
     'beetle-bsnes':              ('beetle-bsnes-libretro',      'Makefile',          '.',                 'jni', {'soname': 'mednafen_snes'}),
     'beetle-gba':                ('beetle-gba-libretro',        'Makefile',          '.',                 'jni', {'soname': 'mednafen_gba'}),
     'beetle-lynx':               ('beetle-lynx-libretro',       'Makefile',          '.',                 'jni', {'soname': 'mednafen_lynx'}),
@@ -79,6 +78,7 @@ ADDONS = {
     'nestopia':                  ('nestopia',                   'Makefile',          'libretro',          'libretro/jni', {}),
     'nx':                        ('nxengine-libretro',          'Makefile',          '.',                 'jni', {'soname': 'nxengine'}),
     'o2em':                      ('libretro-o2em',              'Makefile',          '.',                 'jni', {}),
+    'opera':                     ('opera-libretro',             'Makefile',          '.',                 'jni', {}),
     'parallel_n64':              ('parallel-n64',               'Makefile',          '.',                 'jni', {}),
     'pcem':                      ('libretro-pcem',              'Makefile.libretro', 'src',               'jni', {}),
     'pcsx-rearmed':              ('pcsx_rearmed',               'Makefile.libretro', '.',                 'jni', {'soname': 'pcsx_rearmed'}),

@@ -432,4 +432,4 @@ class KodiGameAddon():
         """ Pushing changes to GitHub repository """
         print("  Pushing changes to GitHub repository {}".format(self.name))
         branch = self.info['game']['branch']
-        self._repo.push(branch, tags=branch == 'master', sleep=3*60)
+        self._repo.push(branch, tags=(branch == 'master'), sleep=(3 * 60))

@@ -423,10 +423,11 @@ class KodiGameAddon():
         self.info['git']['diff'] = self._repo.diff()
 
     def tag(self):
-        """ Creating tag in Git repository """
-        print("  Creating tag in Git repository {}: {}".format(
+        """ Creating tags in Git repository """
+        print("  Creating tags in Git repository {}: {}".format(
             self.name, self.info['game']['version']))
-        self._repo.tag('{}-Leia'.format(self.info['game']['version']))
+        for branch in ['Leia', 'Matrix']:
+            self._repo.tag('{}-{}'.format(self.info['game']['version'], branch))
 
     def push(self):
         """ Pushing changes to GitHub repository """

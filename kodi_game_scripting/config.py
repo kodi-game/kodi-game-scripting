@@ -58,6 +58,7 @@ ADDONS = {
     'dinothawr':                 ('Dinothawr',                  'Makefile',          '.',                 'jni', {}),
     #'dolphin':                   ('dolphin',                    '',                  '',                  '', {'cmake': True }),  # Uses git submodules
     'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.',                 'jni', {}),
+    'ecwolf':                    ('ecwolf',                     'Makefile',          'src/libretro',       'src/libretro/jni', {}),
     'fbalpha2012':               ('fbalpha2012',                'makefile.libretro', 'svn-current/trunk', 'svn-current/trunk/projectfiles/libretro-android/jni', {}),
     'fbneo':                     ('FBNeo',                      'Makefile',          'src/burner/libretro', 'jni', {}),
     'fceumm':                    ('libretro-fceumm',            'Makefile',          '.',                 'jni', {}),

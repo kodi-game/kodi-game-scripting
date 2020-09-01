@@ -51,6 +51,7 @@ ADDONS = {
     'cannonball':                ('cannonball',                 'Makefile',          '.'  ,               'jni', {}),
     'cap32':                     ('libretro-cap32',             'Makefile',          '.'  ,               'jni', {}),
     'chailove':                  ('libretro-chailove',          'Makefile',          '.',                 'jni', {'git_tag': True}),
+    'craft':                     ('Craft',                      'Makefile.libretro', '.',                 'jni', {}),
     'crocods':                   ('libretro-crocods',           'Makefile',          '.',                 'jni', {}),
     'daphne':                    ('daphne',                     'Makefile',          '.',                 'jni', {}),
     'desmume':                   ('desmume',                    'Makefile.libretro', 'desmume/src/frontend/libretro', 'desmume/src/frontend/libretro/jni', {}),

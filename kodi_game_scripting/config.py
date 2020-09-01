@@ -94,6 +94,7 @@ ADDONS = {
     'nx':                        ('nxengine-libretro',          'Makefile',          '.',                 'jni', {'soname': 'nxengine'}),
     'o2em':                      ('libretro-o2em',              'Makefile',          '.',                 'jni', {}),
     'opera':                     ('opera-libretro',             'Makefile',          '.',                 'jni', {}),
+    'openlara':                  ('OpenLara',                   'Makefile',          'src/platform/libretro', 'src/platform/libretro/jni', {}),
     'parallel_n64':              ('parallel-n64',               'Makefile',          '.',                 'jni', {}),
     'pcem':                      ('libretro-pcem',              'Makefile.libretro', 'src',               'jni', {}),
     'pcsx-rearmed':              ('pcsx_rearmed',               'Makefile.libretro', '.',                 'jni', {'soname': 'pcsx_rearmed'}),

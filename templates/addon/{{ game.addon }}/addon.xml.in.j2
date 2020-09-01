@@ -3,7 +3,7 @@
 	{% set addon_name = libretro_info.display_name | default(xml.addon.name) | default(system_info.name) | default(game.name) %}
 		name="{{ addon_name | e }}"
 		version="{{ game.version | default(xml.addon.version) | default('0.0.0') }}"
-		provider-name="{{ libretro_info.authors | default('Libretro') }}">
+		provider-name="{{ libretro_info.authors | default('Libretro') | replace('|', ', ')}}">
 	<requires>
 		<import addon="game.libretro" version="1.0.0"/>
 		{% for addon in xml.addon.requires.import | default([]) | get_list %}

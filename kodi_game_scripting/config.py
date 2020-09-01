@@ -105,6 +105,7 @@ ADDONS = {
     'prboom':                    ('libretro-prboom',            'Makefile',          '.',                 'jni', {}),
     'prosystem':                 ('prosystem-libretro',         'Makefile',          '.',                 'jni', {}),
     'quicknes':                  ('QuickNES_Core',              'Makefile',          '.',                 'jni', {}),
+    'reminiscence':              ('REminiscence',               'Makefile',          '.',                 'jni', {}),
     'remotejoy':                 ('libretro-remotejoy',         'Makefile',          '.',                 'jni', {}),
     #'rustation':                 ('rustation-libretro',         'Makefile',          '.',                 'jni', {}),  # Checkout fails
     'sameboy':                   ('SameBoy',                    'Makefile',          'libretro',          'libretro/jni', {'branch': 'buildbot'}),

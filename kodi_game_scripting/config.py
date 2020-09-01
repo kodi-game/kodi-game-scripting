@@ -54,6 +54,7 @@ ADDONS = {
     'crocods':                   ('libretro-crocods',           'Makefile',          '.',                 'jni', {}),
     'daphne':                    ('daphne',                     'Makefile',          '.',                 'jni', {}),
     'desmume':                   ('desmume',                    'Makefile.libretro', 'desmume/src/frontend/libretro', 'desmume/src/frontend/libretro/jni', {}),
+    'desmume2015':               ('desmume2015',                'Makefile.libretro', 'desmume', 'desmume/src/libretro/jni', {}),
     'dinothawr':                 ('Dinothawr',                  'Makefile',          '.',                 'jni', {}),
     #'dolphin':                   ('dolphin',                    '',                  '',                  '', {'cmake': True }),  # Uses git submodules
     'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.',                 'jni', {}),

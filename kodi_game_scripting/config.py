@@ -107,6 +107,7 @@ ADDONS = {
     'ppsspp':                    ('ppsspp',                     'Makefile',          'libretro',          'jni', {}),  # Longrunning, requires OpenGL
     'prboom':                    ('libretro-prboom',            'Makefile',          '.',                 'jni', {}),
     'prosystem':                 ('prosystem-libretro',         'Makefile',          '.',                 'jni', {}),
+    'quasi88':                   ('quasi88-libretro',           'Makefile',          '.',                 'jni', {}),
     'quicknes':                  ('QuickNES_Core',              'Makefile',          '.',                 'jni', {}),
     'race':                      ('RACE',                       'Makefile',          '.',                 'jni', {}),
     'reminiscence':              ('REminiscence',               'Makefile',          '.',                 'jni', {}),

@@ -67,6 +67,7 @@ ADDONS = {
     'flycast':                   ('flycast',                    'Makefile',          '.',                 'jni', {}),
     'fmsx':                      ('fmsx-libretro',              'Makefile',          '.',                 'jni', {}),
     'freechaf':                  ('FreeChaF',                   'Makefile',          '.',                 'jni', {}),
+    'freeintv':                  ('FreeIntv',                   'Makefile',          '.',                 'jni', {}),
     'frodo':                     ('frodo-libretro',             'Makefile',          '.',                 'jni', {}),
     #'fsuae':                     ('libretro-fsuae',             'Makefile.libretro', '.',                 'jni', {'branch': 'libretro-fsuae'}),  # Fails to build
     'fuse':                      ('fuse-libretro',              'Makefile',          '.',                 'jni', {}),

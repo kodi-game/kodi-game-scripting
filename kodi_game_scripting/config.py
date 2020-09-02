@@ -18,7 +18,7 @@
 
     Override settings for specific libretro cores. """
 
-# pylint: disable=bad-whitespace, line-too-long
+# pylint: disable=bad-option-value, bad-whitespace, line-too-long
 # flake8: noqa
 
 GITHUB_ORGANIZATION = 'kodi-game'

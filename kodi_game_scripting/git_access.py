@@ -61,10 +61,10 @@ class GitHubOrg:
             if auth and not apitoken:
                 cred.save(username, password)
             self._org = self._github.get_organization(org)
-        except github.BadCredentialsException:
+        except github.BadCredentialsException as err:
             if auth and not apitoken:
                 cred.clean()
-            raise ValueError("Authentication to GitHub failed")
+            raise ValueError("Authentication to GitHub failed") from err
 
     @functools.lru_cache()
     def get_repos(self, regex):

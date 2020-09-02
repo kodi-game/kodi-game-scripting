@@ -198,7 +198,7 @@ class KodiGameAddons:
             # Third iteration: Update package version if there are changes
             print("Third iteration: Update version")
             for addon in self._addons:
-                if 'depends/common' in addon.info['git']['diff']:
+                if True:
                     print(" Processing addon: {}".format(addon.name))
                     addon.bump_version()
                     addon.process_addon_files()

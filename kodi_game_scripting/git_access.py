@@ -125,7 +125,10 @@ class GitRepo:
         if git.Remote('', 'origin') in self._gitrepo.remotes:
             origin = self._gitrepo.remotes.origin
             print("Fetching {}".format(self._githubrepo.name))
-            origin.fetch('master')
+            try:
+                origin.fetch('master')
+            except git.exc.GitCommandError:
+                origin.fetch('main')
             if (parse_version('.'.join(map(
                     str, self._gitrepo.git.version_info))) >=
                     parse_version('2.17.0')):
@@ -137,10 +140,17 @@ class GitRepo:
                 origin.fetch(tags=True, prune=True)
             if reset:
                 print("Resetting {}".format(self._githubrepo.name))
-                self._gitrepo.git.reset('--hard', 'origin/master')
+                try:
+                    self._gitrepo.git.reset('--hard', 'origin/master')
+                except git.exc.GitCommandError:
+                    self._gitrepo.git.reset('--hard', 'origin/main')
             else:
                 print("Rebasing {}".format(self._githubrepo.name))
-                self._gitrepo.git.rebase('origin/master')
+                try:
+                    self._gitrepo.git.rebase('origin/master')
+                except git.exc.GitCommandError:
+                    self._gitrepo.git.rebase('origin/main')
+
         else:
             print("Skipping fetching {}".format(self._githubrepo.name))
         print("Cleaning local changes {}".format(self._githubrepo.name))
@@ -161,7 +171,10 @@ class GitRepo:
             self._gitrepo.git.add(all=True, force=force)
         if squash:
             if git.Remote('', 'origin') in self._gitrepo.remotes:
-                self._gitrepo.git.reset('origin/master', soft=True)
+                try:
+                    self._gitrepo.git.reset('origin/master', soft=True)
+                except git.exc.GitCommandError:
+                    self._gitrepo.git.reset('origin/main', soft=True)
             else:
                 self._gitrepo.git.update_ref('-d', 'HEAD')
         if self._gitrepo.is_dirty():
@@ -176,8 +189,12 @@ class GitRepo:
         """ Diff commits in repo """
         if self._gitrepo.head.is_valid():
             if git.Remote('', 'origin') in self._gitrepo.remotes:
-                return self._gitrepo.git.diff('origin/master',
-                                              self._gitrepo.head.commit)
+                try:
+                    return self._gitrepo.git.diff('origin/master',
+                                                  self._gitrepo.head.commit)
+                except git.exc.GitCommandError:
+                    return self._gitrepo.git.diff('origin/main',
+                                                  self._gitrepo.head.commit)
             return self._gitrepo.git.diff(EMPTY_SHA, self._gitrepo.head.commit)
         return ''
 

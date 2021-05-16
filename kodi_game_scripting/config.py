@@ -153,6 +153,7 @@ ADDONS = {
     'vba-next':                  ('vba-next',                   'Makefile',          '.',                 'libretro/jni', {'soname': 'vba_next'}),
     'vbam':                      ('vbam-libretro',              'Makefile',          'src/libretro',      'src/libretro/jni', {}),
     'vecx':                      ('libretro-vecx',              'Makefile',          '.',                 'jni', {}),
+    'vemulator':                 ('vemulator-libretro',         'Makefile',          '.',                 'jni', {}),
     'vice':                      ('vice-libretro',              'Makefile',          '.',                 'jni', {'soname': 'vice_x64'}),  # Settings broken for option API version 0
     'virtualjaguar':             ('virtualjaguar-libretro',     'Makefile',          '.',                 'jni', {}),
     'xmil':                      ('xmil-libretro',              'Makefile.libretro', 'libretro',          'libretro/jni', {'soname': 'x1'}),

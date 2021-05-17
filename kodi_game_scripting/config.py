@@ -42,7 +42,7 @@ ADDONS = {
     'beetle-vb':                 ('beetle-vb-libretro',         'Makefile',          '.',                 'jni', {'soname': 'mednafen_vb'}),
     'beetle-wswan':              ('beetle-wswan-libretro',      'Makefile',          '.',                 'jni', {'soname': 'mednafen_wswan'}),
     'bk':                        ('bk-emulator',                'Makefile.libretro', '.',                 'jni', {}),
-    'blastem':                   ('blastem',                    'Makefile',          '.',                 'android/jni', {}),
+    'blastem':                   ('blastem',                    'Makefile.libretro', '.',                 'android/jni', {'branch': 'libretro --'}),
     'bluemsx':                   ('blueMSX-libretro',           'Makefile',          '.',                 'jni', {}),
     'bnes':                      ('bnes-libretro',              'Makefile',          '.',                 'jni', {}),
     'boom3':                     ('boom3',                      'Makefile',          'neo',               'jni', {}),
@@ -60,7 +60,7 @@ ADDONS = {
     'dinothawr':                 ('Dinothawr',                  'Makefile',          '.',                 'jni', {}),
     #'dolphin':                   ('dolphin',                    '',                  '',                  '', {'cmake': True }),  # Uses git submodules
     'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.',                 'jni', {}),
-    'dosbox-core':               ('dosbox-core',                'Makefile.libretro', 'libretro',          'libretro/jni', {'branch': 'libretro --'}),  # Requires CMake 3.11 or higher
+    'dosbox-core':               ('dosbox-core',                'Makefile.libretro', 'libretro',          'libretro/jni', {'branch': 'libretro --', 'cmake_options': 'BUNDLED_SDL=1', 'soname': 'dosbox_core'}),
     'ecwolf':                    ('ecwolf',                     'Makefile',          'src/libretro',       'src/libretro/jni', {}),
     'fbalpha2012':               ('fbalpha2012',                'makefile.libretro', 'svn-current/trunk', 'svn-current/trunk/projectfiles/libretro-android/jni', {}),
     'fbneo':                     ('FBNeo',                      'Makefile',          'src/burner/libretro', 'jni', {}),
@@ -93,14 +93,14 @@ ADDONS = {
     'mesen':                     ('SourMesen/Mesen',            'Makefile',          'Libretro',          'libretro/jni', {}),
     'meteor':                    ('meteor-libretro',            'Makefile',          'libretro',          'libretro/jni', {}),
     'mgba':                      ('mgba',                       'Makefile',          '.',                 'jni', {}),
-    'mrboom':                    ('mrboom-libretro',            'Makefile',          '.',                 'jni', {}),
+    'mrboom':                    ('Javanaise/mrboom-libretro',  'Makefile',          '.',                 'libretro/jni', {}),
     'mu':                        ('Mu',                         'Makefile.libretro', 'libretroBuildSystem', 'libretroBuildSystem/jni', {}),
     'mupen64plus-nx':            ('mupen64plus-libretro-nx',    'Makefile',          '.',                 'jni', {'soname': 'mupen64plus_next'}),
     'nestopia':                  ('nestopia',                   'Makefile',          'libretro',          'libretro/jni', {}),
     'nx':                        ('nxengine-libretro',          'Makefile',          '.',                 'jni', {'soname': 'nxengine'}),
     'o2em':                      ('libretro-o2em',              'Makefile',          '.',                 'jni', {}),
-    'opera':                     ('opera-libretro',             'Makefile',          '.',                 'jni', {}),
     'openlara':                  ('OpenLara',                   'Makefile',          'src/platform/libretro', 'src/platform/libretro/jni', {}),
+    'opera':                     ('opera-libretro',             'Makefile',          '.',                 'jni', {}),
     'parallel_n64':              ('parallel-n64',               'Makefile',          '.',                 'jni', {}),
     'parallext':                 ('parallext',                  'Makefile',          '.',                 'libretro/jni', {'soname': 'parallel_n64'}),
     'pcem':                      ('libretro-pcem',              'Makefile.libretro', 'src',               'jni', {}),
@@ -136,7 +136,7 @@ ADDONS = {
     'vba-next':                  ('vba-next',                   'Makefile',          '.',                 'libretro/jni', {'soname': 'vba_next'}),
     'vbam':                      ('vbam-libretro',              'Makefile',          'src/libretro',      'src/libretro/jni', {}),
     'vecx':                      ('libretro-vecx',              'Makefile',          '.',                 'jni', {}),
-    #'vice':                      ('vice-libretro',              'Makefile.libretro', '.',                 'jni', {'soname': 'vice_x64'}),  # Settings broken for option API version 0
+    'vice':                      ('vice-libretro',              'Makefile',          '.',                 'jni', {'soname': 'vice_x64'}),  # Settings broken for option API version 0
     'virtualjaguar':             ('virtualjaguar-libretro',     'Makefile',          '.',                 'jni', {}),
     'xmil':                      ('xmil-libretro',              'Makefile.libretro', 'libretro',          'libretro/jni', {'soname': 'x1'}),
     'yabause':                   ('yabause',                    'Makefile',          'yabause/src/libretro', 'yabause/src/libretro/jni', {}),

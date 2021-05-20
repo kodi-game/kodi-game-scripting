@@ -326,8 +326,7 @@ class KodiGameAddon():
             library = LibretroWrapper(library_path)
             self.info['library']['loaded'] = True
             self.info['system_info'] = library.system_info
-            self.info['settings'] = sorted(library.variables,
-                                           key=lambda x: x.id)
+            self.info['settings'] = library.variables
             self.info['library']['opengl'] = library.opengl_linkage
         except OSError as err:
             self.info['library']['error'] = err

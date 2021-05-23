@@ -58,7 +58,7 @@ ADDONS = {
     'desmume':                   ('desmume',                    'Makefile.libretro', 'desmume/src/frontend/libretro', 'desmume/src/frontend/libretro/jni', {}),
     'desmume2015':               ('desmume2015',                'Makefile.libretro', 'desmume', 'desmume/src/libretro/jni', {}),
     'dinothawr':                 ('Dinothawr',                  'Makefile',          '.',                 'jni', {}),
-    #'dolphin':                   ('dolphin',                    '',                  '',                  '', {'cmake': True }),  # Uses git submodules
+    'dolphin':                   ('dolphin',                    '',                  '',                  '', {'cmake': True }),
     'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.',                 'jni', {}),
     'dosbox-core':               ('dosbox-core',                'Makefile.libretro', 'libretro',          'libretro/jni', {'branch': 'libretro --', 'cmake_options': 'BUNDLED_SDL=1', 'soname': 'dosbox_core'}),
     'dosbox-pure':               ('dosbox-pure',                'Makefile',          '.',                 'jni', {'branch': 'main', 'soname': 'dosbox_pure'}),

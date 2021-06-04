@@ -68,6 +68,7 @@ ADDONS = {
     'ecwolf':                    ('ecwolf',                     'Makefile',          'src/libretro',       'src/libretro/jni', {}),
     'fbalpha2012':               ('fbalpha2012',                'makefile.libretro', 'svn-current/trunk', 'svn-current/trunk/projectfiles/libretro-android/jni', {}),
     'fbalpha2012-cps3':          ('fbalpha2012_cps3',           'makefile.libretro', 'svn-current/trunk', 'svn-current/trunk/projectfiles/libretro-android/jni', {'soname': 'fbalpha2012_cps3'}),
+    'fbalpha2012-neogeo':        ('fbalpha2012_neogeo',         'makefile.libretro', '.',                 'projectfiles/libretro-android/jni', {'soname': 'fbalpha2012_neogeo'}),
     'fbneo':                     ('FBNeo',                      'Makefile',          'src/burner/libretro', 'jni', {}),
     'fceumm':                    ('libretro-fceumm',            'Makefile',          '.',                 'jni', {}),
     'flycast':                   ('flycast',                    'Makefile',          '.',                 'jni', {}),

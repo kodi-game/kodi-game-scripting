@@ -143,6 +143,7 @@ ADDONS = {
     'snes9x2010':                ('snes9x2010',                 'Makefile',          '.',                 'jni', {}),
     'stella':                    ('stella2014-libretro',        'Makefile',          '.',                 'jni', {'soname': 'stella2014'}),
     'supafaust':                 ('supafaust',                  'Makefile',          '.',                 'jni', {'soname': 'mednafen_supafaust'}),
+    'swanstation':               ('swanstation',                '',                  '.',                 '', {'branch': 'main', 'cmake': True}),
     'tgbdual':                   ('tgbdual-libretro',           'Makefile',          '.',                 'jni', {}),
     'theodore':                  ('Zlika/theodore',             'Makefile',          '.',                  'jni', {}),
     'thepowdertoy':              ('ThePowderToy',               '',                  '',                  '', {'cmake': True, 'binary_dir': 'src'}),

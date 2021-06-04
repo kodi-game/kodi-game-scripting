@@ -121,6 +121,7 @@ ADDONS = {
     'picodrive':                 ('picodrive',                  'Makefile.libretro', '.',                 'jni', {}),
     'pocketcdg':                 ('libretro-pocketcdg',         'Makefile',          '.',                 'jni', {}),
     'pokemini':                  ('PokeMini',                   'Makefile.libretro', '.',                 'jni', {}),
+    'potator':                   ('potator',                    'Makefile' ,         ' platform/libretro', 'platform/libretro/jni', {}),
     'ppsspp':                    ('ppsspp',                     'Makefile',          'libretro',          'jni', {}),  # Longrunning, requires OpenGL
     'prboom':                    ('libretro-prboom',            'Makefile',          '.',                 'jni', {}),
     'prosystem':                 ('prosystem-libretro',         'Makefile',          '.',                 'jni', {}),

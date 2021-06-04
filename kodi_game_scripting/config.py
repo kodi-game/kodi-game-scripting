@@ -125,7 +125,7 @@ ADDONS = {
     'snes9x':                    ('snes9x',                     'Makefile',          'libretro',          'libretro/jni', {}),
     'snes9x2002':                ('snes9x2002',                 'Makefile',          '.',                 'jni', {}),
     'snes9x2010':                ('snes9x2010',                 'Makefile',          '.',                 'jni', {}),
-    'stella':                    ('stella-libretro',            'Makefile',          '.',                 'jni', {'soname': 'stella2014'}),
+    'stella':                    ('stella2014-libretro',        'Makefile',          '.',                 'jni', {'soname': 'stella2014'}),
     'supafaust':                 ('supafaust',                  'Makefile',          '.',                 'jni', {'soname': 'mednafen_supafaust'}),
     'tgbdual':                   ('tgbdual-libretro',           'Makefile',          '.',                 'jni', {}),
     'theodore':                  ('Zlika/theodore',             'Makefile',          '.',                  'jni', {}),

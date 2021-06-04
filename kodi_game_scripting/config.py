@@ -153,5 +153,6 @@ ADDONS = {
     'vice':                      ('vice-libretro',              'Makefile',          '.',                 'jni', {'soname': 'vice_x64'}),  # Settings broken for option API version 0
     'virtualjaguar':             ('virtualjaguar-libretro',     'Makefile',          '.',                 'jni', {}),
     'xmil':                      ('xmil-libretro',              'Makefile.libretro', 'libretro',          'libretro/jni', {'soname': 'x1'}),
+    'xrick':                     ('xrick-libretro',             'Makefile.libretro', '.',                 'jni', {}),
     'yabause':                   ('yabause',                    'Makefile',          'yabause/src/libretro', 'yabause/src/libretro/jni', {}),
 }

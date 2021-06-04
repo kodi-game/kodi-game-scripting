@@ -82,6 +82,7 @@ ADDONS = {
     'fuse':                      ('fuse-libretro',              'Makefile',          '.',                 'jni', {}),
     'gambatte':                  ('gambatte-libretro',          'Makefile',          '.',                 'libgambatte/libretro/jni', {}),
     'genplus':                   ('Genesis-Plus-GX',            'Makefile.libretro', '.',                 'libretro/jni', {'soname': 'genesis_plus_gx'}),
+    'gong':                      ('gong',                       'Makefile.libretro', '.',                 'jni', {}),  # TODO: No jni folder
     'gpsp':                      ('gpsp',                       'Makefile',          '.',                 'jni', {}),
     'gw':                        ('gw-libretro',                'Makefile',          '.',                 'jni', {}),
     'handy':                     ('libretro-handy',             'Makefile',          '.',                 'jni', {}),

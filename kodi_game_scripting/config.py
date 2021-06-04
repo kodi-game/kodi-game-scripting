@@ -91,7 +91,7 @@ ADDONS = {
     'mame2016':                  ('mame2016-libretro',          'Makefile.libretro', '.',                 '3rdparty/SDL2/android-project/jni', {'cmake_options': 'PTR64=1'}),  # Huge and longrunning
     'melonds':                   ('melonDS',                    'Makefile',          '.',                 'jni', {}),
     'meowpc98':                  ('libretro-meowPC98',          'Makefile.libretro', 'libretro',          'libretro/jni', {'soname': 'nekop2'}),
-    'mesen':                     ('SourMesen/Mesen',            'Makefile',          'Libretro',          'libretro/jni', {}),
+    'mesen':                     ('Mesen',                      'Makefile',          'Libretro',          'Libretro/jni', {}),
     'meteor':                    ('meteor-libretro',            'Makefile',          'libretro',          'libretro/jni', {}),
     'mgba':                      ('mgba',                       'Makefile',          '.',                 'jni', {}),
     'mrboom':                    ('Javanaise/mrboom-libretro',  'Makefile',          '.',                 'libretro/jni', {}),

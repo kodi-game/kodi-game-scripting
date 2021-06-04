@@ -108,6 +108,7 @@ ADDONS = {
     'mu':                        ('Mu',                         'Makefile.libretro', 'libretroBuildSystem', 'libretroBuildSystem/jni', {}),
     'mupen64plus-nx':            ('mupen64plus-libretro-nx',    'Makefile',          '.',                 'jni', {'soname': 'mupen64plus_next'}),
     'nestopia':                  ('nestopia',                   'Makefile',          'libretro',          'libretro/jni', {}),
+    'neocd':                     ('neocd_libretro',             'Makefile',          '.',                 'jni', {}),
     'nx':                        ('nxengine-libretro',          'Makefile',          '.',                 'jni', {'soname': 'nxengine'}),
     'o2em':                      ('libretro-o2em',              'Makefile',          '.',                 'jni', {}),
     'openlara':                  ('OpenLara',                   'Makefile',          'src/platform/libretro', 'src/platform/libretro/jni', {}),

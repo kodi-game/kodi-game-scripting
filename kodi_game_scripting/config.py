@@ -101,6 +101,7 @@ ADDONS = {
     'melonds':                   ('melonDS',                    'Makefile',          '.',                 'jni', {}),
     'meowpc98':                  ('libretro-meowPC98',          'Makefile.libretro', 'libretro',          'libretro/jni', {'soname': 'nekop2'}),
     'mesen':                     ('Mesen',                      'Makefile',          'Libretro',          'Libretro/jni', {}),
+    'mesen-s':                   ('Mesen-S',                    'Makefile',          'Libretro',          'Libretro/jni', {}),
     'meteor':                    ('meteor-libretro',            'Makefile',          'libretro',          'libretro/jni', {}),
     'mgba':                      ('mgba',                       'Makefile',          '.',                 'jni', {}),
     'mrboom':                    ('Javanaise/mrboom-libretro',  'Makefile',          '.',                 'libretro/jni', {}),

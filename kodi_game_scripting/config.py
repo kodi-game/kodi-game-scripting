@@ -111,6 +111,7 @@ ADDONS = {
     'neocd':                     ('neocd_libretro',             'Makefile',          '.',                 'jni', {}),
     'nx':                        ('nxengine-libretro',          'Makefile',          '.',                 'jni', {'soname': 'nxengine'}),
     'o2em':                      ('libretro-o2em',              'Makefile',          '.',                 'jni', {}),
+    'oberon':                    ('oberon-risc-emu',            'Makefile.libretro', '.',                 'Libretro/jni', {}),
     'openlara':                  ('OpenLara',                   'Makefile',          'src/platform/libretro', 'src/platform/libretro/jni', {}),
     'opera':                     ('opera-libretro',             'Makefile',          '.',                 'jni', {}),
     'parallel_n64':              ('parallel-n64',               'Makefile',          '.',                 'jni', {}),

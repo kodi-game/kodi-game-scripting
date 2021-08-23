@@ -31,10 +31,10 @@ jobs:
           repository: xbmc/sync_addon_metadata_translations
           path: sync_addon_metadata_translations
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python {{ '${{ matrix.python-version }}' }}
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: {{ '${{ matrix.python-version }}' }}
 
       - name: Install dependencies
         run: |
@@ -56,5 +56,5 @@ jobs:
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          branch: ${{ github.ref }}
+          branch: {{ '${{ github.ref }}' }}
           directory: ./project

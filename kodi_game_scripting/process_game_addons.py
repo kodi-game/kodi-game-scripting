@@ -166,6 +166,7 @@ class KodiGameAddons:
         for addon in self._addons:
             print(" Processing addon: {}".format(addon.name))
             addon.load_git_tag()
+            addon.load_addon_xml()
             addon.process_addon_files()
             print(" Processing addon description: {}".format(addon.name))
             addon.process_description_files(self._args.kodi_directory)
@@ -268,6 +269,8 @@ class KodiGameAddon():
             'game': {
                 'name': self.game_name,
                 'addon': self.name,
+                'summary': self.game_name,
+                'description': '',
                 'debian_package': re.sub(r'[\._]', '-', self.name),
                 'branch': push_branch or 'master',
                 'version': '0.0.0',
@@ -317,6 +320,13 @@ class KodiGameAddon():
         """ Generate addon files """
         TemplateProcessor.process('addon', self._path, self.info)
 
+    def load_addon_xml(self):
+        """ Load metadata from addon.xml.in """
+        addon_xml_path = os.path.join(self._path, self.name, 'addon.xml.in')
+        xml_data = utils.get_xml_data(addon_xml_path)
+
+        self.info['game']['description'] = xml_data['addon']['extension'][1]['description']['content']
+
     def load_library_file(self):
         """ Load the compiled library file """
         library = None
@@ -331,12 +341,19 @@ class KodiGameAddon():
         except OSError as err:
             self.info['library']['error'] = err
             print("Failed to read output library.")
+
+        # Update summary for loaded info
+        self.info['game']['summary'] = self._get_addon_summary()
+
         return library
 
     def load_info_file(self):
         """ Load info file from libretro-super repository """
         self.info['libretro_info'] = LibretroSuper(self._working_directory) \
             .parse_info_file(self.info['library']['soname'])
+
+        # Update summary for loaded info
+        self.info['game']['summary'] = self._get_addon_summary()
 
     def load_assets(self):
         """ Process assets """
@@ -433,3 +450,18 @@ class KodiGameAddon():
         print("  Pushing changes to GitHub repository {}".format(self.name))
         branch = self.info['game']['branch']
         self._repo.push(branch, tags=(branch == 'master'), sleep=(3 * 60))
+
+    def _get_addon_summary(self) -> str:
+        """ Helper method to generate an add-on summary from its name and version """
+        addon_summary = self.info['libretro_info'].get('display_name')
+        if not addon_summary:
+            addon_summary = self.info['system_info']['name']
+        if not addon_summary:
+            addon_summary = self.game_name
+
+        # Append stylized version
+        addon_version = self.info["system_info"]["version"]
+        if addon_version:
+            addon_summary += ' ' + addon_version
+
+        return addon_summary

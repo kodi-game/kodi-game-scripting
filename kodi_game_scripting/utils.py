@@ -17,7 +17,12 @@
 """ Common utility functions """
 
 import os
+import re
 import shutil
+from typing import Any
+from typing import Dict
+import xml.etree.ElementTree
+import xmljson
 
 
 def ensure_directory_exists(path, clean=False):
@@ -30,6 +35,36 @@ def ensure_directory_exists(path, clean=False):
             os.makedirs(path)
     except OSError:
         pass
+
+
+def get_xml_data(xml_path: str) -> Dict[str, Any]:
+    with open(xml_path, 'r') as xmlfile_ctx:
+        xml_content = xmlfile_ctx.read()
+
+    # Remove variables from xml.in files
+    xml_content = re.sub(r'@([A-Za-z0-9_]+)@', r'AT_\1_AT',
+                         xml_content)
+    xml_data: Dict[str, Any] = {}
+    try:
+        # Like Yahoo converter, but don't omit 'content' if
+        # there are no attributes.
+        converter = xmljson.XMLData(
+            xml_fromstring=False,
+            simple_text=False,
+            text_content="content"
+        )
+        root = xml.etree.ElementTree.fromstring(xml_content)
+        xml_data = converter.data(root)
+
+        # Parsed XML Data will contain OrderedDict() as empty
+        # value which converts to 'OrderedDict()' instead of ''
+        # in the templates. Remove empty fields instead.
+        xml_data = purify(xml_data)
+    except xml.etree.ElementTree.ParseError as err:
+        print("Failed to parse {}: {}".format(
+            xml_path, err))
+
+    return xml_data
 
 
 def list_all_files(path):

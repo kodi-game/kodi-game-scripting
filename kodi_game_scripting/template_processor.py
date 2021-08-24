@@ -19,8 +19,6 @@
 import os
 import re
 import shutil
-import xml.etree.ElementTree
-import xmljson
 
 import jinja2
 
@@ -86,31 +84,7 @@ class TemplateProcessor:
                 # the template. That way templates can decide what data to keep
                 # or override.
                 if '.xml' in infile and os.path.isfile(outfile_path):
-                    with open(outfile_path, 'r') as xmlfile_ctx:
-                        xml_content = xmlfile_ctx.read()
-
-                    # Remove variables from xml.in files
-                    xml_content = re.sub(r'@([A-Za-z0-9_]+)@', r'AT_\1_AT',
-                                         xml_content)
-                    xml_data = {}
-                    try:
-                        # Like Yahoo converter, but don't omit 'content' if
-                        # there are no attributes.
-                        converter = xmljson.XMLData(
-                            xml_fromstring=False,
-                            simple_text=False,
-                            text_content="content"
-                        )
-                        root = xml.etree.ElementTree.fromstring(xml_content)
-                        xml_data = converter.data(root)
-
-                        # Parsed XML Data will contain OrderedDict() as empty
-                        # value which converts to 'OrderedDict()' instead of ''
-                        # in the templates. Remove empty fields instead.
-                        xml_data = utils.purify(xml_data)
-                    except xml.etree.ElementTree.ParseError as err:
-                        print("Failed to parse {}: {}".format(
-                            outfile_path, err))
+                    xml_data = utils.get_xml_data(outfile_path)
                     template_vars.update({'xml': xml_data})
 
                 # Make the datetime of strings files the existing datetime

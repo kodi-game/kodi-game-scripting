@@ -21,28 +21,6 @@
 		<supports_standalone>{{ system_info.supports_no_game | default('false') | lower }}</supports_standalone>
 	</extension>
 	<extension point="xbmc.addon.metadata">
-		{% set summary = addon_name %}
-		{% if system_info.version %}
-			{% set summary = summary + ' ' + system_info.version %}
-		{% endif %}
-		<summary lang="en_GB">{{ summary | e }}</summary>
-		{% if system_info.extensions %}
-			{% set extensions = 'Supported files: ' + system_info.extensions | map('regex_replace', '(.+)', '.\\1') | join(', ') %}
-		{% endif %}
-		{% set description = xml.addon.extension[1].description.content | default('') %}
-		{% if ("Supported files: " in xml.addon.extension[1].description.content) %}
-			{% set description = xml.addon.extension[1].description.content | regex_replace('Supported files: (?:\\.\\w+)(?:,\\s*\\.\\w+)*', extensions | default('')) %}
-		{% elif extensions %}
-			{% set description = xml.addon.extension[1].description.content | default('') + '\n\n' + extensions %}
-		{% endif %}
-		{% if ("License: " in xml.addon.extension[1].description.content) %}
-			{% set description = description | regex_replace('License: .*', '') %}
-		{% endif %}
-		{% set description = description | regex_replace('^(\\s*\\n){2,}', '\n', multiline=True) | trim %}
-		<description lang="en_GB">{{ description | e }}</description>
-		{% if xml.addon.extension[1].disclaimer %}
-		<disclaimer>{{ xml.addon.extension[1].disclaimer.content | e }}</disclaimer>
-		{% endif %}
 		<license>{{ libretro_info.license | default(xml.addon.extension[1].license.content) | default('') | e }}</license>
 		<platform>@PLATFORM@</platform>
 		<source>https://github.com/kodi-game/{{ game.addon }}</source>
@@ -59,5 +37,10 @@
 			{% endfor %}
 		</assets>
 		{% endif %}
+		{% if xml.addon.extension[1].disclaimer %}
+		<disclaimer>{{ xml.addon.extension[1].disclaimer.content | e }}</disclaimer>
+		{% endif %}
+		<summary lang="en_GB">{{ game.summary | e }}</summary>
+		<description lang="en_GB">{{ game.description | e }}</description>
 	</extension>
 </addon>

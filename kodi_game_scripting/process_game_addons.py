@@ -325,7 +325,8 @@ class KodiGameAddon():
         addon_xml_path = os.path.join(self._path, self.name, 'addon.xml.in')
         xml_data = utils.get_xml_data(addon_xml_path)
 
-        self.info['game']['description'] = xml_data['addon']['extension'][1]['description']['content']
+        if xml_data:
+            self.info['game']['description'] = xml_data['addon']['extension'][1]['description']['content']
 
     def load_library_file(self):
         """ Load the compiled library file """

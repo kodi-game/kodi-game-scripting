@@ -38,6 +38,9 @@ def ensure_directory_exists(path, clean=False):
 
 
 def get_xml_data(xml_path: str) -> Dict[str, Any]:
+    if not os.path.exists(xml_path):
+        return {}
+
     with open(xml_path, 'r') as xmlfile_ctx:
         xml_content = xmlfile_ctx.read()
 

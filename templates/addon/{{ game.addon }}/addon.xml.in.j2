@@ -19,6 +19,7 @@
 		<extensions>{{ system_info.extensions | join('|') | e }}</extensions>
 		<supports_vfs>{{ 'false' if system_info.need_fullpath | default('true') else 'true' }}</supports_vfs>
 		<supports_standalone>{{ system_info.supports_no_game | default('false') | lower }}</supports_standalone>
+		<requires_opengl>{{ 'true' if library.opengl | default('false') else 'false' }}</requires_opengl>
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<license>{{ libretro_info.license | default(xml.addon.extension[1].license.content) | default('') | e }}</license>

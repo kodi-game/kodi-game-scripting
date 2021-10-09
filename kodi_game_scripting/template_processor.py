@@ -19,6 +19,7 @@
 import os
 import re
 import shutil
+import xml.sax.saxutils
 
 import jinja2
 
@@ -40,6 +41,13 @@ def regex_replace(string, find, replace, *, multiline=False):
     if multiline:
         flags += re.MULTILINE
     return re.sub(find, replace, string, flags=flags)
+
+
+def escape_xml(string):
+    return xml.sax.saxutils.escape(string, entities={
+        "'": "&#39;",
+        "\"": "&#34;"
+    })
 
 
 class TemplateProcessor:
@@ -97,7 +105,7 @@ class TemplateProcessor:
                     template_vars.update({'datetime': timestamp})
 
                 template = template_env.get_template(infile)
-                content = template.render(template_vars)
+                content = template.render(template_vars, escape_xml=escape_xml)
                 if content:
                     utils.ensure_directory_exists(
                         os.path.dirname(os.path.join(destination, outfile)))

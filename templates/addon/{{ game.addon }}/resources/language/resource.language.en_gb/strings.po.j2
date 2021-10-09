@@ -21,8 +21,14 @@ msgid "{{ game.summary | e }}"
 msgstr ""
 
 msgctxt "Addon Description"
-msgid "{{ game.description | e }}"
+msgid "{{ game.description_english | e }}"
 msgstr ""
+{% if game.disclaimers %}
+
+msgctxt "Addon Disclaimer"
+msgid "{{ game.disclaimer_english | e }}"
+msgstr ""
+{% endif %}
 {% if settings %}
 
 msgctxt "#30000"

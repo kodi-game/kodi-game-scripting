@@ -47,25 +47,21 @@ def get_xml_data(xml_path: str) -> Dict[str, Any]:
     # Remove variables from xml.in files
     xml_content = re.sub(r'@([A-Za-z0-9_]+)@', r'AT_\1_AT',
                          xml_content)
-    xml_data: Dict[str, Any] = {}
-    try:
-        # Like Yahoo converter, but don't omit 'content' if
-        # there are no attributes.
-        converter = xmljson.XMLData(
-            xml_fromstring=False,
-            simple_text=False,
-            text_content="content"
-        )
-        root = xml.etree.ElementTree.fromstring(xml_content)
-        xml_data = converter.data(root)
 
-        # Parsed XML Data will contain OrderedDict() as empty
-        # value which converts to 'OrderedDict()' instead of ''
-        # in the templates. Remove empty fields instead.
-        xml_data = purify(xml_data)
-    except xml.etree.ElementTree.ParseError as err:
-        print("Failed to parse {}: {}".format(
-            xml_path, err))
+    # Like Yahoo converter, but don't omit 'content' if
+    # there are no attributes.
+    converter = xmljson.XMLData(
+        xml_fromstring=False,
+        simple_text=False,
+        text_content="content"
+    )
+    root = xml.etree.ElementTree.fromstring(xml_content)
+    xml_data: Dict[str, Any] = converter.data(root)
+
+    # Parsed XML Data will contain OrderedDict() as empty
+    # value which converts to 'OrderedDict()' instead of ''
+    # in the templates. Remove empty fields instead.
+    xml_data = purify(xml_data)
 
     return xml_data
 

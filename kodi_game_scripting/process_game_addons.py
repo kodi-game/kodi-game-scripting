@@ -326,7 +326,24 @@ class KodiGameAddon():
         xml_data = utils.get_xml_data(addon_xml_path)
 
         if xml_data:
-            self.info['game']['description'] = xml_data['addon']['extension'][1]['description']['content']
+            listify = lambda var: var if isinstance(var, list) else [var]
+
+            descriptions = listify(xml_data['addon']['extension'][1]['description'])
+            disclaimers = listify(xml_data['addon']['extension'][1].get('disclaimer', []))
+
+            self.info['game']['descriptions'] = descriptions
+            self.info['game']['disclaimers'] = disclaimers
+
+            def get_english(string_tags):
+                for string_tag in string_tags:
+                    if 'lang' not in string_tag or string_tag['lang'] == 'en_GB':
+                        return string_tag['content']
+                if not string_tags:
+                    return ''
+                raise Exception(f"Couldn't find en_GB string in {string_tags}")
+
+            self.info['game']['description_english'] = get_english(descriptions)
+            self.info['game']['disclaimer_english'] = get_english(disclaimers)
 
     def load_library_file(self):
         """ Load the compiled library file """

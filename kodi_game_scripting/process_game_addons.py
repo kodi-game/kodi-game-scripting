@@ -328,9 +328,11 @@ class KodiGameAddon():
         if xml_data:
             listify = lambda var: var if isinstance(var, list) else [var]
 
+            summaries = listify(xml_data['addon']['extension'][1]['summary'])
             descriptions = listify(xml_data['addon']['extension'][1]['description'])
             disclaimers = listify(xml_data['addon']['extension'][1].get('disclaimer', []))
 
+            self.info['game']['summaries'] = summaries
             self.info['game']['descriptions'] = descriptions
             self.info['game']['disclaimers'] = disclaimers
 
@@ -342,6 +344,7 @@ class KodiGameAddon():
                     return ''
                 raise Exception(f"Couldn't find en_GB string in {string_tags}")
 
+            self.info['game']['summary_english'] = get_english(summaries)
             self.info['game']['description_english'] = get_english(descriptions)
             self.info['game']['disclaimer_english'] = get_english(disclaimers)
 

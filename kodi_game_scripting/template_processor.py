@@ -43,13 +43,6 @@ def regex_replace(string, find, replace, *, multiline=False):
     return re.sub(find, replace, string, flags=flags)
 
 
-def escape_xml(string):
-    return xml.sax.saxutils.escape(string, entities={
-        "'": "&#39;",
-        "\"": "&#34;"
-    })
-
-
 class TemplateProcessor:
     """ Process Jinja2 templates """
 
@@ -105,7 +98,7 @@ class TemplateProcessor:
                     template_vars.update({'datetime': timestamp})
 
                 template = template_env.get_template(infile)
-                content = template.render(template_vars, escape_xml=escape_xml)
+                content = template.render(template_vars, regex_replace=regex_replace)
                 if content:
                     utils.ensure_directory_exists(
                         os.path.dirname(os.path.join(destination, outfile)))

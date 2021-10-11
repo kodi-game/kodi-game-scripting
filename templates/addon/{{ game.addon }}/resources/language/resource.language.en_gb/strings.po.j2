@@ -17,16 +17,16 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "Addon Summary"
-msgid "{{ game.summary | e }}"
+msgid "{{ regex_replace(game.summary_english, '"', '\\"') }}"
 msgstr ""
 
 msgctxt "Addon Description"
-msgid "{{ game.description_english | e }}"
+msgid "{{ regex_replace(game.description_english, '"', '\\"') }}"
 msgstr ""
 {% if game.disclaimers %}
 
 msgctxt "Addon Disclaimer"
-msgid "{{ game.disclaimer_english | e }}"
+msgid "{{ regex_replace(game.disclaimer_english, '"', '\\"') }}"
 msgstr ""
 {% endif %}
 {% if settings %}
@@ -37,7 +37,7 @@ msgstr ""
 {% for setting in settings %}
 
 msgctxt "#{{ 30000 + loop.index }}"
-msgid "{{ setting.description }}"
+msgid "{{ regex_replace(setting.description, '"', '\\"') }}"
 msgstr ""
 {% endfor %}
 {% endif %}

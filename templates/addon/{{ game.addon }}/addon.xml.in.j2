@@ -38,12 +38,14 @@
 			{% endfor %}
 		</assets>
 		{% endif %}
-		<summary lang="en_GB">{{ game.summary | e }}</summary>
+		{% for summary in game.summaries %}
+		<summary lang="{{ summary.lang | default('en_GB') | e }}">{{ summary.content | e }}</summary>
+		{% endfor %}
 		{% for description in game.descriptions %}
-		<description lang="{{ description.lang | default('en_GB') }}">{{ escape_xml(description.content) }}</description>
+		<description lang="{{ description.lang | default('en_GB') | e }}">{{ description.content | e }}</description>
 		{% endfor %}
 		{% for disclaimer in game.disclaimers %}
-		<disclaimer lang="{{ disclaimer.lang | default('en_GB') }}">{{ escape_xml(disclaimer.content) | e }}</disclaimer>
+		<disclaimer lang="{{ disclaimer.lang | default('en_GB') | e }}">{{ disclaimer.content | e }}</disclaimer>
 		{% endfor %}
 	</extension>
 </addon>

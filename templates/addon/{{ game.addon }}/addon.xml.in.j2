@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon id="{{ game.addon }}"
 	{% set addon_name = libretro_info.display_name | default(xml.addon.name) | default(system_info.name) | default(game.name) %}
-		name="{{ addon_name | e }}"
+		name="{{ addon_name | escape }}"
 		version="{{ game.version | default(xml.addon.version) | default('0.0.0') }}"
 		provider-name="{{ libretro_info.authors | default('Libretro') | replace('|', ', ')}}">
 	<requires>
@@ -15,14 +15,14 @@
 	</requires>
 	<extension point="kodi.gameclient"
 			library_@PLATFORM@="@LIBRARY_FILENAME@">
-		<platforms>{{ xml.addon.extension[0].platforms.content | default('') | e }}</platforms>
-		<extensions>{{ system_info.extensions | join('|') | e }}</extensions>
+		<platforms>{{ xml.addon.extension[0].platforms.content | default('') | escape }}</platforms>
+		<extensions>{{ system_info.extensions | join('|') | escape }}</extensions>
 		<supports_vfs>{{ 'false' if system_info.need_fullpath | default('true') else 'true' }}</supports_vfs>
 		<supports_standalone>{{ system_info.supports_no_game | default('false') | lower }}</supports_standalone>
 		<requires_opengl>{{ 'true' if library.opengl | default('false') else 'false' }}</requires_opengl>
 	</extension>
 	<extension point="xbmc.addon.metadata">
-		<license>{{ libretro_info.license | default(xml.addon.extension[1].license.content) | default('') | e }}</license>
+		<license>{{ libretro_info.license | default(xml.addon.extension[1].license.content) | default('') | escape }}</license>
 		<platform>@PLATFORM@</platform>
 		<source>https://github.com/kodi-game/{{ game.addon }}</source>
 		{% if assets %}
@@ -39,13 +39,13 @@
 		</assets>
 		{% endif %}
 		{% for summary in game.summaries %}
-		<summary lang="{{ summary.lang | default('en_GB') | e }}">{{ summary.content | e }}</summary>
+		<summary lang="{{ summary.lang | default('en_GB') | escape }}">{{ summary.content | escape }}</summary>
 		{% endfor %}
 		{% for description in game.descriptions %}
-		<description lang="{{ description.lang | default('en_GB') | e }}">{{ description.content | e }}</description>
+		<description lang="{{ description.lang | default('en_GB') | escape }}">{{ description.content | escape }}</description>
 		{% endfor %}
 		{% for disclaimer in game.disclaimers %}
-		<disclaimer lang="{{ disclaimer.lang | default('en_GB') | e }}">{{ disclaimer.content | e }}</disclaimer>
+		<disclaimer lang="{{ disclaimer.lang | default('en_GB') | escape }}">{{ disclaimer.content | escape }}</disclaimer>
 		{% endfor %}
 	</extension>
 </addon>

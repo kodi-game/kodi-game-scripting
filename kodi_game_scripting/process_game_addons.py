@@ -338,7 +338,7 @@ class KodiGameAddon():
 
             def get_english(string_tags):
                 for string_tag in string_tags:
-                    if 'lang' not in string_tag or string_tag['lang'] == 'en_GB':
+                    if 'lang' not in string_tag or string_tag['lang'].lower() in ['en', 'en_gb']:
                         return string_tag['content']
                 if not string_tags:
                     return ''

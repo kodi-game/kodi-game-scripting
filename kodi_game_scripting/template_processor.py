@@ -43,6 +43,17 @@ def regex_replace(string, find, replace, *, multiline=False):
     return re.sub(find, replace, string, flags=flags)
 
 
+def escape_xml(string):
+    """Filter: Replace unsafe XML characters with named references"""
+    return (
+        string.replace('&', '&amp;')
+        .replace("'", '&apos;')
+        .replace('"', '&quot;')
+        .replace('<', '&lt;')
+        .replace('>', '&gt;')
+    )
+
+
 class TemplateProcessor:
     """ Process Jinja2 templates """
 
@@ -65,6 +76,7 @@ class TemplateProcessor:
 
         template_env.filters["regex_replace"] = regex_replace
         template_env.filters["get_list"] = get_list
+        template_env.filters["escape_xml"] = escape_xml
 
         # Loop over all templates
         for infile in utils.list_all_files(template_dir):

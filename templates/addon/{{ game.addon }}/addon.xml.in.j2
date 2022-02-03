@@ -39,13 +39,13 @@
 		</assets>
 		{% endif %}
 		{% for summary in game.summaries %}
-		<summary lang="{{ summary.lang | default('en_GB') | escape }}">{{ summary.content | escape }}</summary>
+		<summary lang="{{ summary.lang | default('en_GB') | escape }}">{{ summary.content | escape_xml }}</summary>
 		{% endfor %}
 		{% for description in game.descriptions %}
-		<description lang="{{ description.lang | default('en_GB') | escape }}">{{ description.content | escape }}</description>
+		<description lang="{{ description.lang | default('en_GB') | escape }}">{{ description.content | escape_xml }}</description>
 		{% endfor %}
 		{% for disclaimer in game.disclaimers %}
-		<disclaimer lang="{{ disclaimer.lang | default('en_GB') | escape }}">{{ disclaimer.content | escape }}</disclaimer>
+		<disclaimer lang="{{ disclaimer.lang | default('en_GB') | escape }}">{{ disclaimer.content | escape_xml }}</disclaimer>
 		{% endfor %}
 	</extension>
 </addon>

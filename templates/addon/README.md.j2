@@ -1,6 +1,44 @@
-# {{ game.addon }} addon for Kodi
-
-This is a [Kodi](http://kodi.tv) game addon for {{ libretro_info.display_name | default(xml.addon.name) | default(system_info.name) | default(game.name) }}.
-
 [![Build Status](https://travis-ci.org/kodi-game/{{ game.addon }}.svg?branch=master)](https://travis-ci.org/kodi-game/{{ game.addon }})
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/kodi-game/{{ game.addon }}?svg=true)](https://ci.appveyor.com/project/kodi-game/{{ game.addon | regex_replace('[\._]', '-') }})
+
+# {{ libretro_info.display_name | default(xml.addon.name) | default(system_info.name) | default(game.name) }}
+
+### Description
+
+{{ regex_replace(regex_replace(regex_replace(game.description_english, '\\[CR\\]', '\n'), '\\[/?I\\]', '*'), '\\[/?B\\]', '**') }}
+
+### License
+
+{{ libretro_info.license | default(xml.addon.extension[1].license.content) }}
+
+### Icon
+
+{% if assets.icon %}
+![Icon]({{ game.addon }}/{{ assets.icon }})
+{% else %}
+Help make me an icon!
+{% endif %}
+
+### Fanart
+
+{% if assets.fanart %}
+![Fanart]({{ game.addon }}/{{ assets.fanart }})
+{% else %}
+Help make me fanart!
+{% endif %}
+
+### Screenshots
+
+{% if assets.screenshots %}
+{% for screenshot in assets.screenshots %}
+![Screenshot]({{ game.addon }}/{{ screenshot }})
+{% endfor %}
+{% else %}
+Help make me screenshots!
+{% endif %}
+{% if game.disclaimers %}
+
+### Disclaimer
+
+*{{ regex_replace(regex_replace(regex_replace(game.disclaimer_english, '\\[CR\\]', '\n'), '\\[/?I\\]', ''), '\\[/?B\\]', '**') }}*
+{% endif %}

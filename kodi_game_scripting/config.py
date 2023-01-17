@@ -87,7 +87,7 @@ ADDONS = {
     'genplus-wide':              ('Genesis-Plus-GX-Wide',       'Makefile.libretro', '.',                 'libretro/jni', {'soname': 'genesis_plus_gx_wide', 'branch': 'main'}),
     'gong':                      ('gong',                       'Makefile.libretro', '.',                 'jni', {}),  # TODO: No jni folder
     'gpsp':                      ('gpsp',                       'Makefile',          '.',                 'jni', {}),
-    'gw':                        ('gw-libretro',                'Makefile',          '.',                 'jni', {}),
+    'gw':                        ('gw-libretro',                'Makefile',          '.',                 'build/jni', {}),
     'handy':                     ('libretro-handy',             'Makefile',          '.',                 'jni', {}),
     'hatari':                    ('hatari',                     'Makefile.libretro', '.',                 'libretro/jni', {}),
     'hbmame':                    ('hbmame-libretro',            'Makefile.libretro', '.',                 'jni', {}),

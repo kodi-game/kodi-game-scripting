@@ -89,7 +89,7 @@ ADDONS = {
     'gpsp':                      ('gpsp',                       'Makefile',          '.',                 'jni', {}),
     'gw':                        ('gw-libretro',                'Makefile',          '.',                 'jni', {}),
     'handy':                     ('libretro-handy',             'Makefile',          '.',                 'jni', {}),
-    'hatari':                    ('hatari',                     'Makefile.libretro', '.',                 'jni', {}),
+    'hatari':                    ('hatari',                     'Makefile.libretro', '.',                 'libretro/jni', {}),
     'hbmame':                    ('hbmame-libretro',            'Makefile.libretro', '.',                 'jni', {}),
     'lutro':                     ('libretro-lutro',             'Makefile',          '.',                 'jni', {}),
     'mame':                      ('mame',                       'Makefile.libretro', '.',                 'jni', {'cmake_options': 'PTR64=1'}),  # Huge and longrunning

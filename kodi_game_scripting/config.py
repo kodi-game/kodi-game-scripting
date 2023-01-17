@@ -146,7 +146,7 @@ ADDONS = {
     'swanstation':               ('swanstation',                '',                  '.',                 '', {'branch': 'main', 'cmake': True}),
     'tgbdual':                   ('tgbdual-libretro',           'Makefile',          '.',                 'jni', {}),
     'theodore':                  ('Zlika/theodore',             'Makefile',          '.',                  'jni', {}),
-    'thepowdertoy':              ('ThePowderToy',               '',                  '',                  '', {'cmake': True, 'binary_dir': 'src'}),
+    'thepowdertoy':              ('kodi-game/ThePowderToy',     '',                  '',                  '', {'cmake': True, 'binary_dir': 'src', 'jnisoname': 'thepowdertoy_libretro_android'}),
     'tyrquake':                  ('tyrquake',                   'Makefile',          '.',                 'jni', {}),
     'uae':                       ('libretro-uae',               'Makefile',          '.',                 'jni', {'soname': 'puae'}),
     #'uae4arm':                   ('uae4arm-libretro',           'Makefile',          '.',                 'jni', {}),  # Fails to build on non arm system

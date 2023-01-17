@@ -80,7 +80,7 @@ ADDONS = {
     'freeintv':                  ('FreeIntv',                   'Makefile',          '.',                 'jni', {}),
     'frodo':                     ('frodo-libretro',             'Makefile',          '.',                 'jni', {}),
     #'fsuae':                     ('libretro-fsuae',             'Makefile.libretro', '.',                 'jni', {'branch': 'libretro-fsuae'}),  # Fails to build
-    'fuse':                      ('fuse-libretro',              'Makefile',          '.',                 'jni', {}),
+    'fuse':                      ('fuse-libretro',              'Makefile',          '.',                 'build/jni', {}),
     'gambatte':                  ('gambatte-libretro',          'Makefile',          '.',                 'libgambatte/libretro/jni', {}),
     'gearboy':                   ('Gearboy',                    'Makefile',          'platforms/libretro', 'platforms/libretro/jni', {}),
     'genplus':                   ('Genesis-Plus-GX',            'Makefile.libretro', '.',                 'libretro/jni', {'soname': 'genesis_plus_gx'}),

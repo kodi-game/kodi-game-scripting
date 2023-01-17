@@ -128,7 +128,7 @@ ADDONS = {
     'prboom':                    ('libretro-prboom',            'Makefile',          '.',                 'jni', {}),
     'prosystem':                 ('prosystem-libretro',         'Makefile',          '.',                 'jni', {}),
     'px68k':                     ('px68k-libretro',             'Makefile.libretro', '.',                 'jni', {}),
-    'quasi88':                   ('quasi88-libretro',           'Makefile',          '.',                 'jni', {}),
+    'quasi88':                   ('quasi88-libretro',           'Makefile',          '.',                 'src/LIBRETRO/jni', {}),
     'quicknes':                  ('QuickNES_Core',              'Makefile',          '.',                 'jni', {}),
     'race':                      ('RACE',                       'Makefile',          '.',                 'jni', {}),
     'reminiscence':              ('REminiscence',               'Makefile',          '.',                 'jni', {}),

@@ -74,7 +74,7 @@ ADDONS = {
     'fbalpha2012-neogeo':        ('fbalpha2012_neogeo',         'makefile.libretro', '.',                 'projectfiles/libretro-android/jni', {'soname': 'fbalpha2012_neogeo'}),
     'fbneo':                     ('FBNeo',                      'Makefile',          'src/burner/libretro', 'src/burner/libretro/jni', {}),
     'fceumm':                    ('libretro-fceumm',            'Makefile',          '.',                 'jni', {}),
-    'flycast':                   ('flycast',                    'Makefile',          '.',                 'jni', {}),
+    'flycast':                   ('kodi-game/flycast',          'Makefile',          '.',                 'jni', {}),
     'fmsx':                      ('fmsx-libretro',              'Makefile',          '.',                 'jni', {}),
     'freechaf':                  ('FreeChaF',                   'Makefile',          '.',                 'jni', {}),
     'freeintv':                  ('FreeIntv',                   'Makefile',          '.',                 'jni', {}),

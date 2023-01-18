@@ -76,7 +76,7 @@ ADDONS = {
     'fceumm':                    ('libretro-fceumm',            'Makefile',          '.',                 'jni', {}),
     'flycast':                   ('kodi-game/flycast',          'Makefile',          '.',                 'jni', {}),
     'fmsx':                      ('fmsx-libretro',              'Makefile',          '.',                 'jni', {}),
-    'freechaf':                  ('FreeChaF',                   'Makefile',          '.',                 'jni', {}),
+    'freechaf':                  ('kodi-game/FreeChaF',         'Makefile',          '.',                 'jni', {}),
     'freeintv':                  ('FreeIntv',                   'Makefile',          '.',                 'jni', {}),
     'frodo':                     ('frodo-libretro',             'Makefile',          '.',                 'jni', {}),
     #'fsuae':                     ('libretro-fsuae',             'Makefile.libretro', '.',                 'jni', {'branch': 'libretro-fsuae'}),  # Fails to build

@@ -79,7 +79,7 @@ ADDONS = {
     'freechaf':                  ('kodi-game/FreeChaF',         'Makefile',          '.',                 'jni', {}),
     'freeintv':                  ('FreeIntv',                   'Makefile',          '.',                 'jni', {}),
     'frodo':                     ('frodo-libretro',             'Makefile',          '.',                 'jni', {}),
-    #'fsuae':                     ('libretro-fsuae',             'Makefile.libretro', '.',                 'jni', {'branch': 'libretro-fsuae'}),  # Fails to build
+    #'fsuae':                     ('kodi-game/libretro-fsuae',   'Makefile.libretro', '.',                 'jni', {'branch': 'libretro-fsuae'}), # Requires configure command: "./autogen.sh && ./configure && make gen"
     'fuse':                      ('fuse-libretro',              'Makefile',          '.',                 'build/jni', {}),
     'gambatte':                  ('gambatte-libretro',          'Makefile',          '.',                 'libgambatte/libretro/jni', {}),
     'gearboy':                   ('Gearboy',                    'Makefile',          'platforms/libretro', 'platforms/libretro/jni', {}),

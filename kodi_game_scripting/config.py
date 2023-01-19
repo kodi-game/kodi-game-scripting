@@ -138,6 +138,7 @@ ADDONS = {
     'remotejoy':                 ('libretro-remotejoy',         'Makefile',          '.',                 'jni', {}),
     'retro8':                    ('retro8',                     'Makefile',          '.',                 'jni', {}),
     #'rustation':                 ('rustation-libretro',         'Makefile',          '.',                 'jni', {}),  # Checkout fails
+    'same_cdi':                  ('same_cdi',                   'Makefile.libretro', '.',                 'jni', {}),
     'sameboy':                   ('SameBoy',                    'Makefile',          'libretro',          'libretro/jni', {'branch': 'buildbot'}),
     'scummvm':                   ('kodi-game/scummvm',          'Makefile',          '.',                 'jni', {'branch': 'main'}),
     'smsplus-gx':                ('smsplus-gx',                 'Makefile.libretro', '.',                 'jni', {'soname': 'smsplus'}),

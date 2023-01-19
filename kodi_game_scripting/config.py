@@ -93,6 +93,7 @@ ADDONS = {
     'handy':                     ('libretro-handy',             'Makefile',          '.',                 'jni', {}),
     'hatari':                    ('hatari',                     'Makefile.libretro', '.',                 'libretro/jni', {}),
     'hbmame':                    ('hbmame-libretro',            'Makefile.libretro', '.',                 '3rdparty/SDL2/android-project/jni', {}),
+    'lrps2':                     ('kodi-game/LRPS2',            '',                  '.',                 '', {'cmake': True, 'branch': 'main', 'soname': 'pcsx2'}),
     'lutro':                     ('libretro-lutro',             'Makefile',          '.',                 'jni', {}),
     'mame':                      ('mame',                       'Makefile.libretro', '.',                 'jni', {'cmake_options': 'PTR64=1'}),  # Huge and longrunning
     'mame2000':                  ('mame2000-libretro',          'Makefile',          '.',                 'jni', {}),

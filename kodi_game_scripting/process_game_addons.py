@@ -279,6 +279,7 @@ class KodiGameAddon():
             'datetime': '{0:%Y-%m-%d %H:%Mi%z}'.format(
                 datetime.datetime.now()),
             'system_info': {
+                'name': '',
                 'version': '0.0.0',
             },
             'settings': [],

@@ -82,6 +82,7 @@ ADDONS = {
     'frodo':                     ('frodo-libretro',             'Makefile',          '.',                 'jni', {}),
     #'fsuae':                     ('kodi-game/libretro-fsuae',   'Makefile.libretro', '.',                 'jni', {'branch': 'libretro-fsuae'}), # Requires configure command: "./autogen.sh && ./configure && make gen"
     'fuse':                      ('fuse-libretro',              'Makefile',          '.',                 'build/jni', {}),
+    'galaxy':                    ('galaxy-libretro',            'Makefile',          '.',                 'jni', {'branch': 'main', 'soname': 'galaksija'}),
     'gambatte':                  ('gambatte-libretro',          'Makefile',          '.',                 'libgambatte/libretro/jni', {}),
     'gearboy':                   ('Gearboy',                    'Makefile',          'platforms/libretro', 'platforms/libretro/jni', {}),
     'genplus':                   ('Genesis-Plus-GX',            'Makefile.libretro', '.',                 'libretro/jni', {'soname': 'genesis_plus_gx'}),

@@ -133,6 +133,7 @@ ADDONS = {
     'quasi88':                   ('quasi88-libretro',           'Makefile',          '.',                 'src/LIBRETRO/jni', {}),
     'quicknes':                  ('QuickNES_Core',              'Makefile',          '.',                 'jni', {}),
     'race':                      ('RACE',                       'Makefile',          '.',                 'jni', {}),
+    'redbook':                   ('redbook',                    'Makefile',          '.',                 'jni', {}),
     'reminiscence':              ('REminiscence',               'Makefile',          '.',                 'jni', {}),
     'remotejoy':                 ('libretro-remotejoy',         'Makefile',          '.',                 'jni', {}),
     'retro8':                    ('retro8',                     'Makefile',          '.',                 'jni', {}),

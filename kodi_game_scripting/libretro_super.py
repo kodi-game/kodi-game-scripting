@@ -40,7 +40,10 @@ class LibretroSuper:
         """ Load info file from libretro-super repository """
         path = os.path.join(self._working_directory, 'libretro-super', 'dist',
                             'info', '{}.info'.format(library_soname))
-        result = {}
+        result = {
+            'license': 'Unlicensed',
+        }
+
         if os.path.isfile(path):
             with open(path, 'r') as info_ctx:
                 for line in info_ctx.readlines():

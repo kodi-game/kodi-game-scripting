@@ -471,7 +471,7 @@ class KodiGameAddon():
         """ Pushing changes to GitHub repository """
         print("  Pushing changes to GitHub repository {}".format(self.name))
         branch = self.info['game']['branch']
-        self._repo.push(branch, tags=(branch == 'master'), sleep=(3 * 60))
+        self._repo.push(branch, tags=(branch == 'master'), sleep=1)
 
     def _get_addon_summary(self) -> str:
         """ Helper method to generate an add-on summary from its name and version """

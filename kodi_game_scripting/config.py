@@ -160,7 +160,7 @@ ADDONS = {
     'vbam':                      ('vbam-libretro',              'Makefile',          'src/libretro',      'src/libretro/jni', {}),
     'vecx':                      ('libretro-vecx',              'Makefile',          '.',                 'jni', {}),
     'vemulator':                 ('vemulator-libretro',         'Makefile',          '.',                 'jni', {}),
-    'vice':                      ('vice-libretro',              'Makefile',          '.',                 'jni', {'soname': 'vice_x64'}),  # Settings broken for option API version 0
+    'vice':                      ('kodi-game/vice-libretro',    'Makefile',          '.',                 'jni', {'soname': 'vice_x64'}),
     'virtualjaguar':             ('virtualjaguar-libretro',     'Makefile',          '.',                 'jni', {}),
     'wolfenstein3d':             ('kodi-game/libretro-wolfenstein3d', 'Makefile.libretro', '.',           'jni', {}),
     'xmil':                      ('xmil-libretro',              'Makefile.libretro', 'libretro',          'libretro/jni', {'soname': 'x1'}),

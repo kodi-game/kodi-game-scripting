@@ -153,7 +153,7 @@ ADDONS = {
     'theodore':                  ('Zlika/theodore',             'Makefile',          '.',                  'jni', {}),
     'thepowdertoy':              ('kodi-game/ThePowderToy',     '',                  '',                  '', {'cmake': True, 'binary_dir': 'src', 'jnisoname': 'thepowdertoy_libretro_android'}),
     'tyrquake':                  ('tyrquake',                   'Makefile',          '.',                 'jni', {}),
-    'uae':                       ('libretro-uae',               'Makefile',          '.',                 'jni', {'soname': 'puae'}),
+    'uae':                       ('kodi-game/libretro-uae',     'Makefile',          '.',                 'jni', {'soname': 'puae'}),
     #'uae4arm':                   ('uae4arm-libretro',           'Makefile',          '.',                 'jni', {}),  # Fails to build on non arm system
     'uzem':                      ('libretro-uzem',              'Makefile.libretro', '.',                 'jni', {}),
     'vba-next':                  ('vba-next',                   'Makefile',          '.',                 'libretro/jni', {'soname': 'vba_next'}),

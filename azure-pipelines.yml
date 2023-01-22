@@ -48,6 +48,9 @@ jobs:
     - script: |
         sudo apt update
 
+        # 3dengine
+        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
+
         # boom3
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 

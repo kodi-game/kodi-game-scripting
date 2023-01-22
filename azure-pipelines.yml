@@ -157,7 +157,7 @@ jobs:
           - vba-next
           - uzem
           #- uae4arm # Doesn't run on x86_64
-          #- uae # Problem with settings
+          - uae
           - tyrquake
           - thepowdertoy
           - theodore

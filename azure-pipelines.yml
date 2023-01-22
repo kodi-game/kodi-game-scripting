@@ -201,7 +201,7 @@ jobs:
           - neocd
           - mupen64plus-nx
           - mu
-          #- mrboom # Problem with settings
+          - mrboom
           - mgba
           - meteor
           - mesen-s

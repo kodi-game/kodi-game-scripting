@@ -150,7 +150,7 @@ jobs:
           - xmil
           #- wolfenstein3d # Doesn't compile
           - virtualjaguar
-          #- vice # Problem with settings
+          - vice
           - vemulator
           - vecx
           - vbam

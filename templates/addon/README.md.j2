@@ -1,3 +1,4 @@
+{% set addon_name = libretro_info.display_name | default(xml.addon.name) | default(system_info.name) | default(game.name) %}
 [![Build Status](https://travis-ci.org/kodi-game/{{ game.addon }}.svg?branch=master)](https://travis-ci.org/kodi-game/{{ game.addon }})
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/kodi-game/{{ game.addon }}?svg=true)](https://ci.appveyor.com/project/kodi-game/{{ game.addon | regex_replace('[\._]', '-') }})
 
@@ -14,7 +15,7 @@
 ### Icon
 
 {% if assets.icon %}
-![Icon]({{ game.addon }}/{{ assets.icon }})
+![{{ addon_name }} icon]({{ game.addon }}/{{ assets.icon }})
 {% else %}
 Help make me an icon!
 {% endif %}
@@ -22,7 +23,7 @@ Help make me an icon!
 ### Fanart
 
 {% if assets.fanart %}
-![Fanart]({{ game.addon }}/{{ assets.fanart }})
+![{{ addon_name }} fanart]({{ game.addon }}/{{ assets.fanart }})
 {% else %}
 Help make me fanart!
 {% endif %}
@@ -31,7 +32,7 @@ Help make me fanart!
 
 {% if assets.screenshots %}
 {% for screenshot in assets.screenshots %}
-![Screenshot]({{ game.addon }}/{{ screenshot }})
+![{{ addon_name }} screenshot]({{ game.addon }}/{{ screenshot }})
 {% endfor %}
 {% else %}
 Help make me screenshots!

@@ -16,7 +16,7 @@
 
 # TODO: Run as a cron job
 trigger:
-- master
+- todo-disabled-for-now
 
 jobs:
   - job: Build

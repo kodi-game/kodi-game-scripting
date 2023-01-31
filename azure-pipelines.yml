@@ -105,6 +105,9 @@ jobs:
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
         dpkg -s nasm || sudo apt install -y nasm
 
+        # openlara
+        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
+
         # parallel_n64
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
         dpkg -s nasm || sudo apt install -y nasm

@@ -162,7 +162,7 @@ ADDONS = {
     'vemulator':                 ('vemulator-libretro',         'Makefile',          '.',                 'jni', {}),
     'vice':                      ('kodi-game/vice-libretro',    'Makefile',          '.',                 'jni', {'soname': 'vice_x64'}),
     'virtualjaguar':             ('virtualjaguar-libretro',     'Makefile',          '.',                 'jni', {}),
-    'wolfenstein3d':             ('kodi-game/libretro-wolfenstein3d', 'Makefile.libretro', '.',           'jni', {}),
+    #'wolfenstein3d':             ('kodi-game/libretro-wolfenstein3d', 'Makefile.libretro', '.',           'jni', {}),  # Requires SDL 1
     'xmil':                      ('xmil-libretro',              'Makefile.libretro', 'libretro',          'libretro/jni', {'soname': 'x1'}),
     'xrick':                     ('xrick-libretro',             'Makefile.libretro', '.',                 'jni', {}),
     'yabause':                   ('yabause',                    'Makefile',          'yabause/src/libretro', 'yabause/src/libretro/jni', {}),

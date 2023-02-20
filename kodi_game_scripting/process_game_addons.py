@@ -464,7 +464,7 @@ class KodiGameAddon():
         """ Creating tags in Git repository """
         print("  Creating tags in Git repository {}: {}".format(
             self.name, self.info['game']['version']))
-        for branch in ['Matrix']:
+        for branch in ['Nexus']:
             self._repo.tag('{}-{}'.format(self.info['game']['version'], branch))
 
     def push(self):

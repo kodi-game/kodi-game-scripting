@@ -156,7 +156,16 @@ jobs:
           - xmil
           #- wolfenstein3d # Doesn't compile
           - virtualjaguar
-          - vice
+          - vice_xvic
+          - vice_xscpu64
+          - vice_xplus4
+          - vice_xpet
+          - vice_xcbm5x0
+          - vice_xcbm2
+          - vice_x64sc
+          - vice_x64dtv
+          - vice_x64
+          - vice_x128
           - vemulator
           - vecx
           - vbam

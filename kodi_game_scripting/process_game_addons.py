@@ -365,7 +365,14 @@ class KodiGameAddon():
             print("Failed to read output library.")
 
         # Update summary for loaded info
-        self.info['game']['summary'] = self._get_addon_summary()
+        summary_english = self._get_addon_summary()
+
+        self.info['game']['summary'] = summary_english
+        self.info['game']['summary_english'] = summary_english
+
+        for string_tag in self.info['game']['summaries']:
+            if 'lang' not in string_tag or string_tag['lang'].lower() in ['en', 'en_gb']:
+                string_tag['content'] = summary_english
 
         return library
 

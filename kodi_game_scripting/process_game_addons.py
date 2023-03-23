@@ -481,9 +481,4 @@ class KodiGameAddon():
         if not addon_summary:
             addon_summary = self.game_name
 
-        # Append stylized version
-        addon_version = self.info["system_info"]["version"]
-        if addon_version:
-            addon_summary += ' ' + addon_version
-
         return addon_summary

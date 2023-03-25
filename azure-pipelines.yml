@@ -233,6 +233,7 @@ jobs:
           #- mame # Insanely huge and long running (hours and 50GB on a fast machine)
           - lutro
           - lrps2
+          - jumpnbump
           - hbmame
           - hatari
           - handy

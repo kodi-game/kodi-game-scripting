@@ -280,6 +280,8 @@ jobs:
           - bsnes-mercury-performance
           - bsnes-mercury-balanced
           - bsnes-mercury-accuracy
+          - bsnes-hd
+          - bsnes
           - boom3
           - bnes
           - bluemsx

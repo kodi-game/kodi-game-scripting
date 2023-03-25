@@ -48,6 +48,8 @@ ADDONS = {
     'bluemsx':                   ('blueMSX-libretro',           'Makefile',          '.',                 'jni', {}),
     'bnes':                      ('bnes-libretro',              'Makefile',          '.',                 'libretro/jni', {}),
     'boom3':                     ('boom3',                      'Makefile',          'neo',               'jni', {}),
+    'bsnes':                     ('bsnes-libretro',             'Makefile',          '.',                 'bsnes/target-libretro/jni', {}),
+    'bsnes-hd':                  ('DerKoun/bsnes-hd',           'GNUmakefile',       'bsnes',             'bsnes/target-libretro/jni', {'binary_dir': 'bsnes/out', 'soname': 'bsnes_hd_beta', 'cmake_options': 'target=libretro local=false binary=library'}),
     'bsnes-mercury-accuracy':    ('bsnes-mercury',              'Makefile',          '.',                 'target-libretro/jni', {'soname': 'bsnes_mercury_accuracy', 'jnisoname': 'libretro', 'cmake_options': 'PROFILE=accuracy'}),
     'bsnes-mercury-balanced':    ('bsnes-mercury',              'Makefile',          '.',                 'target-libretro/jni', {'soname': 'bsnes_mercury_balanced', 'jnisoname': 'libretro', 'cmake_options': 'PROFILE=balanced'}),
     'bsnes-mercury-performance': ('bsnes-mercury',              'Makefile',          '.',                 'target-libretro/jni', {'soname': 'bsnes_mercury_performance', 'jnisoname': 'libretro', 'cmake_options': 'PROFILE=performance'}),

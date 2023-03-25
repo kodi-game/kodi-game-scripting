@@ -297,6 +297,7 @@ jobs:
           - beetle-gba
           - beetle-bsnes
           - atari800
+          - a5200
           - 81
           - 3dengine
           - 2048

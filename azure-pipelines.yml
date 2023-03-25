@@ -242,6 +242,8 @@ jobs:
           - gong
           - genplus-wide
           - genplus
+          - gearsystem
+          - gearcoleco
           - gearboy
           - gambatte
           - galaxy

@@ -122,18 +122,16 @@ class KodiGameAddons:
         """ Prepare and check the environment (directories and config) """
         # Check if given filter matches with config.py
         addons = {k: v for k, v in ADDONS.items()
-                  if re.search(self._args.filter, k)}
+                  if k == self._args.filter}
         if not addons:
             raise ValueError("Filter doesn't match any items in config.py")
 
         # Check GitHub repos
         repos = {}
         if self._args.git:
-            regex = (self._args.filter if self._args.filter
-                     else GITHUB_ADDON_PREFIX)
-            print("Querying GitHub repos matching '{}'".format(regex))
+            print("Querying GitHub repos matching '{}'".format(self._args.filter))
             self._github = GitHubOrg(GITHUB_ORGANIZATION, auth=True)
-            repos = self._github.get_repos(regex)
+            repos = self._github.get_repos(f"{GITHUB_ADDON_PREFIX}{self._args.filter}")
 
         # Create Addon objects
         self._addons = []

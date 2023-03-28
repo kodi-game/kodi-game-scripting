@@ -217,6 +217,7 @@ jobs:
           - mupen64plus-nx
           - mu
           - mrboom
+          - minivmac
           - mgba
           - meteor
           - mesen-s

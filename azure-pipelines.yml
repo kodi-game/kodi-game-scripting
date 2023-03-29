@@ -240,7 +240,7 @@ jobs:
           - mame2003_midway
           - mame2003
           - mame2000
-          #- mame # Insanely huge and long running (hours and 50GB on a fast machine)
+          - mame # Insanely huge and long running (hours and 50GB on a fast machine)
           - lutro
           - lrps2
           - jumpnbump

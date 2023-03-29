@@ -164,7 +164,7 @@ ADDONS = {
     #'uae4arm':                   ('uae4arm-libretro',           'Makefile',          '.',                 'jni', {}),  # Fails to build on non arm system
     'uzem':                      ('libretro-uzem',              'Makefile.libretro', '.',                 'jni', {}),
     'vba-next':                  ('vba-next',                   'Makefile',          '.',                 'libretro/jni', {'soname': 'vba_next'}),
-    'vbam':                      ('vbam-libretro',              'Makefile',          'src/libretro',      'src/libretro/jni', {}),
+    'vbam':                      ('visualboyadvance-m/visualboyadvance-m', 'Makefile', 'src/libretro',    'src/libretro/jni', {}),
     'vecx':                      ('libretro-vecx',              'Makefile',          '.',                 'jni', {}),
     'vemulator':                 ('vemulator-libretro',         'Makefile',          '.',                 'jni', {}),
     'vice_x128':                 ('vice-libretro',              'Makefile',          '.',                 'jni', {'soname': 'vice_x128', 'cmake_options': 'EMUTYPE=x128'}),

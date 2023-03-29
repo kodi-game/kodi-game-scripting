@@ -161,7 +161,7 @@ ADDONS = {
     'thepowdertoy':              ('kodi-game/ThePowderToy',     '',                  '',                  '', {'cmake': True, 'binary_dir': 'src'}),
     'tyrquake':                  ('tyrquake',                   'Makefile',          '.',                 'jni', {}),
     'uae':                       ('libretro-uae',               'Makefile',          '.',                 'jni', {'soname': 'puae'}),
-    #'uae4arm':                   ('uae4arm-libretro',           'Makefile',          '.',                 'jni', {}),  # Fails to build on non arm system
+    #'uae4arm':                   ('Chips-fr/uae4arm-rpi',       'Makefile.libretro', '.',                 'jni', {}),  # Fails to build on non arm system
     'uzem':                      ('libretro-uzem',              'Makefile.libretro', '.',                 'jni', {}),
     'vba-next':                  ('vba-next',                   'Makefile',          '.',                 'libretro/jni', {'soname': 'vba_next'}),
     'vbam':                      ('visualboyadvance-m/visualboyadvance-m', 'Makefile', 'src/libretro',    'src/libretro/jni', {}),

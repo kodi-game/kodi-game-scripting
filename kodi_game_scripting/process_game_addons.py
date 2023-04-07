@@ -122,7 +122,7 @@ class KodiGameAddons:
         """ Prepare and check the environment (directories and config) """
         # Check if given filter matches with config.py
         addons = {k: v for k, v in ADDONS.items()
-                  if k == self._args.filter}
+                  if not self._args.filter or k == self._args.filter}
         if not addons:
             raise ValueError("Filter doesn't match any items in config.py")
 

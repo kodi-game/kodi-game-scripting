@@ -101,6 +101,14 @@ jobs:
         # melonds
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
+        # moonlight
+        dpkg -s libavcodec-dev || sudo apt install -y libavcodec-dev
+        dpkg -s libavdevice-dev || sudo apt install -y libavdevice-dev
+        dpkg -s libavformat-dev || sudo apt install -y libavformat-dev
+        dpkg -s libcurl4-openssl-dev || sudo apt install -y libcurl4-openssl-dev
+        dpkg -s libgl-dev || sudo apt install -y libgl-dev
+        dpkg -s libopus-dev || sudo apt install -y libopus-dev
+
         # mupen64plus-nx
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
         dpkg -s nasm || sudo apt install -y nasm
@@ -217,6 +225,8 @@ jobs:
           - mupen64plus-nx
           - mu
           - mrboom
+          - moonlight
+          - minivmac
           - mgba
           - meteor
           - mesen-s
@@ -230,9 +240,10 @@ jobs:
           - mame2003_midway
           - mame2003
           - mame2000
-          #- mame # Insanely huge and long running (hours and 50GB on a fast machine)
+          - mame # Insanely huge and long running (hours and 50GB on a fast machine)
           - lutro
           - lrps2
+          - jumpnbump
           - hbmame
           - hatari
           - handy
@@ -241,6 +252,8 @@ jobs:
           - gong
           - genplus-wide
           - genplus
+          - gearsystem
+          - gearcoleco
           - gearboy
           - gambatte
           - galaxy
@@ -279,6 +292,8 @@ jobs:
           - bsnes-mercury-performance
           - bsnes-mercury-balanced
           - bsnes-mercury-accuracy
+          - bsnes-hd
+          - bsnes
           - boom3
           - bnes
           - bluemsx
@@ -297,6 +312,7 @@ jobs:
           - beetle-gba
           - beetle-bsnes
           - atari800
+          - a5200
           - 81
           - 3dengine
           - 2048

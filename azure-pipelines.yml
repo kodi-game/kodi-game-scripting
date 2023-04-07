@@ -101,6 +101,14 @@ jobs:
         # melonds
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
+        # moonlight
+        dpkg -s libavcodec-dev || sudo apt install -y libavcodec-dev
+        dpkg -s libavdevice-dev || sudo apt install -y libavdevice-dev
+        dpkg -s libavformat-dev || sudo apt install -y libavformat-dev
+        dpkg -s libcurl4-openssl-dev || sudo apt install -y libcurl4-openssl-dev
+        dpkg -s libgl-dev || sudo apt install -y libgl-dev
+        dpkg -s libopus-dev || sudo apt install -y libopus-dev
+
         # mupen64plus-nx
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
         dpkg -s nasm || sudo apt install -y nasm
@@ -217,6 +225,7 @@ jobs:
           - mupen64plus-nx
           - mu
           - mrboom
+          - moonlight
           - minivmac
           - mgba
           - meteor

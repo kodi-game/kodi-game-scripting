@@ -51,6 +51,9 @@ jobs:
         # 3dengine
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
+        # beetle-psx-hw
+        dpkg -s libgl-dev || sudo apt install libgl-dev
+
         # boom3
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
@@ -303,6 +306,7 @@ jobs:
           - beetle-vb
           - beetle-supergrafx
           - beetle-saturn
+          - beetle-psx-hw
           - beetle-psx
           - beetle-pcfx
           - beetle-pce-fast

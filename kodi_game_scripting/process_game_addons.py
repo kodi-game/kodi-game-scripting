@@ -165,6 +165,7 @@ class KodiGameAddons:
             print(" Processing addon: {}".format(addon.name))
             addon.load_git_tag()
             addon.load_addon_xml()
+            addon.load_strings()
             addon.process_addon_files()
             print(" Processing addon description: {}".format(addon.name))
             addon.process_description_files(self._args.kodi_directory)
@@ -281,6 +282,8 @@ class KodiGameAddon():
                 'version': '0.0.0',
             },
             'settings': [],
+            'oldstrings': [],
+            'strings': [],
             'libretro_info': {},
             'libretro_repo': {
                 'org': os.path.dirname(addon_config[0]) or 'libretro',
@@ -347,6 +350,41 @@ class KodiGameAddon():
             self.info['game']['description_english'] = get_english(descriptions)
             self.info['game']['disclaimer_english'] = get_english(disclaimers)
 
+    def load_strings(self):
+        """ Load strings from strings.po """
+        strings_path = os.path.join(self._path, self.name, 'resources', 'language',
+                                    'resource.language.en_gb', 'strings.po')
+
+        if os.path.isfile(strings_path):
+            with open(strings_path, 'r') as stringsfile_ctx:
+                strings_content = stringsfile_ctx.read()
+
+            # Loop through lines in strings.po and extract strings, assigning
+            # them to self.info['strings'].
+            #
+            # Example string looks like:
+            #
+            #   msgctxt "#30001"
+            #   msgid "System > Model"
+            #   msgstr ""
+            #
+            for line in strings_content.splitlines():
+                if line.startswith('msgctxt') and '#' in line:
+                    # Extract string ID from line
+                    string_id = int(line.split('"')[1][1:])
+
+                    # Read next line
+                    line = strings_content.splitlines()[strings_content.splitlines().index(line) + 1]
+
+                    # Extract string content from line
+                    string_content = line.split('"')[1]
+
+                    # Append string to self.info['strings']
+                    self.info['oldstrings'].append({
+                        'id': string_id,
+                        'content': string_content
+                    })
+
     def load_library_file(self):
         """ Load the compiled library file """
         library = None
@@ -356,7 +394,8 @@ class KodiGameAddon():
             library = LibretroWrapper(library_path)
             self.info['library']['loaded'] = True
             self.info['system_info'] = library.system_info
-            self.info['settings'] = library.variables
+            self.info['settings'] = self._get_settings(library.variables, self.info['oldstrings'])
+            self.info['strings'] = self._get_strings(self.info['settings'])
             self.info['library']['opengl'] = library.opengl_linkage
         except OSError as err:
             self.info['library']['error'] = err
@@ -487,3 +526,70 @@ class KodiGameAddon():
             addon_summary = self.game_name
 
         return addon_summary
+
+    @classmethod
+    def _get_settings(cls, variables, strings):
+        """ Get settings from libretro variables, while preserving string IDs """
+        settings = []
+
+        for variable in variables:
+            # Get description
+            description = variable.description
+
+            # Search for existing string ID
+            string_id = None
+            for string in strings:
+                if string['content'] == description:
+                    string_id = string['id']
+                    break
+
+            # If no string ID was found, add an ID to the end of the list
+            if string_id is None:
+                if len(strings) > 0:
+                    string_id = strings[-1]['id'] + 1
+                    # Update the strings array so that the next ID will be incremented
+                    strings.append({
+                        'id': string_id,
+                        'content': description,
+                    })
+                else:
+                    string_id = cls._get_max_string_id(settings) + 1
+
+            # Append the setting
+            settings.append({
+                'id': variable.id,
+                'label': string_id,
+                'description': description,
+                'values': variable.values,
+                'default': variable.default
+            })
+
+        return settings
+
+    @staticmethod
+    def _get_max_string_id(settings):
+        """ Get the maximum string ID from a list of settings, starting from 30000 """
+        max_id = 30000
+
+        for setting in settings:
+            if setting['label'] > max_id:
+                max_id = setting['label']
+
+        return max_id
+
+    @staticmethod
+    def _get_strings(settings):
+        """ Get strings from settings by sorting via string ID """
+        strings = []
+
+        # Loop through settings and append strings
+        for setting in settings:
+            strings.append({
+                'id': setting['label'],
+                'content': setting['description']
+            })
+
+        # Sort by string ID
+        strings.sort(key=lambda string: string['id'])
+
+        return strings

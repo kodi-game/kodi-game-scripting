@@ -3,7 +3,7 @@
 <settings>
 	<category label="30000">
 	{% for setting in settings %}
-		<setting label="{{ 30000 + loop.index }}" type="select" id="{{ setting.id | e }}" values="{{ setting['values']|join('|') | e }}" default="{{ setting.default | e }}"/>
+		<setting label="{{ setting.label }}" type="select" id="{{ setting.id | e }}" values="{{ setting['values']|join('|') | e }}" default="{{ setting.default | e }}"/>
 	{% endfor %}
 	</category>
 </settings>

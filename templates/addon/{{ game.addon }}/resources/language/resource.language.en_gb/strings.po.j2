@@ -29,15 +29,15 @@ msgctxt "Addon Disclaimer"
 msgid "{{ regex_replace(game.disclaimer_english, '"', '\\"') }}"
 msgstr ""
 {% endif %}
-{% if settings %}
+{% if strings %}
 
 msgctxt "#30000"
 msgid "Settings"
 msgstr ""
-{% for setting in settings %}
+{% for string in strings %}
 
-msgctxt "#{{ 30000 + loop.index }}"
-msgid "{{ regex_replace(setting.description, '"', '\\"') }}"
+msgctxt "#{{ string.id }}"
+msgid "{{ regex_replace(string.content, '"', '\\"') }}"
 msgstr ""
 {% endfor %}
 {% endif %}

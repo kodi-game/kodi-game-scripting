@@ -88,6 +88,7 @@ jobs:
 
         # hbmame
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
+        dpkg -s python2 || sudo apt install -y python2
 
         # lrps2
         dpkg -s ccache || sudo apt install -y ccache

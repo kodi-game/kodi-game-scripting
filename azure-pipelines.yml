@@ -72,9 +72,9 @@ jobs:
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
         # dosbox-core
-        dpkg -s libasound2-dev || sudo apt install -y libasound2-dev
-        dpkg -s libtool-bin || sudo apt install -y libtool-bin
-        dpkg -s ninja-build || sudo apt install -y ninja-build
+        #dpkg -s libasound2-dev || sudo apt install -y libasound2-dev
+        #dpkg -s libtool-bin || sudo apt install -y libtool-bin
+        #dpkg -s ninja-build || sudo apt install -y ninja-build
 
         # flycast
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
@@ -278,7 +278,7 @@ jobs:
           - ep128emu
           - ecwolf
           - dosbox-pure
-          - dosbox-core
+          #- dosbox-core # Add-on marked as broken
           - dosbox
           - dolphin
           - dinothawr

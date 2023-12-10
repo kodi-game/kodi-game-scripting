@@ -139,6 +139,9 @@ jobs:
 
         # wolfenstein3d
         #dpkg -s libsdl1.2-dev || sudo apt install -y libsdl1.2-dev
+
+        # yabasanshiro
+        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
       displayName: 'Install system dependencies'
 
     # TODO: git authorship
@@ -164,6 +167,7 @@ jobs:
         # List add-ons in reverse order for sorted results in the kodi-game org
         addons:
           - yabause
+          - yabasanshiro
           - xrick
           - xmil
           #- wolfenstein3d # Doesn't compile

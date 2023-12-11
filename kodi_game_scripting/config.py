@@ -59,7 +59,7 @@ ADDONS = {
     'bsnes2014-performance':     ('bsnes2014',                  'Makefile',          '.',                 'target-libretro/jni', {'branch': 'libretro --', 'soname': 'bsnes2014_performance', 'cmake_options': 'PROFILE=performance'}),
     'cannonball':                ('cannonball',                 'Makefile',          '.',                 'jni', {}),
     'cap32':                     ('libretro-cap32',             'Makefile',          '.',                 'jni', {}),
-    'chailove':                  ('libretro-chailove',          'Makefile',          '.',                 'jni', {'git_tag': True}),
+    'chailove':                  ('kodi-game/libretro-chailove', 'Makefile',         '.',                 'jni', {}),
     'craft':                     ('Craft',                      'Makefile.libretro', '.',                 'jni', {}),
     'crocods':                   ('libretro-crocods',           'Makefile',          '.',                 'jni', {}),
     'daphne':                    ('daphne',                     'Makefile',          '.',                 'jni', {}),

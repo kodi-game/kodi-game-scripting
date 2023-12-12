@@ -183,5 +183,6 @@ ADDONS = {
     #'wolfenstein3d':             ('kodi-game/libretro-wolfenstein3d', 'Makefile.libretro', '.',           'jni', {}),  # Requires SDL 1
     'xmil':                      ('xmil-libretro',              'Makefile.libretro', 'libretro',          'libretro/jni', {'soname': 'x1'}),
     'xrick':                     ('xrick-libretro',             'Makefile.libretro', '.',                 'jni', {}),
+    'yabasanshiro':              ('yabause',                    'Makefile',          'yabause/src/libretro', 'yabause/src/libretro/jni', {'branch': 'yabasanshiro'}),
     'yabause':                   ('yabause',                    'Makefile',          'yabause/src/libretro', 'yabause/src/libretro/jni', {}),
 }

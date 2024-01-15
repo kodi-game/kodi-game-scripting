@@ -95,6 +95,7 @@ ADDONS = {
     'gearsystem':                ('drhelius/Gearsystem',        'Makefile',          'platforms/libretro', 'platforms/libretro/jni', {}),
     'genplus':                   ('Genesis-Plus-GX',            'Makefile.libretro', '.',                 'libretro/jni', {'soname': 'genesis_plus_gx'}),
     'genplus-wide':              ('Genesis-Plus-GX-Wide',       'Makefile.libretro', '.',                 'libretro/jni', {'soname': 'genesis_plus_gx_wide', 'branch': 'main'}),
+    'gme':                       ('libretro-gme',               'Makefile',          '.',                 'jni', {}),
     'gong':                      ('gong',                       'Makefile.libretro', '.',                 'jni', {}),  # TODO: No jni folder
     'gpsp':                      ('gpsp',                       'Makefile',          '.',                 'jni', {}),
     'gw':                        ('gw-libretro',                'Makefile',          '.',                 'build/jni', {}),

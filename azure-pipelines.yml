@@ -268,6 +268,7 @@ jobs:
           - gw
           - gpsp
           - gong
+          - gme
           - genplus-wide
           - genplus
           - gearsystem

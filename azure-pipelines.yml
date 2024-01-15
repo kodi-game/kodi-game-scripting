@@ -189,6 +189,7 @@ jobs:
           - vice_x64dtv
           - vice_x64
           - vice_x128
+          #- vice # Renamed to vice_x64
           - vemulator
           - vecx
           - vbam

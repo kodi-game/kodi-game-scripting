@@ -183,6 +183,7 @@ ADDONS = {
     'vice_xplus4':               ('vice-libretro',              'Makefile',          '.',                 'jni', {'soname': 'vice_xplus4', 'cmake_options': 'EMUTYPE=xplus4'}),
     'vice_xscpu64':              ('vice-libretro',              'Makefile',          '.',                 'jni', {'soname': 'vice_xscpu64', 'cmake_options': 'EMUTYPE=xscpu64'}),
     'vice_xvic':                 ('vice-libretro',              'Makefile',          '.',                 'jni', {'soname': 'vice_xvic', 'cmake_options': 'EMUTYPE=xvic'}),
+    'vice':                      ('vice-libretro',              'Makefile',          '.',                 'jni', {'soname': 'vice_x64', 'cmake_options': 'EMUTYPE=x64'}),
     'virtualjaguar':             ('virtualjaguar-libretro',     'Makefile',          '.',                 'jni', {}),
     #'wolfenstein3d':             ('kodi-game/libretro-wolfenstein3d', 'Makefile.libretro', '.',           'jni', {}),  # Requires SDL 1
     'xmil':                      ('xmil-libretro',              'Makefile.libretro', 'libretro',          'libretro/jni', {'soname': 'x1'}),

@@ -113,6 +113,10 @@ jobs:
         dpkg -s libgl-dev || sudo apt install -y libgl-dev
         dpkg -s libopus-dev || sudo apt install -y libopus-dev
 
+        # mupen64plus
+        #dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
+        #dpkg -s nasm || sudo apt install -y nasm
+
         # mupen64plus-nx
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
         dpkg -s nasm || sudo apt install -y nasm
@@ -235,6 +239,7 @@ jobs:
           - nestopia
           - neocd
           - mupen64plus-nx
+          #- mupen64plus # Renamed to mupen64plus-nx
           - mu
           - mrboom
           - moonlight

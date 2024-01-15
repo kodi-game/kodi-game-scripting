@@ -73,6 +73,7 @@ ADDONS = {
     'dosbox-pure':               ('dosbox-pure',                'Makefile',          '.',                 'jni', {'branch': 'main', 'soname': 'dosbox_pure'}),
     'ecwolf':                    ('kodi-game/ecwolf',           'Makefile',          'src/libretro',      'src/libretro/jni', {}),
     'ep128emu':                  ('ep128emu-core',              'Makefile',          '.',                 'jni', {'branch': 'core', 'soname': 'ep128emu_core'}),
+    'fbalpha':                   ('fbalpha',                    'makefile.libretro', '.',                 'jni', {}),
     'fbalpha2012':               ('fbalpha2012',                'makefile.libretro', 'svn-current/trunk', 'svn-current/trunk/projectfiles/libretro-android/jni', {}),
     'fbalpha2012-cps1':          ('fbalpha2012_cps1',           'makefile.libretro', '.',                 'projectfiles/libretro-android/jni', {'soname': 'fbalpha2012_cps1'}),
     'fbalpha2012-cps2':          ('fbalpha2012_cps2',           'makefile.libretro', '.',                 'projectfiles/libretro-android/jni', {'soname': 'fbalpha2012_cps2'}),

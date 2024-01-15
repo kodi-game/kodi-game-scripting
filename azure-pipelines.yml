@@ -279,6 +279,7 @@ jobs:
           - fbalpha2012-cps2
           - fbalpha2012-cps1
           - fbalpha2012
+          #- fbalpha # Renamed to fbneo
           - ep128emu
           - ecwolf
           - dosbox-pure

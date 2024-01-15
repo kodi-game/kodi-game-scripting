@@ -146,6 +146,7 @@ ADDONS = {
     'quicknes':                  ('QuickNES_Core',              'Makefile',          '.',                 'jni', {}),
     'race':                      ('RACE',                       'Makefile',          '.',                 'jni', {}),
     'redbook':                   ('redbook',                    'Makefile',          '.',                 'jni', {}),
+    'reicast':                   ('kodi-game/reicast',          'Makefile',          '.',                 'jni', {'soname': 'flycast'}),
     'reminiscence':              ('REminiscence',               'Makefile',          '.',                 'jni', {}),
     'remotejoy':                 ('libretro-remotejoy',         'Makefile',          '.',                 'jni', {}),
     'retro8':                    ('retro8',                     'Makefile',          '.',                 'jni', {}),

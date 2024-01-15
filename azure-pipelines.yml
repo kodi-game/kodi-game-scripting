@@ -131,6 +131,9 @@ jobs:
         # ppsspp
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
+        # reicast
+        #dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
+
         # same_cdi
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
@@ -207,6 +210,7 @@ jobs:
           - retro8
           - remotejoy
           - reminiscence
+          #- reicast # Renamed to flycast
           - redbook
           - race
           - quicknes

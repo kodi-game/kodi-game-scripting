@@ -28,6 +28,7 @@ GITHUB_ADDON_PREFIX = 'game.libretro.'
 ADDONS = {
     '2048':                      ('libretro-2048',              'Makefile.libretro', '.',                 'jni', {}),
     '3dengine':                  ('libretro-3dengine',          'Makefile',          '.',                 'jni', {}),
+    '4do':                       ('kodi-game/4do-libretro',     'Makefile',          '.',                 'jni', {}),
     '81':                        ('81-libretro',                'Makefile',          '.',                 'build/jni', {}),
     'a5200':                     ('a5200',                      'Makefile',          '.',                 'jni', {}),
     'atari800':                  ('libretro-atari800',          'Makefile',          '.',                 'jni', {}),

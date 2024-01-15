@@ -323,6 +323,7 @@ jobs:
           - atari800
           - a5200
           - 81
+          #- 4do # Renamed to opera
           - 3dengine
           - 2048
 

@@ -120,7 +120,7 @@ ADDONS = {
     'moonlight':                 ('kodi-game/moonlight-libretro','Makefile',          '.',                 '', {}),
     'mrboom':                    ('kodi-game/mrboom-libretro',  'Makefile',          '.',                 'libretro/jni', {}),
     'mu':                        ('Mu',                         'Makefile.libretro', 'libretroBuildSystem', 'libretroBuildSystem/jni', {}),
-    'mupen64plus-nx':            ('mupen64plus-libretro-nx',    'Makefile',          '.',                 'jni', {'soname': 'mupen64plus_next'}),
+    'mupen64plus-nx':            ('mupen64plus-libretro-nx',    'Makefile',          '.',                 'libretro/jni', {'soname': 'mupen64plus_next'}),
     'nestopia':                  ('nestopia',                   'Makefile',          'libretro',          'libretro/jni', {}),
     'neocd':                     ('neocd_libretro',             'Makefile',          '.',                 'jni', {}),
     'nx':                        ('nxengine-libretro',          'Makefile',          '.',                 'jni', {'soname': 'nxengine'}),

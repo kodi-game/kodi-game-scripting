@@ -113,6 +113,10 @@ jobs:
         dpkg -s libgl-dev || sudo apt install -y libgl-dev
         dpkg -s libopus-dev || sudo apt install -y libopus-dev
 
+        # mupen64plus
+        #dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
+        #dpkg -s nasm || sudo apt install -y nasm
+
         # mupen64plus-nx
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
         dpkg -s nasm || sudo apt install -y nasm
@@ -130,6 +134,9 @@ jobs:
 
         # ppsspp
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
+
+        # reicast
+        #dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
         # same_cdi
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
@@ -182,6 +189,7 @@ jobs:
           - vice_x64dtv
           - vice_x64
           - vice_x128
+          #- vice # Renamed to vice_x64
           - vemulator
           - vecx
           - vbam
@@ -207,6 +215,7 @@ jobs:
           - retro8
           - remotejoy
           - reminiscence
+          #- reicast # Renamed to flycast
           - redbook
           - race
           - quicknes
@@ -231,6 +240,7 @@ jobs:
           - nestopia
           - neocd
           - mupen64plus-nx
+          #- mupen64plus # Renamed to mupen64plus-nx
           - mu
           - mrboom
           - moonlight
@@ -258,6 +268,7 @@ jobs:
           - gw
           - gpsp
           - gong
+          - gme
           - genplus-wide
           - genplus
           - gearsystem
@@ -279,6 +290,7 @@ jobs:
           - fbalpha2012-cps2
           - fbalpha2012-cps1
           - fbalpha2012
+          #- fbalpha # Renamed to fbneo
           - ep128emu
           - ecwolf
           - dosbox-pure
@@ -323,6 +335,7 @@ jobs:
           - atari800
           - a5200
           - 81
+          #- 4do # Renamed to opera
           - 3dengine
           - 2048
 

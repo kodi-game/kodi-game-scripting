@@ -158,7 +158,7 @@ jobs:
       displayName: 'Set Git authorship'
 
     - script: |
-        git clone --branch retroplayer-20 --depth=1 https://github.com/garbear/xbmc.git kodi
+        git clone --branch retroplayer-21 --depth=1 https://github.com/garbear/xbmc.git kodi
       displayName: 'Clone Kodi'
 
     - task: UsePythonVersion@0

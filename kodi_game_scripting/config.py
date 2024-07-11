@@ -155,7 +155,7 @@ ADDONS = {
     #'rustation':                 ('rustation-libretro',         'Makefile',          '.',                 'jni', {}),  # Checkout fails
     'same_cdi':                  ('same_cdi',                   'Makefile.libretro', '.',                 'jni', {}),
     'sameboy':                   ('SameBoy',                    'Makefile',          'libretro',          'libretro/jni', {'branch': 'buildbot'}),
-    'scummvm':                   ('libretro/scummvm-wrapper',   'Makefile',          '.',                 'jni', {'branch': 'main'}),
+    'scummvm':                   ('scummvm',                    'Makefile',          'backends/platform/libretro', 'backends/platform/libretro/jni', {}),
     'smsplus-gx':                ('smsplus-gx',                 'Makefile.libretro', '.',                 'jni', {'soname': 'smsplus'}),
     'snes9x':                    ('snes9x',                     'Makefile',          'libretro',          'libretro/jni', {}),
     'snes9x2002':                ('snes9x2002',                 'Makefile',          '.',                 'jni', {}),

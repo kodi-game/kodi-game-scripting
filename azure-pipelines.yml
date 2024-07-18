@@ -101,6 +101,7 @@ jobs:
 
         # mame2016
         dpkg -s libasound2-dev || sudo apt install -y libasound2-dev
+        dpkg -s python2 || sudo apt install -y python2
 
         # melonds
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev

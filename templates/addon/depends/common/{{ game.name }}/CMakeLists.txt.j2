@@ -27,15 +27,19 @@ if(CORE_SYSTEM_NAME STREQUAL windows)
                     -j$ENV{NUMBER_OF_PROCESSORS}
                     -C {{ makefile.dir }}
                     -f {{ makefile.file }}
-                    platform=win
+                    ${LIBRETRO_DEBUG}
+                    GIT_VERSION=
                     MSYSTEM=${MSYSTEM}
-                    {{ config.cmake_options | default('') }} ${LIBRETRO_DEBUG} GIT_VERSION=)
+                    platform=win
+                    {{ config.cmake_options | default('') }})
 elseif(CORE_SYSTEM_NAME STREQUAL linux)
   set(BUILD_COMMAND $(MAKE)
                     -C {{ makefile.dir }}
                     -f {{ makefile.file }}
+                    ${LIBRETRO_DEBUG}
+                    GIT_VERSION=
                     platform=unix
-                    {{ config.cmake_options | default('') }} ${LIBRETRO_DEBUG} GIT_VERSION=)
+                    {{ config.cmake_options | default('') }})
 elseif(CORE_SYSTEM_NAME STREQUAL osx)
   if(CPU STREQUAL arm64)
     set(ARCH arm)
@@ -45,12 +49,14 @@ elseif(CORE_SYSTEM_NAME STREQUAL osx)
   set(BUILD_COMMAND $(MAKE)
                     -C {{ makefile.dir }}
                     -f {{ makefile.file }}
-                    platform=osx
+                    ${LIBRETRO_DEBUG}
                     arch=${ARCH}
                     CROSS_COMPILE=1
-                    LIBRETRO_APPLE_PLATFORM=${CPU}-apple-macos
+                    GIT_VERSION=
                     LIBRETRO_APPLE_ISYSROOT=${CMAKE_OSX_SYSROOT}
-                    {{ config.cmake_options | default('') }} ${LIBRETRO_DEBUG} GIT_VERSION=)
+                    LIBRETRO_APPLE_PLATFORM=${CPU}-apple-macos
+                    platform=osx
+                    {{ config.cmake_options | default('') }})
 elseif(CORE_SYSTEM_NAME STREQUAL ios OR CORE_SYSTEM_NAME STREQUAL darwin_embedded)
   if(CORE_PLATFORM_NAME STREQUAL ios)
     set(LIBRETRO_SONAME {{ library.soname }}_ios${CMAKE_SHARED_LIBRARY_SUFFIX})
@@ -62,15 +68,19 @@ elseif(CORE_SYSTEM_NAME STREQUAL ios OR CORE_SYSTEM_NAME STREQUAL darwin_embedde
     set(BUILD_COMMAND IOSSDK=${CMAKE_OSX_SYSROOT} $(MAKE)
                                                   -C {{ makefile.dir }}
                                                   -f {{ makefile.file }}
+                                                  ${LIBRETRO_DEBUG}
+                                                  GIT_VERSION=
                                                   platform=${PLATFORM}
-                                                  {{ config.cmake_options | default('') }} ${LIBRETRO_DEBUG} GIT_VERSION=)
+                                                  {{ config.cmake_options | default('') }})
   elseif(CORE_PLATFORM_NAME STREQUAL tvos)
     set(LIBRETRO_SONAME {{ library.soname }}_tvos${CMAKE_SHARED_LIBRARY_SUFFIX})
     set(BUILD_COMMAND IOSSDK=${CMAKE_OSX_SYSROOT} $(MAKE)
                                                   -C {{ makefile.dir }}
                                                   -f {{ makefile.file }}
+                                                  ${LIBRETRO_DEBUG}
+                                                  GIT_VERSION=
                                                   platform=tvos-arm64
-                                                  {{ config.cmake_options | default('') }} ${LIBRETRO_DEBUG} GIT_VERSION=)
+                                                  {{ config.cmake_options | default('') }})
   endif()
 elseif(CORE_SYSTEM_NAME STREQUAL android)
   if(NOT NDKROOT)
@@ -87,11 +97,13 @@ elseif(CORE_SYSTEM_NAME STREQUAL android)
   endif()
   set(BUILD_COMMAND GNUMAKE=$(MAKE) ${NDKROOT}/ndk-build
                                     -C {{ makefile.jni }}
+                                    ${LIBRETRO_DEBUG}
                                     APP_ABI=${PLATFORM}
-                                    V7NEONOPTIMIZATION=1
+                                    GIT_VERSION=
                                     NDK_LIBS_OUT=${PROJECT_SOURCE_DIR}/${LIBRETRO_BINARY_DIR}
                                     V=1
-                                    {{ config.cmake_options | default('') }} ${LIBRETRO_DEBUG} GIT_VERSION=
+                                    V7NEONOPTIMIZATION=1
+                                    {{ config.cmake_options | default('') }}
                     && cp ${PROJECT_SOURCE_DIR}/${LIBRETRO_BINARY_DIR}/${PLATFORM}/${LIBRETRO_JNISONAME} ${PROJECT_SOURCE_DIR}/${LIBRETRO_BINARY_DIR}/${LIBRETRO_SONAME})
   {% else %}
   if(CPU STREQUAL armeabi-v7a)
@@ -106,8 +118,10 @@ elseif(CORE_SYSTEM_NAME STREQUAL android)
   set(BUILD_COMMAND PATH=${TOOLCHAIN_DIR}:$ENV{PATH} $(MAKE)
                                                      -C {{ makefile.dir }}
                                                      -f {{ makefile.file }}
+                                                     ${LIBRETRO_DEBUG}
+                                                     GIT_VERSION=
                                                      platform=${PLATFORM}
-                                                     {{ config.cmake_options | default('') }} ${LIBRETRO_DEBUG} GIT_VERSION=)
+                                                     {{ config.cmake_options | default('') }})
   {% endif %}
 elseif(CORE_SYSTEM_NAME STREQUAL rbpi)
   message(FATAL_ERROR "${PROJECT_NAME} needs RPi build command in CMakeLists.txt!")
@@ -115,8 +129,10 @@ elseif(CORE_SYSTEM_NAME STREQUAL freebsd)
   set(BUILD_COMMAND $(MAKE)
                     -C {{ makefile.dir }}
                     -f {{ makefile.file }}
+                    ${LIBRETRO_DEBUG
+                    GIT_VERSION=
                     platform=unix
-                    {{ config.cmake_options | default('') }} ${LIBRETRO_DEBUG} GIT_VERSION=)
+                    {{ config.cmake_options | default('') }})
 else()
   message(FATAL_ERROR "${PROJECT_NAME} - Unknown system: ${CORE_SYSTEM_NAME}")
 endif()

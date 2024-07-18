@@ -332,6 +332,7 @@ jobs:
           - beetle-ngp
           - beetle-lynx
           - beetle-gba
+          #- beetle-cygne # Renamed to beetle-wswan
           - beetle-bsnes
           - atari800
           - a5200

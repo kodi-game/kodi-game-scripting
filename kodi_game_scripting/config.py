@@ -171,7 +171,7 @@ ADDONS = {
     'uae':                       ('libretro-uae',               'Makefile',          '.',                 'jni', {'soname': 'puae'}),
     #'uae4arm':                   ('Chips-fr/uae4arm-rpi',       'Makefile.libretro', '.',                 'jni', {}),  # Fails to build on non arm system
     'uzem':                      ('libretro-uzem',              'Makefile.libretro', '.',                 'jni', {}),
-    'vba-next':                  ('vba-next',                   'Makefile',          '.',                 'libretro/jni', {'soname': 'vba_next'}),
+    'vba-next':                  ('vba-next',                   'Makefile',          '.',                 'libretro/jni', {'soname': 'vba_next', 'exclude_platforms': ['android-armv7']}),
     'vbam':                      ('visualboyadvance-m/visualboyadvance-m', 'Makefile', 'src/libretro',    'src/libretro/jni', {}),
     'vecx':                      ('libretro-vecx',              'Makefile',          '.',                 'jni', {}),
     'vemulator':                 ('vemulator-libretro',         'Makefile',          '.',                 'jni', {}),

@@ -162,7 +162,7 @@ ADDONS = {
     'snes9x2002':                ('snes9x2002',                 'Makefile',          '.',                 'jni', {}),
     'snes9x2010':                ('snes9x2010',                 'Makefile',          '.',                 'jni', {}),
     'stella':                    ('stella-emu/stella',          'Makefile',          'src/os/libretro',   'src/os/libretro/jni', {}),
-    'supafaust':                 ('supafaust',                  'Makefile',          '.',                 'jni', {'soname': 'mednafen_supafaust'}),
+    'supafaust':                 ('supafaust',                  'Makefile',          '.',                 'jni', {'soname': 'mednafen_supafaust', 'exclude_platforms': ['osx-x86_64', 'osx-arm64']}),
     'swanstation':               ('swanstation',                '',                  '.',                 '', {'branch': 'main', 'cmake': True}),
     'tgbdual':                   ('tgbdual-libretro',           'Makefile',          '.',                 'jni', {}),
     'theodore':                  ('Zlika/theodore',             'Makefile',          '.',                 'jni', {}),

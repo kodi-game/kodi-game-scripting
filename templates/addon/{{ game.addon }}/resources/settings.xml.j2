@@ -1,7 +1,7 @@
 {% if settings %}
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-	<category label="30000">
+	<category label="128">
 	{% for setting in settings %}
 		<setting label="{{ setting.label }}" type="select" id="{{ setting.id | e }}" values="{{ setting['values']|join('|') | e }}" default="{{ setting.default | e }}"/>
 	{% endfor %}

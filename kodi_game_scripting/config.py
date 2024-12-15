@@ -28,12 +28,10 @@ GITHUB_ADDON_PREFIX = 'game.libretro.'
 ADDONS = {
     '2048':                      ('libretro-2048',              'Makefile.libretro', '.',                 'jni', {}),
     '3dengine':                  ('libretro-3dengine',          'Makefile',          '.',                 'jni', {}),
-    '4do':                       ('kodi-game/4do-libretro',     'Makefile',          '.',                 'jni', {}),
     '81':                        ('81-libretro',                'Makefile',          '.',                 'build/jni', {}),
     'a5200':                     ('a5200',                      'Makefile',          '.',                 'jni', {}),
     'atari800':                  ('libretro-atari800',          'Makefile',          '.',                 'jni', {}),
     'beetle-bsnes':              ('beetle-bsnes-libretro',      'Makefile',          '.',                 'jni', {'soname': 'mednafen_snes'}),
-    'beetle-cygne':              ('beetle-wswan-libretro',      'Makefile',          '.',                 'jni', {'soname': 'mednafen_wswan'}),
     'beetle-gba':                ('beetle-gba-libretro',        'Makefile',          '.',                 'jni', {'soname': 'mednafen_gba'}),
     'beetle-lynx':               ('beetle-lynx-libretro',       'Makefile',          '.',                 'jni', {'soname': 'mednafen_lynx'}),
     'beetle-ngp':                ('beetle-ngp-libretro',        'Makefile',          '.',                 'jni', {'soname': 'mednafen_ngp'}),
@@ -70,12 +68,10 @@ ADDONS = {
     'dinothawr':                 ('Dinothawr',                  'Makefile',          '.',                 'jni', {}),
     'dolphin':                   ('dolphin',                    '',                  '',                  '', {'cmake': True }),
     'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.',                 'jni', {}),
-    #'dosbox-core':               ('realnc/dosbox-core',         'Makefile.libretro', 'libretro',          'libretro/jni', {'branch': 'libretro --', 'cmake_options': 'BUNDLED_SDL=1', 'soname': 'dosbox_core'}), # Add-on marked as broken
     'dosbox-pure':               ('dosbox-pure',                'Makefile',          '.',                 'jni', {'branch': 'main', 'soname': 'dosbox_pure'}),
     'easyrpg':                   ('EasyRPG/Player',             '',                  '',                  '', {'cmake': True}),
     'ecwolf':                    ('kodi-game/ecwolf',           'Makefile',          'src/libretro',      'src/libretro/jni', {}),
     'ep128emu':                  ('ep128emu-core',              'Makefile',          '.',                 'jni', {'branch': 'core', 'soname': 'ep128emu_core'}),
-    'fbalpha':                   ('fbalpha',                    'makefile.libretro', '.',                 'jni', {}),
     'fbalpha2012':               ('fbalpha2012',                'makefile.libretro', 'svn-current/trunk', 'svn-current/trunk/projectfiles/libretro-android/jni', {}),
     'fbalpha2012-cps1':          ('fbalpha2012_cps1',           'makefile.libretro', '.',                 'projectfiles/libretro-android/jni', {'soname': 'fbalpha2012_cps1'}),
     'fbalpha2012-cps2':          ('fbalpha2012_cps2',           'makefile.libretro', '.',                 'projectfiles/libretro-android/jni', {'soname': 'fbalpha2012_cps2'}),
@@ -113,7 +109,6 @@ ADDONS = {
     'mame2003_midway':           ('mame2003_midway',            'Makefile',          '.',                 'jni', {}),
     'mame2003_plus':             ('mame2003-plus-libretro',     'Makefile',          '.',                 'jni', {}),
     'mame2010':                  ('mame2010-libretro',          'Makefile',          '.',                 'jni', {'cmake_options': 'VRENDER=soft PTR64=1'}),  # Huge and longrunning
-    'mame2014':                  ('mame2015-libretro',          'Makefile',          '.',                 'jni', {'cmake_options': 'PTR64=1 TARGET=mame', 'soname': 'mame2015'}),  # Huge and longrunning
     'mame2015':                  ('mame2015-libretro',          'Makefile',          '.',                 'jni', {'cmake_options': 'PTR64=1 TARGET=mame'}),  # Huge and longrunning
     'mame2016':                  ('mame2016-libretro',          'Makefile.libretro', '.',                 '3rdparty/SDL2/android-project/jni', {'cmake_options': 'PTR64=1'}),  # Huge and longrunning
     'melonds':                   ('melonDS',                    'Makefile',          '.',                 'jni', {}),
@@ -126,7 +121,6 @@ ADDONS = {
     'moonlight':                 ('kodi-game/moonlight-libretro','Makefile',          '.',                 '', {}),
     'mrboom':                    ('kodi-game/mrboom-libretro',  'Makefile',          '.',                 'libretro/jni', {}),
     'mu':                        ('Mu',                         'Makefile.libretro', 'libretroBuildSystem', 'libretroBuildSystem/jni', {}),
-    'mupen64plus':               ('kodi-game/mupen64plus-libretro-nx', 'Makefile',   '.',                 'libretro/jni', {'branch': 'develop', 'soname': 'mupen64plus_next'}),
     'mupen64plus-nx':            ('kodi-game/mupen64plus-libretro-nx', 'Makefile',   '.',                 'libretro/jni', {'branch': 'develop', 'soname': 'mupen64plus_next'}),
     'nestopia':                  ('nestopia',                   'Makefile',          'libretro',          'libretro/jni', {}),
     'neocd':                     ('neocd_libretro',             'Makefile',          '.',                 'jni', {}),
@@ -151,7 +145,6 @@ ADDONS = {
     'quicknes':                  ('QuickNES_Core',              'Makefile',          '.',                 'jni', {}),
     'race':                      ('RACE',                       'Makefile',          '.',                 'jni', {}),
     'redbook':                   ('redbook',                    'Makefile',          '.',                 'jni', {}),
-    'reicast':                   ('kodi-game/reicast',          'Makefile',          '.',                 'jni', {'soname': 'flycast'}),
     'reminiscence':              ('REminiscence',               'Makefile',          '.',                 'jni', {}),
     'remotejoy':                 ('libretro-remotejoy',         'Makefile',          '.',                 'jni', {}),
     'retro8':                    ('retro8',                     'Makefile',          '.',                 'jni', {}),
@@ -187,7 +180,6 @@ ADDONS = {
     'vice_xplus4':               ('vice-libretro',              'Makefile',          '.',                 'jni', {'soname': 'vice_xplus4', 'cmake_options': 'EMUTYPE=xplus4'}),
     'vice_xscpu64':              ('vice-libretro',              'Makefile',          '.',                 'jni', {'soname': 'vice_xscpu64', 'cmake_options': 'EMUTYPE=xscpu64'}),
     'vice_xvic':                 ('vice-libretro',              'Makefile',          '.',                 'jni', {'soname': 'vice_xvic', 'cmake_options': 'EMUTYPE=xvic'}),
-    'vice':                      ('vice-libretro',              'Makefile',          '.',                 'jni', {'soname': 'vice_x64', 'cmake_options': 'EMUTYPE=x64'}),
     'virtualjaguar':             ('virtualjaguar-libretro',     'Makefile',          '.',                 'jni', {}),
     #'wolfenstein3d':             ('kodi-game/libretro-wolfenstein3d', 'Makefile.libretro', '.',           'jni', {}),  # Requires SDL 1
     'xmil':                      ('xmil-libretro',              'Makefile.libretro', 'libretro',          'libretro/jni', {'soname': 'x1'}),

@@ -76,6 +76,10 @@ jobs:
         #dpkg -s libtool-bin || sudo apt install -y libtool-bin
         #dpkg -s ninja-build || sudo apt install -y ninja-build
 
+        # easyrpg
+        dpkg -s libfmt-dev || sudo apt install -y libfmt-dev
+        dpkg -s libinih-dev || sudo apt install -y libinih-dev
+
         # flycast
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
@@ -294,6 +298,7 @@ jobs:
           #- fbalpha # Renamed to fbneo
           - ep128emu
           - ecwolf
+          - easyrpg
           - dosbox-pure
           #- dosbox-core # Add-on marked as broken
           - dosbox

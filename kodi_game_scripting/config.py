@@ -72,6 +72,7 @@ ADDONS = {
     'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.',                 'jni', {}),
     #'dosbox-core':               ('realnc/dosbox-core',         'Makefile.libretro', 'libretro',          'libretro/jni', {'branch': 'libretro --', 'cmake_options': 'BUNDLED_SDL=1', 'soname': 'dosbox_core'}), # Add-on marked as broken
     'dosbox-pure':               ('dosbox-pure',                'Makefile',          '.',                 'jni', {'branch': 'main', 'soname': 'dosbox_pure'}),
+    'easyrpg':                   ('EasyRPG/Player',             '',                  '',                  '', {'cmake': True}),
     'ecwolf':                    ('kodi-game/ecwolf',           'Makefile',          'src/libretro',      'src/libretro/jni', {}),
     'ep128emu':                  ('ep128emu-core',              'Makefile',          '.',                 'jni', {'branch': 'core', 'soname': 'ep128emu_core'}),
     'fbalpha':                   ('fbalpha',                    'makefile.libretro', '.',                 'jni', {}),

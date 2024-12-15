@@ -18,6 +18,13 @@
 trigger:
 - todo-disabled-for-now
 
+schedules:
+- cron: "0 2 * * *"  # Every day at 02:00 UTC
+  always: true
+  branches:
+    include:
+    - master
+
 jobs:
 
   - template: .azure/job-template.yml

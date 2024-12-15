@@ -1,6 +1,6 @@
 ################################################################################
 #
-# Pipeline to process Kodi game -addons
+# Pipeline to process Kodi game-addons
 #
 ################################################################################
 
@@ -18,36 +18,155 @@
 trigger:
 - todo-disabled-for-now
 
+schedules:
+- cron: "0 2 * * *"  # Every day at 02:00 UTC
+  always: true
+  branches:
+    include:
+    - master
+
 jobs:
-  - job: Build
 
-    pool:
+  - template: .azure/job-template.yml
+    parameters:
+      displayName: "BuildYabauseToReicast"
       vmImage: 'ubuntu-22.04'
+      pythonVersion: '3.10'
+      installScript: |
+        # same_cdi
+        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
-    strategy:
-        matrix:
-          Python310:
-            python.version: '3.10'
+        # vecx
+        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
-    timeoutInMinutes: 0 # Use the maximum limit
+        # wolfenstein3d
+        #dpkg -s libsdl1.2-dev || sudo apt install -y libsdl1.2-dev
 
-    steps:
-    # Download secure file to the agent machine
-    - task: DownloadSecureFile@1
-      name: privateKey # The name with which to reference the secure file's path on the agent
-      displayName: 'Download SSH private key'
-      inputs:
-        secureFile: 'id_rsa-azure' # The file name or GUID of the secure file
+        # yabasanshiro
+        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
+      addons:
+        - yabause
+        - yabasanshiro
+        - xrick
+        - xmil
+        #- wolfenstein3d # Doesn't compile
+        - virtualjaguar
+        - vice_xvic
+        - vice_xscpu64
+        - vice_xplus4
+        - vice_xpet
+        - vice_xcbm5x0
+        - vice_xcbm2
+        - vice_x64sc
+        - vice_x64dtv
+        - vice_x64
+        - vice_x128
+        - vemulator
+        - vecx
+        - vbam
+        - vba-next
+        - uzem
+        #- uae4arm # Doesn't run on x86_64
+        - uae
+        - tyrquake
+        - thepowdertoy
+        - theodore
+        - tgbdual
+        - swanstation
+        - supafaust
+        - stella
+        - snes9x2010
+        - snes9x2002
+        - snes9x
+        - smsplus-gx
+        - scummvm
+        - sameboy
+        - same_cdi
+        #- rustation # Disabled for now
+        - retro8
+        - remotejoy
+        - reminiscence
 
-    # Install SSH key prior to a build or deployment
-    - task: InstallSSHKey@0
-      inputs:
-        knownHostsEntry: "|1|5qWKb7xAKkWXfLw6ZdNAs9FzKNA=|A+W82x1iZWz+nXHgPdlIQmsEOsU= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ=="
-        sshKeySecureFile: 'id_rsa-azure'
+  - template: .azure/job-template.yml
+    parameters:
+      displayName: "BuildRedbook"
+      vmImage: 'ubuntu-20.04'
+      pythonVersion: '3.10'
+      dependsOn: "BuildYabauseToReicast"
+      installScript: ""
+      addons:
+        - redbook
 
-    - script: |
-        sudo apt update
+  - template: .azure/job-template.yml
+    parameters:
+      displayName: "BuildRaceToPCSXRearmed"
+      vmImage: 'ubuntu-22.04'
+      pythonVersion: '3.10'
+      dependsOn: "BuildRedbook"
+      installScript: |
+        # ppsspp
+        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
+      addons:
+        - race
+        - quicknes
+        - quasi88
+        - px68k
+        - prosystem
+        - prboom
+        - ppsspp
+        - potator
+        - pokemini
+        - pocketcdg
+        - picodrive
+        - pcsx-rearmed
 
+  - template: .azure/job-template.yml
+    parameters:
+      displayName: "BuildPcemToParallext"
+      vmImage: 'ubuntu-20.04'
+      pythonVersion: '3.10'
+      dependsOn: "BuildRaceToPCSXRearmed"
+      installScript: |
+          # parallext
+          dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
+          dpkg -s nasm || sudo apt install -y nasm
+      addons:
+          - pcem
+          - parallext
+
+  - template: .azure/job-template.yml
+    parameters:
+      displayName: "BuildParallelN64ToOpera"
+      vmImage: 'ubuntu-22.04'
+      pythonVersion: '3.10'
+      dependsOn: "BuildPcemToParallext"
+      installScript: |
+          # parallel_n64
+          dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
+          dpkg -s nasm || sudo apt install -y nasm
+      addons:
+          - parallel_n64
+          - opera
+
+  - template: .azure/job-template.yml
+    parameters:
+      displayName: "BuildOpenLara"
+      vmImage: 'ubuntu-20.04'
+      pythonVersion: '3.10'
+      dependsOn: "BuildParallelN64ToOpera"
+      installScript: |
+          # openlara
+          dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
+      addons:
+          - openlara
+
+  - template: .azure/job-template.yml
+    parameters:
+      displayName: "BuildOberonTo2048"
+      vmImage: 'ubuntu-22.04'
+      pythonVersion: '3.10'
+      dependsOn: "BuildOpenLara"
+      installScript: |
         # 3dengine
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
@@ -71,10 +190,9 @@ jobs:
         dpkg -s libxrandr-dev || sudo apt install -y libxrandr-dev
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
-        # dosbox-core
-        #dpkg -s libasound2-dev || sudo apt install -y libasound2-dev
-        #dpkg -s libtool-bin || sudo apt install -y libtool-bin
-        #dpkg -s ninja-build || sudo apt install -y ninja-build
+        # easyrpg
+        dpkg -s libfmt-dev || sudo apt install -y libfmt-dev
+        dpkg -s libinih-dev || sudo apt install -y libinih-dev
 
         # flycast
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
@@ -121,238 +239,105 @@ jobs:
         # mupen64plus-nx
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
         dpkg -s nasm || sudo apt install -y nasm
-
-        # openlara
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
-
-        # parallel_n64
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
-        dpkg -s nasm || sudo apt install -y nasm
-
-        # parallext
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
-        dpkg -s nasm || sudo apt install -y nasm
-
-        # ppsspp
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
-
-        # reicast
-        #dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
-
-        # same_cdi
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
-
-        # vecx
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
-
-        # wolfenstein3d
-        #dpkg -s libsdl1.2-dev || sudo apt install -y libsdl1.2-dev
-
-        # yabasanshiro
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
-      displayName: 'Install system dependencies'
-
-    # TODO: git authorship
-    - script: |
-        git config --global user.name "Garrett Brown"
-        git config --global user.email "themagnificentmrb@gmail.com"
-      displayName: 'Set Git authorship'
-
-    - script: |
-        git clone --branch retroplayer-21 --depth=1 https://github.com/garbear/xbmc.git kodi
-      displayName: 'Clone Kodi'
-
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: $(python.version)
-
-    - script: |
-        pip3 install -r requirements.txt
-      displayName: 'Install Python requirements'
-
-    - template: .azure/azure-process-addon.yml
-      parameters:
-        # List add-ons in reverse order for sorted results in the kodi-game org
-        addons:
-          - yabause
-          - yabasanshiro
-          - xrick
-          - xmil
-          #- wolfenstein3d # Doesn't compile
-          - virtualjaguar
-          - vice_xvic
-          - vice_xscpu64
-          - vice_xplus4
-          - vice_xpet
-          - vice_xcbm5x0
-          - vice_xcbm2
-          - vice_x64sc
-          - vice_x64dtv
-          - vice_x64
-          - vice_x128
-          #- vice # Renamed to vice_x64
-          - vemulator
-          - vecx
-          - vbam
-          - vba-next
-          - uzem
-          #- uae4arm # Doesn't run on x86_64
-          - uae
-          - tyrquake
-          - thepowdertoy
-          - theodore
-          - tgbdual
-          - swanstation
-          - supafaust
-          - stella
-          - snes9x2010
-          - snes9x2002
-          - snes9x
-          - smsplus-gx
-          - scummvm
-          - sameboy
-          - same_cdi
-          #- rustation # Disabled for now
-          - retro8
-          - remotejoy
-          - reminiscence
-          #- reicast # Renamed to flycast
-          - redbook
-          - race
-          - quicknes
-          - quasi88
-          - px68k
-          - prosystem
-          - prboom
-          - ppsspp
-          - potator
-          - pokemini
-          - pocketcdg
-          - picodrive
-          - pcsx-rearmed
-          - pcem
-          - parallext
-          - parallel_n64
-          - opera
-          - openlara
-          - oberon
-          - o2em
-          - nx
-          - nestopia
-          - neocd
-          - mupen64plus-nx
-          #- mupen64plus # Renamed to mupen64plus-nx
-          - mu
-          - mrboom
-          - moonlight
-          - minivmac
-          - mgba
-          - meteor
-          - mesen-s
-          - mesen
-          - meowpc98
-          - melonds
-          - mame2016
-          - mame2015
-          - mame2010
-          - mame2003_plus
-          - mame2003_midway
-          - mame2003
-          - mame2000
-          - mame # Insanely huge and long running (hours and 50GB on a fast machine)
-          - lutro
-          - lrps2
-          - jumpnbump
-          - hbmame
-          - hatari
-          - handy
-          - gw
-          - gpsp
-          - gong
-          - gme
-          - genplus-wide
-          - genplus
-          - gearsystem
-          - gearcoleco
-          - gearboy
-          - gambatte
-          - galaxy
-          - fuse
-          #- fsuae # Requires configure command: "./autogen.sh && ./configure && make gen"
-          - frodo
-          - freeintv
-          - freechaf
-          - fmsx
-          - flycast
-          - fceumm
-          - fbneo
-          - fbalpha2012-neogeo
-          - fbalpha2012-cps3
-          - fbalpha2012-cps2
-          - fbalpha2012-cps1
-          - fbalpha2012
-          #- fbalpha # Renamed to fbneo
-          - ep128emu
-          - ecwolf
-          - dosbox-pure
-          #- dosbox-core # Add-on marked as broken
-          - dosbox
-          - dolphin
-          - dinothawr
-          - desmume2015
-          - desmume
-          - daphne
-          - crocods
-          - craft
-          - chailove
-          - cap32
-          - cannonball
-          - bsnes2014-performance
-          - bsnes2014-balanced
-          - bsnes2014-accuracy
-          - bsnes-mercury-performance
-          - bsnes-mercury-balanced
-          - bsnes-mercury-accuracy
-          - bsnes-hd
-          - bsnes
-          - boom3
-          - bnes
-          - bluemsx
-          - blastem
-          - bk
-          - beetle-wswan
-          - beetle-vb
-          - beetle-supergrafx
-          - beetle-saturn
-          - beetle-psx-hw
-          - beetle-psx
-          - beetle-pcfx
-          - beetle-pce-fast
-          - beetle-pce
-          - beetle-ngp
-          - beetle-lynx
-          - beetle-gba
-          #- beetle-cygne # Renamed to beetle-wswan
-          - beetle-bsnes
-          - atari800
-          - a5200
-          - 81
-          #- 4do # Renamed to opera
-          - 3dengine
-          - 2048
-
-    - script: |
-        echo
-        echo "wiki.txt:"
-        echo
-        cat game-addons/wiki.txt
-        echo
-      displayName: 'Print wiki.txt'
-
-    - script: |
-        echo
-        echo "summary.html:"
-        echo
-        cat game-addons/summary.html
-        echo
-      displayName: 'Print summary.html'
+      addons:
+        - oberon
+        - o2em
+        - nx
+        - nestopia
+        - neocd
+        - mupen64plus-nx
+        - mu
+        - mrboom
+        - moonlight
+        - minivmac
+        - mgba
+        - meteor
+        - mesen-s
+        - mesen
+        - meowpc98
+        - melonds
+        - mame2016
+        - mame2015
+        - mame2010
+        - mame2003_plus
+        - mame2003_midway
+        - mame2003
+        - mame2000
+        #- mame # Insanely huge and long running (hours and 50GB on a fast machine)
+        - lutro
+        - lrps2
+        - jumpnbump
+        #- hbmame # Currently fails to build
+        - hatari
+        - handy
+        - gw
+        - gpsp
+        - gong
+        - gme
+        - genplus-wide
+        - genplus
+        - gearsystem
+        - gearcoleco
+        - gearboy
+        - gambatte
+        - galaxy
+        - fuse
+        #- fsuae # Requires configure command: "./autogen.sh && ./configure && make gen"
+        - frodo
+        - freeintv
+        - freechaf
+        - fmsx
+        - flycast
+        - fceumm
+        - fbneo
+        - fbalpha2012-neogeo
+        - fbalpha2012-cps3
+        - fbalpha2012-cps2
+        - fbalpha2012-cps1
+        - fbalpha2012
+        - ep128emu
+        - ecwolf
+        - easyrpg
+        - dosbox-pure
+        - dosbox
+        - dolphin
+        - dinothawr
+        - desmume2015
+        - desmume
+        - daphne
+        - crocods
+        - craft
+        - chailove
+        - cap32
+        - cannonball
+        - bsnes2014-performance
+        - bsnes2014-balanced
+        - bsnes2014-accuracy
+        - bsnes-mercury-performance
+        - bsnes-mercury-balanced
+        - bsnes-mercury-accuracy
+        - bsnes-hd
+        - bsnes
+        - boom3
+        - bnes
+        - bluemsx
+        - blastem
+        - bk
+        - beetle-wswan
+        - beetle-vb
+        - beetle-supergrafx
+        - beetle-saturn
+        - beetle-psx-hw
+        - beetle-psx
+        - beetle-pcfx
+        - beetle-pce-fast
+        - beetle-pce
+        - beetle-ngp
+        - beetle-lynx
+        - beetle-gba
+        - beetle-bsnes
+        - atari800
+        - a5200
+        - 81
+        - 3dengine
+        - 2048

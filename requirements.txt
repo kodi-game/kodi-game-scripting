@@ -8,3 +8,4 @@ keyring
 keyrings.alt
 PyGithub>=1.43.2
 xmljson
+setuptools

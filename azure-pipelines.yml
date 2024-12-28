@@ -202,14 +202,6 @@ jobs:
         dpkg -s libaio-dev || sudo apt install -y libaio-dev
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
-        # mame
-        dpkg -s libasound2-dev || sudo apt install -y libasound2-dev
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
-
-        # mame2016
-        dpkg -s libasound2-dev || sudo apt install -y libasound2-dev
-        dpkg -s python2 || sudo apt install -y python2
-
         # melonds
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
@@ -245,14 +237,11 @@ jobs:
         - mesen
         - meowpc98
         - melonds
-        - mame2016
-        - mame2015
         - mame2010
         - mame2003_plus
         - mame2003_midway
         - mame2003
         - mame2000
-        #- mame # Insanely huge and long running (hours and 50GB on a fast machine)
         - lutro
         - lrps2
         - jumpnbump

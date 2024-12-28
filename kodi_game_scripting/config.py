@@ -102,14 +102,11 @@ ADDONS = {
     'jumpnbump':                 ('jumpnbump-libretro',         'Makefile',          '.',                 'jni', {}),
     'lrps2':                     ('kodi-game/LRPS2',            '',                  '.',                 '', {'cmake': True, 'branch': 'main', 'soname': 'pcsx2'}),
     'lutro':                     ('libretro-lutro',             'Makefile',          '.',                 'jni', {}),
-    'mame':                      ('mame',                       'Makefile.libretro', '.',                 'jni', {'cmake_options': 'PTR64=1'}),  # Huge and longrunning
     'mame2000':                  ('mame2000-libretro',          'Makefile',          '.',                 'jni', {}),
     'mame2003':                  ('mame2003-libretro',          'Makefile',          '.',                 'jni', {}),
     'mame2003_midway':           ('mame2003_midway',            'Makefile',          '.',                 'jni', {}),
     'mame2003_plus':             ('mame2003-plus-libretro',     'Makefile',          '.',                 'jni', {}),
     'mame2010':                  ('mame2010-libretro',          'Makefile',          '.',                 'jni', {'cmake_options': 'VRENDER=soft PTR64=1'}),  # Huge and longrunning
-    'mame2015':                  ('mame2015-libretro',          'Makefile',          '.',                 'jni', {'cmake_options': 'PTR64=1 TARGET=mame'}),  # Huge and longrunning
-    'mame2016':                  ('mame2016-libretro',          'Makefile.libretro', '.',                 '3rdparty/SDL2/android-project/jni', {'cmake_options': 'PTR64=1'}),  # Huge and longrunning
     'melonds':                   ('melonDS',                    'Makefile',          '.',                 'jni', {}),
     'meowpc98':                  ('libretro-meowPC98',          'Makefile.libretro', 'libretro',          'libretro/jni', {'soname': 'nekop2'}),
     'mesen':                     ('Mesen',                      'Makefile',          'Libretro',          'Libretro/jni', {}),

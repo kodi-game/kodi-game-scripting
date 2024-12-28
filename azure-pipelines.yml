@@ -197,10 +197,6 @@ jobs:
         # fuse
         #dpkg -s libglib2.0-dev || sudo apt install -y libglib2.0-dev
 
-        # hbmame
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
-        dpkg -s python2 || sudo apt install -y python2
-
         # lrps2
         dpkg -s ccache || sudo apt install -y ccache
         dpkg -s libaio-dev || sudo apt install -y libaio-dev
@@ -260,7 +256,6 @@ jobs:
         - lutro
         - lrps2
         - jumpnbump
-        #- hbmame # Currently fails to build
         - hatari
         - handy
         - gw

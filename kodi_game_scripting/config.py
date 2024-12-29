@@ -102,6 +102,7 @@ ADDONS = {
     'jumpnbump':                 ('jumpnbump-libretro',         'Makefile',          '.',                 'jni', {}),
     'lrps2':                     ('kodi-game/LRPS2',            '',                  '.',                 '', {'cmake': True, 'branch': 'main', 'soname': 'pcsx2'}),
     'lutro':                     ('libretro-lutro',             'Makefile',          '.',                 'jni', {}),
+    #'mame':                      ('mame',                       'Makefile.libretro', '.',                 'jni', {'cmake_options': 'PTR64=1'}),  # Huge and longrunning
     'mame2000':                  ('mame2000-libretro',          'Makefile',          '.',                 'jni', {}),
     'mame2003':                  ('mame2003-libretro',          'Makefile',          '.',                 'jni', {}),
     'mame2003_midway':           ('mame2003_midway',            'Makefile',          '.',                 'jni', {}),

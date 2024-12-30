@@ -1,11 +1,11 @@
 <!-- For http://kodi.wiki/index.php?title=Game_add-ons -->
 
 {| class="prettytable sortable plainlinks"
-! Libretro core !! Platform emulated !! Version !! License * !! Supports VFS !!  Supports Rewind !! Requires GL !! Status
+! Libretro core !! Platform emulated !! Version !! License * !! Supports VFS !! Supports Rewind !! Requires GL !! Status
 |-
 {% for addon in addons %}
 {{ '{{' }}game add-on
-| Name= [https://github.com/kodi-game/{{ addon.game.addon }}/blob/master/{{ addon.game.addon }}/addon.xml.in {{ addon.libretro_info.display_name | default(addon.game.name) | e }}]
+| Name= [[Add-on:{{ addon.libretro_info.display_name | default(addon.game.name) | default(addon.system_info.name) | default(addon.game.name) }}]]
 | Platform= {{ addon.libretro_info.systemname | default('') }}
 | Version= {{ addon.game.version | default('0.0.0') }}
 {% if addon.libretro_info.license in ['Non-commercial'] %}

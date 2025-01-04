@@ -5,7 +5,7 @@
 |-
 {% for addon in addons %}
 {{ '{{' }}game add-on
-| Name= [[Add-on:{{ addon.libretro_info.display_name | default(addon.game.name) | default(addon.system_info.name) | default(addon.game.name) }}]]
+| Name= [[Add-on:{{ addon.libretro_info.display_name | default(addon.game.name) | default(addon.system_info.name) | default(addon.game.name) }}|{{ addon.libretro_info.display_name | default(addon.game.name) | default(addon.system_info.name) | default(addon.game.name) }}]]
 | Platform= {{ addon.libretro_info.systemname | default('') }}
 | Version= {{ addon.game.version | default('0.0.0') }}
 {% if addon.libretro_info.license in ['Non-commercial'] %}

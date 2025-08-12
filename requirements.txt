@@ -6,6 +6,6 @@ keyring
 #
 # See https://github.com/dcos/dcos-e2e/issues/1643.
 keyrings.alt
-PyGithub>=1.43.2
+PyGithub==2.6.1
 xmljson
 setuptools

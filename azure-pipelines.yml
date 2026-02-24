@@ -167,8 +167,6 @@ jobs:
         - picodrive
         - pcsx-rearmed
         - pcem
-        - parallext
-        - parallel_n64
         - opera
         - openlara
         - onscripter

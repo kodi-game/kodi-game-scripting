@@ -118,7 +118,19 @@ class GitRepo:
             except AttributeError:
                 origin = self._gitrepo.create_remote(
                     'origin', self._githubrepo.clone_url)
-            origin.set_url(self._githubrepo.ssh_url, push=True)
+            # In CI, prefer token-authenticated HTTPS for pushes when a
+            # GitHub token is available. The API client already uses
+            # GITHUB_ACCESS_TOKEN, but git push does not; it uses the
+            # configured remote push URL. Using HTTPS here avoids requiring
+            # an SSH deploy key in CI.
+            apitoken = os.environ.get('GITHUB_ACCESS_TOKEN', None)
+            if apitoken:
+                push_url = self._githubrepo.clone_url.replace(
+                    'https://github.com/',
+                    f'https://x-access-token:{apitoken}@github.com/')
+            else:
+                push_url = self._githubrepo.ssh_url
+            origin.set_url(push_url, push=True)
 
     def fetch_and_reset(self, reset=True):
         """ Fetch repo and reset it """

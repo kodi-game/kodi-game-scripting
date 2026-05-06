@@ -42,12 +42,12 @@ jobs:
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
         # dolphin
-        dpkg -s libegl1-mesa-dev || sudo apt install libegl1-mesa-dev
-        dpkg -s libudev-dev || sudo apt install -y libudev-dev
-        dpkg -s libusb-1.0-0-dev || sudo apt install -y libusb-1.0-0-dev
-        dpkg -s libxi-dev || sudo apt install -y libxi-dev
-        dpkg -s libxrandr-dev || sudo apt install -y libxrandr-dev
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
+        #dpkg -s libegl1-mesa-dev || sudo apt install libegl1-mesa-dev
+        #dpkg -s libudev-dev || sudo apt install -y libudev-dev
+        #dpkg -s libusb-1.0-0-dev || sudo apt install -y libusb-1.0-0-dev
+        #dpkg -s libxi-dev || sudo apt install -y libxi-dev
+        #dpkg -s libxrandr-dev || sudo apt install -y libxrandr-dev
+        #dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
         # easyrpg
         dpkg -s libfmt-dev || sudo apt install -y libfmt-dev
@@ -231,7 +231,7 @@ jobs:
         - easyrpg
         - dosbox-pure
         - dosbox
-        - dolphin
+        #- dolphin # Broken, version and settings don't work
         - dinothawr
         - desmume2015
         - desmume

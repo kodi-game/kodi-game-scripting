@@ -43,6 +43,7 @@ jobs:
 
         # dolphin
         dpkg -s libegl1-mesa-dev || sudo apt install libegl1-mesa-dev
+        dpkg -s libudev-dev || sudo apt install -y libudev-dev
         dpkg -s libusb-1.0-0-dev || sudo apt install -y libusb-1.0-0-dev
         dpkg -s libxi-dev || sudo apt install -y libxi-dev
         dpkg -s libxrandr-dev || sudo apt install -y libxrandr-dev

@@ -71,12 +71,12 @@ jobs:
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
         # moonlight
-        dpkg -s libavcodec-dev || sudo apt install -y libavcodec-dev
-        dpkg -s libavdevice-dev || sudo apt install -y libavdevice-dev
-        dpkg -s libavformat-dev || sudo apt install -y libavformat-dev
-        dpkg -s libcurl4-openssl-dev || sudo apt install -y libcurl4-openssl-dev
-        dpkg -s libgl-dev || sudo apt install -y libgl-dev
-        dpkg -s libopus-dev || sudo apt install -y libopus-dev
+        #dpkg -s libavcodec-dev || sudo apt install -y libavcodec-dev
+        #dpkg -s libavdevice-dev || sudo apt install -y libavdevice-dev
+        #dpkg -s libavformat-dev || sudo apt install -y libavformat-dev
+        #dpkg -s libcurl4-openssl-dev || sudo apt install -y libcurl4-openssl-dev
+        #dpkg -s libgl-dev || sudo apt install -y libgl-dev
+        #dpkg -s libopus-dev || sudo apt install -y libopus-dev
 
         # mupen64plus
         #dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
@@ -181,7 +181,7 @@ jobs:
         - mupen64plus-nx
         - mu
         - mrboom
-        - moonlight
+        #- moonlight # Disabled, currently broken
         - minivmac
         - mgba
         - meteor

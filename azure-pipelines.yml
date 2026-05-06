@@ -99,7 +99,7 @@ jobs:
         dpkg -s nasm || sudo apt install -y nasm
 
         # ppsspp
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
+        #dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
         # same_cdi
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
@@ -162,7 +162,7 @@ jobs:
         - px68k
         - prosystem
         - prboom
-        - ppsspp
+        #- ppsspp # Compilation fails due to missing stdint.h
         - potator
         - pokemini
         - pocketcdg

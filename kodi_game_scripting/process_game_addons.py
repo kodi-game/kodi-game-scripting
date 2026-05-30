@@ -394,6 +394,7 @@ class KodiGameAddon():
             library = LibretroWrapper(library_path)
             self.info['library']['loaded'] = True
             self.info['system_info'] = library.system_info
+            self._apply_libretro_info_defaults(library.system_info)
             self.info['settings'] = self._get_settings(library.variables, self.info['oldstrings'])
             self.info['strings'] = self._get_strings(self.info['settings'])
             self.info['library']['opengl'] = library.opengl_linkage
@@ -412,6 +413,15 @@ class KodiGameAddon():
                 string_tag['content'] = summary_english
 
         return library
+
+    def _apply_libretro_info_defaults(self, system_info):
+        """Apply libretro-super metadata when runtime probing is incomplete."""
+        if getattr(system_info, 'supports_disc_control', False):
+            return
+
+        disk_control = self.info['libretro_info'].get('disk_control')
+        if disk_control is not None:
+            system_info.supports_disc_control = str(disk_control).lower() == 'true'
 
     def load_info_file(self):
         """ Load info file from libretro-super repository """

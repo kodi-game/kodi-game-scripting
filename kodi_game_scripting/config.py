@@ -127,7 +127,7 @@ ADDONS = {
     'onscripter':                ('kodi-game/libretro-onscripter','Makefile',        '.',                 'jni', {'branch': 'main'}),
     'openlara':                  ('OpenLara',                   'Makefile',          'src/platform/libretro', 'src/platform/libretro/jni', {}),
     'opera':                     ('opera-libretro',             'Makefile',          '.',                 'jni', {}),
-    'parallel_n64':              ('parallel-n64',               'Makefile',          '.',                 'jni', {}),
+    'parallel_n64':              ('parallel-n64',               'Makefile',          '.',                 'jni', {'exclude_platforms': ['windows-i686']}),
     'parallext':                 ('parallext',                  'Makefile',          '.',                 'libretro/jni', {'soname': 'parallel_n64'}),
     'pcem':                      ('libretro-pcem',              'Makefile.libretro', 'src',               'jni', {}),
     'pcsx-rearmed':              ('pcsx_rearmed',               'Makefile.libretro', '.',                 'jni', {'soname': 'pcsx_rearmed'}),

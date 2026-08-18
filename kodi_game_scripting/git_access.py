@@ -22,8 +22,6 @@ import os
 import re
 import time
 
-from pkg_resources import parse_version
-
 import git
 import github
 
@@ -141,9 +139,7 @@ class GitRepo:
                 origin.fetch('master')
             except git.exc.GitCommandError:
                 origin.fetch('main')
-            if (parse_version('.'.join(map(
-                    str, self._gitrepo.git.version_info))) >=
-                    parse_version('2.17.0')):
+            if self._gitrepo.git.version_info >= (2, 17, 0):
                 origin.fetch(tags=True, prune=True, prune_tags=True)
             else:
                 tags = self._gitrepo.git.tag(list=True)

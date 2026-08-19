@@ -26,7 +26,10 @@ class AddonVersion():
     def get(cls, version):
         """ Convert addon version into Kodi format """
         result = re.sub(r'^[vr \t]', '', version)
-        match = re.search(r'^(0|[1-9]*0?)\.?([0-9]*)\.?([0-9]*)', result)
+        match = re.search(r'^(0|[1-9][0-9]*)\.?([0-9]*)\.?([0-9]*)',
+                          result)
+        if not match:
+            return '0.0.1'
         result = [x if x else '0' for x in match.groups()]
         result = '.'.join(result)
         return result if result != '0.0.0' else '0.0.1'

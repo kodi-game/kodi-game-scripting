@@ -34,3 +34,4 @@ def test_versions():
     assert AddonVersion.get('2') == '2.0.0'
     assert AddonVersion.get('2.3') == '2.3.0'
     assert AddonVersion.get('2.3.4') == '2.3.4'
+    assert AddonVersion.get('2606.0.0+cd1d6298aa') == '2606.0.0'

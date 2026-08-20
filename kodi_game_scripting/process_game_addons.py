@@ -254,7 +254,9 @@ class KodiGameAddons:
 
 class KodiGameAddon():
     """ Process a single Kodi Game addon """
-    def __init__(self, addon_name,  # pylint: disable=too-many-arguments
+    # pylint 3.3 split the positional half of too-many-arguments out into
+    # too-many-positional-arguments, so the existing disable stopped covering it
+    def __init__(self, addon_name,  # pylint: disable=too-many-arguments,too-many-positional-arguments
                  game_name, githubrepo, working_directory, push_branch):
         self.name = addon_name
         self.game_name = game_name

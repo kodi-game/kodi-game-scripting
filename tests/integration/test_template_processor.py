@@ -48,15 +48,36 @@ def test_process_template(tmpdir):
             'branch': 'master',
         },
     }
+    # Between them these cover what a settings.xml has to handle: options a
+    # core leaves uncategorised and options it doesn't, help text present and
+    # absent, and values with and without a label of their own
     extdata = {
         'system_info': {
             'extensions': ['ext1', 'ext2']
         },
-        'settings': [
-            {'id': 1, 'description': 'mysetting1',
-             'values': ['value1', 'value2'], 'default': 'value1'},
-            {'id': 2, 'description': 'mysetting2',
-             'values': ['value1', 'value2'], 'default': 'value2'},
+        'categories': [
+            {'id': 'general', 'label': 128, 'help': None, 'settings': [
+                {'id': 'mysetting1', 'label': 30001, 'help': None,
+                 'default': 'value1',
+                 'values': [{'value': 'value1', 'label': None},
+                            {'value': 'value2', 'label': None}]},
+            ]},
+            {'id': 'video', 'label': 30002, 'help': 30003, 'settings': [
+                {'id': 'mysetting2', 'label': 30004, 'help': 30005,
+                 'default': 'value2',
+                 'values': [{'value': 'value1', 'label': 30006},
+                            {'value': 'value2', 'label': None}]},
+            ]},
+        ],
+        'strings': [
+            {'id': 30001, 'content': 'mysetting1'},
+            {'id': 30002, 'content': 'Video'},
+            {'id': 30003, 'content': 'What the picture looks like.'},
+            {'id': 30004, 'content': 'mysetting2'},
+            # The shape of real core help text: several lines, and quotes
+            {'id': 30005, 'content': 'What mysetting2 does.\nSet it to '
+                                     '"value1" unless you know better.'},
+            {'id': 30006, 'content': 'The first value'},
         ],
     }
 

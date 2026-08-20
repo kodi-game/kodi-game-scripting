@@ -17,6 +17,7 @@
 """ Process Kodi Game addons and unify project files """
 
 import argparse
+import collections
 import datetime
 import os
 import multiprocessing
@@ -289,6 +290,7 @@ class KodiGameAddon():
                 'name': '',
                 'version': '0.0.0',
             },
+            'categories': [],
             'settings': [],
             'oldstrings': [],
             'strings': [],
@@ -376,8 +378,11 @@ class KodiGameAddon():
             self.info['system_info'] = library.system_info
             self._apply_libretro_info_defaults(library.system_info)
             string_table = StringTable(self.info['oldstrings'])
-            self.info['settings'] = self._get_settings(
-                library.options, string_table)
+            self.info['categories'] = self._get_categories(
+                library.options, library.categories, string_table)
+            self.info['settings'] = [
+                setting for category in self.info['categories']
+                for setting in category['settings']]
             self.info['strings'] = string_table.strings()
             self.info['library']['opengl'] = library.opengl_linkage
         except OSError as err:
@@ -519,13 +524,58 @@ class KodiGameAddon():
 
         return addon_summary
 
+    @classmethod
+    def _get_categories(cls, options, categories, string_table):
+        """ Group the core's options into the categories it declares
+
+        A core that declares no categories, or leaves an option out of them,
+        gets the one category we've always used: Kodi's own string 128,
+        "General". """
+        described = {category.key: category for category in categories}
+
+        # Keep the core's own category order, and keep an option's position
+        # within its category
+        grouped = collections.OrderedDict()
+        for option in options:
+            key = option.category if option.category in described else ''
+            grouped.setdefault(key, []).append(option)
+
+        ordered_keys = [category.key for category in categories
+                        if category.key in grouped]
+        if '' in grouped:
+            # Uncategorised options come first, as the only ones there used to
+            # be, so existing settings stay where users left them
+            ordered_keys.insert(0, '')
+
+        result = []
+        for key in ordered_keys:
+            result.append({
+                'id': key or 'general',
+                # 128 is Kodi's own "General"; a core's own name needs
+                # translating like any other string it hands us
+                'label': (string_table.get(described[key].description)
+                          if key else 128),
+                'help': (string_table.get(described[key].info)
+                         if key else None),
+                'settings': [cls._get_setting(option, string_table)
+                             for option in grouped[key]],
+            })
+
+        return result
+
     @staticmethod
-    def _get_settings(options, string_table):
-        """ Get settings from libretro options, while preserving string IDs """
-        return [{
+    def _get_setting(option, string_table):
+        """ Describe one option the way settings.xml wants it
+
+        Everything stays a string. The core reads back the value it gave us,
+        so a boolean storing "true" where the core wants "enabled" would break
+        it; the label is what the user sees instead. """
+        return {
             'id': option.id,
             'label': string_table.get(option.description),
-            'description': option.description,
-            'values': [value.value for value in option.values],
+            'help': string_table.get(option.info),
             'default': option.default,
-        } for option in options]
+            'values': [{'value': value.value,
+                        'label': string_table.get(value.label)}
+                       for value in option.values],
+        }

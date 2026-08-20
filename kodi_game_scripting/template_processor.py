@@ -57,6 +57,26 @@ def escape_xml(string):
     )
 
 
+def escape_po(string):
+    """Filter: Escape a string so it survives a round trip through a .po file
+
+    Help text from a core is prose: it runs to several lines and quotes things.
+    A raw newline ends the msgid early and leaves a file no tool can read, so
+    everything that isn't printable-on-one-line is escaped instead.
+
+    Like regex_replace, this runs on metadata an add-on may not have yet, so
+    an undefined value reads as empty."""
+    return (
+        str(string)
+        .replace('\\', '\\\\')
+        .replace('"', '\\"')
+        .replace('\t', '\\t')
+        .replace('\r\n', '\\n')
+        .replace('\r', '\\n')
+        .replace('\n', '\\n')
+    )
+
+
 class TemplateProcessor:
     """ Process Jinja2 templates """
 
@@ -80,6 +100,7 @@ class TemplateProcessor:
         template_env.filters["regex_replace"] = regex_replace
         template_env.filters["get_list"] = get_list
         template_env.filters["escape_xml"] = escape_xml
+        template_env.filters["escape_po"] = escape_po
 
         # Loop over all templates
         for infile in utils.list_all_files(template_dir):

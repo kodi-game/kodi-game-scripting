@@ -16,7 +16,6 @@
 
 """ Test KodiGameAddon """
 
-import collections
 import os
 
 from unittest import mock
@@ -27,6 +26,7 @@ from kodi_game_scripting import config
 from kodi_game_scripting.process_game_addons import \
     KodiAddonDescriptions, KodiGameAddon
 from kodi_game_scripting.git_access import GitHubRepo
+from kodi_game_scripting.libretro_ctypes import LibretroWrapper
 
 pytestmark = [pytest.mark.unit]
 
@@ -140,34 +140,131 @@ def test_kodigameaddon_processaddon(kodigameaddon, templateprocessormock):
         'addon', os.path.join('tmpdir', 'game.mygame'), mock.ANY)
 
 
-Variable = collections.namedtuple('Variable',
-                                  'id description values default')
+def make_option(key, description, values, default, **kwargs):
+    """ Build an option as LibretroWrapper reports it
+
+    values is a list of (value, label) pairs, or of plain values. """
+    return LibretroWrapper.Option(
+        key, description, kwargs.get('info', ''), kwargs.get('category', ''),
+        [LibretroWrapper.OptionValue(*value)
+         if isinstance(value, tuple) else LibretroWrapper.OptionValue(value, '')
+         for value in values], default)
+
+
+SYSTEM_INFO = {
+    'name': 'libraryname', 'version': '123-ver', 'extensions': ['a'],
+    'need_fullpath': True, 'block_extract': False,
+    'supports_no_game': False, 'supports_disc_control': True,
+}
+
+
+def setup_library(libretrowrappermock, options, categories=()):
+    """ Point the mocked wrapper at a set of options """
+    system_info = LibretroWrapper.SystemInfo(dict(SYSTEM_INFO))
+    libretrowrappermock.return_value.system_info = system_info
+    libretrowrappermock.return_value.options = options
+    libretrowrappermock.return_value.categories = [
+        LibretroWrapper.Category(*category) for category in categories]
+    libretrowrappermock.return_value.opengl_linkage = False
+    return system_info
 
 
 def test_kodigameaddon_loadlibraryfile(kodigameaddon, libretrowrappermock):
     """ Test loading info from compiled library """
-    system_info = {'name': 'libraryname', 'version': '123-ver'}
-    libretrowrappermock.return_value.system_info = system_info
-    libretrowrappermock.return_value.variables = [
-        Variable('setting1', 'Setting 1', ['enabled', 'disabled'], 'enabled'),
-        Variable('setting2', 'Setting 2', ['0', '1'], '0'),
-    ]
-    libretrowrappermock.return_value.opengl_linkage = False
+    system_info = setup_library(libretrowrappermock, [
+        make_option('setting1', 'Setting 1', ['enabled', 'disabled'],
+                    'disabled'),
+        make_option('setting2', 'Setting 2', ['0', '1'], '0'),
+    ])
     kodigameaddon.load_library_file()
     assert kodigameaddon.info['library']['loaded']
     assert not kodigameaddon.info['library']['opengl']
     assert kodigameaddon.info['system_info'] is system_info
 
-    # Each setting gets a string ID allocated from 30000
+    # A core with no categories of its own gets the one category settings.xml
+    # has always used: Kodi's own string 128, "General"
+    categories = kodigameaddon.info['categories']
+    assert [(c['id'], c['label']) for c in categories] == [('general', 128)]
+
     assert kodigameaddon.info['settings'] == [
-        {'id': 'setting1', 'label': 30001, 'description': 'Setting 1',
-         'values': ['enabled', 'disabled'], 'default': 'enabled'},
-        {'id': 'setting2', 'label': 30002, 'description': 'Setting 2',
-         'values': ['0', '1'], 'default': '0'},
+        {'id': 'setting1', 'label': 30001, 'help': None,
+         'default': 'disabled',
+         'values': [{'value': 'enabled', 'label': None},
+                    {'value': 'disabled', 'label': None}]},
+        {'id': 'setting2', 'label': 30002, 'help': None, 'default': '0',
+         'values': [{'value': '0', 'label': None},
+                    {'value': '1', 'label': None}]},
     ]
     assert kodigameaddon.info['strings'] == [
         {'id': 30001, 'content': 'Setting 1'},
         {'id': 30002, 'content': 'Setting 2'},
+    ]
+
+
+def test_kodigameaddon_settingscategories(kodigameaddon, libretrowrappermock):
+    """ Test that options are grouped into the categories a core declares """
+    setup_library(libretrowrappermock, [
+        make_option('vsync', 'VSync', ['on', 'off'], 'on', category='video'),
+        make_option('loose', 'Loose', ['on', 'off'], 'on'),
+        make_option('volume', 'Volume', ['0', '1'], '0', category='audio'),
+        make_option('filter', 'Filter', ['on', 'off'], 'on', category='video'),
+        make_option('bogus', 'Bogus', ['on', 'off'], 'on', category='nope'),
+    ], categories=[('video', 'Video', 'What it looks like.'),
+                   ('audio', 'Audio', '')])
+
+    kodigameaddon.load_library_file()
+
+    categories = kodigameaddon.info['categories']
+    assert [(c['id'], c['label'], c['help'],
+             [s['id'] for s in c['settings']]) for c in categories] == [
+        # Uncategorised first, including an option naming a category the core
+        # never declared, so they stay where users last saw them
+        ('general', 128, None, ['loose', 'bogus']),
+        ('video', 30003, 30004, ['vsync', 'filter']),
+        ('audio', 30007, None, ['volume']),
+    ]
+
+    # IDs are allocated in the order the strings are met, category name and
+    # description before the settings under it
+    assert kodigameaddon.info['strings'] == [
+        {'id': 30001, 'content': 'Loose'},
+        {'id': 30002, 'content': 'Bogus'},
+        {'id': 30003, 'content': 'Video'},
+        {'id': 30004, 'content': 'What it looks like.'},
+        {'id': 30005, 'content': 'VSync'},
+        {'id': 30006, 'content': 'Filter'},
+        {'id': 30007, 'content': 'Audio'},
+        {'id': 30008, 'content': 'Volume'},
+    ]
+
+
+def test_kodigameaddon_settingshelpandlabels(kodigameaddon,
+                                             libretrowrappermock):
+    """ Test that help text and value labels get IDs of their own """
+    setup_library(libretrowrappermock, [
+        make_option('vsync', 'VSync', [('on', 'Enabled'), ('off', 'Disabled')],
+                    'on', info='Wait for the display.'),
+        make_option('filter', 'Filter', [('on', 'Enabled')], 'on'),
+    ])
+
+    kodigameaddon.load_library_file()
+
+    vsync, filtering = kodigameaddon.info['settings']
+    assert (vsync['label'], vsync['help']) == (30001, 30002)
+    assert vsync['values'] == [{'value': 'on', 'label': 30003},
+                               {'value': 'off', 'label': 30004}]
+
+    # "Enabled" is the same string wherever it turns up, so it's translated
+    # once rather than once per setting
+    assert filtering['values'] == [{'value': 'on', 'label': 30003}]
+    assert filtering['help'] is None
+
+    assert kodigameaddon.info['strings'] == [
+        {'id': 30001, 'content': 'VSync'},
+        {'id': 30002, 'content': 'Wait for the display.'},
+        {'id': 30003, 'content': 'Enabled'},
+        {'id': 30004, 'content': 'Disabled'},
+        {'id': 30005, 'content': 'Filter'},
     ]
 
 

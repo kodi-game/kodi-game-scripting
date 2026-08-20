@@ -53,7 +53,11 @@ class GitHubOrg:
                           "(no username/password set)")
                     username, password = None, None
                 self._github = github.Github(username, password)
-            rate = self._github.get_rate_limit().core
+            # PyGithub 2.x returns a RateLimitOverview, which keeps the
+            # per-resource limits under .resources; before that get_rate_limit()
+            # returned the RateLimit itself, carrying .core directly.
+            rate_limit = self._github.get_rate_limit()
+            rate = getattr(rate_limit, 'resources', rate_limit).core
             print("GitHub API Rate: limit: {}, remaining: {}, reset: {}"
                   .format(rate.limit, rate.remaining, rate.reset.isoformat()))
             if auth and not apitoken:

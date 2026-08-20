@@ -19,7 +19,6 @@
 import os
 import re
 import shutil
-import xml.sax.saxutils
 
 import jinja2
 
@@ -36,11 +35,15 @@ def get_list(value):
 
 
 def regex_replace(string, find, replace, *, multiline=False):
-    """ Filter: Replace regex in string """
+    """ Filter: Replace regex in string
+
+    Templates call this on metadata an add-on may not have yet -- a core
+    being packaged for the first time has no description -- so an undefined
+    value reads as empty rather than raising. """
     flags = 0
     if multiline:
         flags += re.MULTILINE
-    return re.sub(find, replace, string, flags=flags)
+    return re.sub(find, replace, str(string), flags=flags)
 
 
 def escape_xml(string):
@@ -102,7 +105,7 @@ class TemplateProcessor:
 
                 # Make the datetime of strings files the existing datetime
                 if '.po' in infile and os.path.isfile(outfile_path):
-                    with open(outfile_path, 'r') as stringsfile_ctx:
+                    with open(outfile_path, 'r', encoding='utf-8') as stringsfile_ctx:
                         strings_content = stringsfile_ctx.read()
 
                     datere = re.compile(r'"POT-Creation-Date: (.*)\\n"')
@@ -114,7 +117,7 @@ class TemplateProcessor:
                 if content:
                     utils.ensure_directory_exists(
                         os.path.dirname(os.path.join(destination, outfile)))
-                    with open(outfile_path, 'w') as outfile_ctx:
+                    with open(outfile_path, 'w', encoding='utf-8') as outfile_ctx:
                         outfile_ctx.write(content)
                 elif os.path.exists(outfile_path):
                     os.remove(outfile_path)

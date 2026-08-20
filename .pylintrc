@@ -2,4 +2,12 @@
 good-names=pytestmark
 
 [MESSAGES CONTROL]
-disable=locally-disabled,too-few-public-methods,too-many-locals,too-many-instance-attributes
+# consider-using-f-string: this code is written against str.format throughout,
+#   and converting every call site would be churn with no reader benefit.
+# fixme: flags TODO comments, which are notes rather than defects.
+disable=locally-disabled,
+        too-few-public-methods,
+        too-many-locals,
+        too-many-instance-attributes,
+        consider-using-f-string,
+        fixme

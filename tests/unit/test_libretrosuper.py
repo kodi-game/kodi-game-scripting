@@ -50,8 +50,11 @@ def test_libretrosuper_parseinfofile(mocker):
 
 
 def test_libretrosuper_parseinfofilenofile(mocker):
-    """ Test failure loading info files from libretro-super """
+    """ Test failure loading info files from libretro-super
+
+    A core libretro-super has nothing on still needs a license, or the
+    templates that read one raise UndefinedError. """
     isfilemock = mocker.patch('os.path.isfile', return_value=False)
     info = LibretroSuper('').parse_info_file('mylib')
-    assert not info
+    assert info == {'license': 'Unlicensed'}
     assert isfilemock.mock_calls

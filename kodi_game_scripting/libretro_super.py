@@ -45,7 +45,7 @@ class LibretroSuper:
         }
 
         if os.path.isfile(path):
-            with open(path, 'r') as info_ctx:
+            with open(path, 'r', encoding='utf-8') as info_ctx:
                 for line in info_ctx.readlines():
                     if '=' in line:
                         name, var = line.partition('=')[::2]

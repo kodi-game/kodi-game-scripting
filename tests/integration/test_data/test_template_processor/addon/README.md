@@ -1,6 +1,21 @@
-# game.libretro.mygame addon for Kodi
+# mygame
 
-This is a [Kodi](http://kodi.tv) game addon for mygame.
+### Description
 
-[![Build Status](https://travis-ci.org/kodi-game/game.libretro.mygame.svg?branch=master)](https://travis-ci.org/kodi-game/game.libretro.mygame)
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/kodi-game/game.libretro.mygame?svg=true)](https://ci.appveyor.com/project/kodi-game/game-libretro-mygame)
+
+
+### License
+
+
+
+### Icon
+
+Help make me an icon!
+
+### Fanart
+
+Help make me fanart!
+
+### Screenshots
+
+Help make me screenshots!

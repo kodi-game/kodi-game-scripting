@@ -53,7 +53,7 @@ def test_githuborg_getrepo():
 def create_file(path, content=''):
     """ Create a file """
     utils.ensure_directory_exists(os.path.dirname(path))
-    with open(path, 'w') as tmpfile:
+    with open(path, 'w', encoding='utf-8') as tmpfile:
         tmpfile.write(content)
 
 
@@ -71,7 +71,8 @@ def gitrepo_remote(tmpdir):
     create_file(os.path.join(gitrepo.path, 'upstream-file'))
     gitrepo.commit('Commit upstream-file')
     # Allow pushing into a non-bare repository.
-    with open(os.path.join(gitrepo.path, '.git', 'config'), 'a') as gitconfig:
+    with open(os.path.join(gitrepo.path, '.git', 'config'), 'a',
+              encoding='utf-8') as gitconfig:
         gitconfig.write('[receive]\ndenyCurrentBranch=updateInstead\n')
     return gitrepo
 

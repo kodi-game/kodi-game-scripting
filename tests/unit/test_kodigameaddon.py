@@ -16,6 +16,7 @@
 
 """ Test KodiGameAddon """
 
+import collections
 import os
 
 from unittest import mock
@@ -139,20 +140,35 @@ def test_kodigameaddon_processaddon(kodigameaddon, templateprocessormock):
         'addon', os.path.join('tmpdir', 'game.mygame'), mock.ANY)
 
 
+Variable = collections.namedtuple('Variable',
+                                  'id description values default')
+
+
 def test_kodigameaddon_loadlibraryfile(kodigameaddon, libretrowrappermock):
     """ Test loading info from compiled library """
-    libretrowrappermock.return_value.system_info = 'system_info'
-    var1 = mock.Mock()
-    var1.id = 1
-    var2 = mock.Mock()
-    var2.id = 2
-    libretrowrappermock.return_value.variables = [var2, var1]
+    system_info = {'name': 'libraryname', 'version': '123-ver'}
+    libretrowrappermock.return_value.system_info = system_info
+    libretrowrappermock.return_value.variables = [
+        Variable('setting1', 'Setting 1', ['enabled', 'disabled'], 'enabled'),
+        Variable('setting2', 'Setting 2', ['0', '1'], '0'),
+    ]
     libretrowrappermock.return_value.opengl_linkage = False
     kodigameaddon.load_library_file()
     assert kodigameaddon.info['library']['loaded']
     assert not kodigameaddon.info['library']['opengl']
-    assert kodigameaddon.info['settings'] == [var1, var2]
-    assert kodigameaddon.info['system_info'] == 'system_info'
+    assert kodigameaddon.info['system_info'] is system_info
+
+    # Each setting gets a string ID allocated from 30000
+    assert kodigameaddon.info['settings'] == [
+        {'id': 'setting1', 'label': 30001, 'description': 'Setting 1',
+         'values': ['enabled', 'disabled'], 'default': 'enabled'},
+        {'id': 'setting2', 'label': 30002, 'description': 'Setting 2',
+         'values': ['0', '1'], 'default': '0'},
+    ]
+    assert kodigameaddon.info['strings'] == [
+        {'id': 30001, 'content': 'Setting 1'},
+        {'id': 30002, 'content': 'Setting 2'},
+    ]
 
 
 def test_kodigameaddon_loadlibraryfileerr(kodigameaddon, libretrowrappermock):

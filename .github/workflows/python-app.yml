@@ -1,4 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# This workflow will install Python dependencies, run tests and lint
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
 name: Python application
@@ -11,51 +11,31 @@ on: [push, pull_request]
 jobs:
   # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - os: ubuntu-20.04
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
 
     # Steps represent a sequence of tasks that will be executed as part of the
     # job
     steps:
-    - name: Build environment information
-      run: 'echo "Matrix OS: ${{ matrix.os }} on $HOSTNAME with $(getconf _NPROCESSORS_ONLN) cores"'
+    - uses: actions/checkout@v4
 
-    - uses: actions/checkout@v2
-
-    - name: Set up Python 3.6
-      uses: actions/setup-python@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.6
-
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.7
-
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
+        python-version: ${{ matrix.python-version }}
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install tox
 
-    - name: Restore tox environment
-      id: restore-tox
-      uses: actions/cache@v2
-      with:
-        path: |
-          .tox
-        key: tox-env-${{ hashFiles('tox.ini', 'requirements.txt') }}
+    # Integration tests build a libretro core with CMake
+    - name: Build environment information
+      run: 'echo "Running on $HOSTNAME with $(getconf _NPROCESSORS_ONLN) cores, $(cmake --version | head -1)"'
 
     - name: Run tox
-      run: |
-        tox
+      run: tox -e py

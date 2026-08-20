@@ -12,10 +12,10 @@
 		<extensions>ext1|ext2</extensions>
 		<supports_vfs>false</supports_vfs>
 		<supports_standalone>false</supports_standalone>
+		<supports_disc_control>false</supports_disc_control>
+		<requires_opengl>true</requires_opengl>
 	</extension>
 	<extension point="xbmc.addon.metadata">
-		<summary lang="en_GB">mygame</summary>
-		<description lang="en_GB">Supported files: .ext1, .ext2</description>
 		<license></license>
 		<platform>@PLATFORM@</platform>
 		<source>https://github.com/kodi-game/game.libretro.mygame</source>

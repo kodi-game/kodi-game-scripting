@@ -273,6 +273,11 @@ class KodiGameAddon():
                 'debian_package': re.sub(r'[\._]', '-', self.name),
                 'branch': push_branch or 'master',
                 'version': '0.0.0',
+                # load_addon_xml() fills these in, but an add-on being created
+                # for the first time has no addon.xml to read them from
+                'summaries': [],
+                'descriptions': [],
+                'disclaimers': [],
             },
             'config': addon_config[4],
             'datetime': '{0:%Y-%m-%d %H:%Mi%z}'.format(
@@ -328,7 +333,8 @@ class KodiGameAddon():
         xml_data = utils.get_xml_data(addon_xml_path)
 
         if xml_data:
-            listify = lambda var: var if isinstance(var, list) else [var]
+            def listify(var):
+                return var if isinstance(var, list) else [var]
 
             summaries = listify(xml_data['addon']['extension'][1]['summary'])
             descriptions = listify(xml_data['addon']['extension'][1]['description'])
@@ -344,7 +350,8 @@ class KodiGameAddon():
                         return string_tag['content']
                 if not string_tags:
                     return ''
-                raise Exception(f"Couldn't find en_GB string in {string_tags}")
+                raise ValueError(
+                    f"Couldn't find en_GB string in {string_tags}")
 
             self.info['game']['summary_english'] = get_english(summaries)
             self.info['game']['description_english'] = get_english(descriptions)
@@ -356,7 +363,7 @@ class KodiGameAddon():
                                     'resource.language.en_gb', 'strings.po')
 
         if os.path.isfile(strings_path):
-            with open(strings_path, 'r') as stringsfile_ctx:
+            with open(strings_path, 'r', encoding='utf-8') as stringsfile_ctx:
                 strings_content = stringsfile_ctx.read()
 
             # Loop through lines in strings.po and extract strings, assigning
@@ -374,7 +381,8 @@ class KodiGameAddon():
                     string_id = int(line.split('"')[1][1:])
 
                     # Read next line
-                    line = strings_content.splitlines()[strings_content.splitlines().index(line) + 1]
+                    lines = strings_content.splitlines()
+                    line = lines[lines.index(line) + 1]
 
                     # Extract string content from line
                     string_content = line.split('"')[1]
@@ -487,7 +495,7 @@ class KodiGameAddon():
                                     self.info['makefile']['jni'],
                                     'Application.mk')
             try:
-                with open(filename) as file:
+                with open(filename, encoding='utf-8') as file:
                     if re.search(bad, file.read()):
                         self.info['libretro_repo']['exclude_platforms'] \
                             .append('android-armv7')

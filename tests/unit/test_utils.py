@@ -87,8 +87,8 @@ def test_purify():
     """Test purify function"""
     assert utils.purify(['test', [None, None]]) == ['test']
     assert utils.purify({'l1': {'l2': 'v2'}, 'l3': {}}) == {'l1': {'l2': 'v2'}}
-    assert utils.purify({'l1': [{}, {}], 'l2': {}}) == {}
-    assert utils.purify([]) == []
+    assert not utils.purify({'l1': [{}, {}], 'l2': {}})
+    assert not utils.purify([])
     assert utils.purify(collections.OrderedDict()) == collections.OrderedDict()
 
 

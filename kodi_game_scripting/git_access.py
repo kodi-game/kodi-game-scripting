@@ -218,7 +218,7 @@ class GitRepo:
             raise ValueError("Skipping, repository is dirty")
         self._gitrepo.remotes.origin.push(
             'HEAD:{}'.format(branch),
-            force=(branch != 'master'))
+            force=branch != 'master')
         time.sleep(sleep)
         if tags:
             self._gitrepo.git.push('--tags')

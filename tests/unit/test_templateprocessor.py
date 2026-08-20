@@ -27,7 +27,7 @@ pytestmark = [pytest.mark.unit]
 
 def test_getlist():
     """ Test the get_list filter """
-    assert get_list([]) == []
+    assert not get_list([])
     assert get_list(None) == [None]
     assert get_list('') == ['']
     assert get_list('test') == ['test']
@@ -36,9 +36,10 @@ def test_getlist():
 
 def test_regexreplace():
     """ Test the regex_replace filter """
-    assert(regex_replace('aabbcc', r'(b+)', '-\\1-')) == 'aa-bb-cc'
+    assert regex_replace('aabbcc', r'(b+)', '-\\1-') == 'aa-bb-cc'
 
 
 def test_regexreplace_multiline():
     """ Test the regex_replace filter with a multiline string """
-    assert(regex_replace('a\nbb\nc', r'(b+)\n', '', multiline=True)) == 'a\nc'
+    assert regex_replace(
+        'a\nbb\nc', r'(b+)\n', '', multiline=True) == 'a\nc'

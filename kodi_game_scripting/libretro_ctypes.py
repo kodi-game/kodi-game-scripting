@@ -202,6 +202,7 @@ def probe_disc_control_subprocess(library_path, result_path):
     lib = ctypes.cdll.LoadLibrary(library_path)
 
     class RetroSystemInfo(ctypes.Structure):
+        """ struct retro_system_info """
         _fields_ = [
             ('library_name', ctypes.c_char_p),
             ('library_version', ctypes.c_char_p),

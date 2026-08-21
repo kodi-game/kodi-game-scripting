@@ -159,7 +159,7 @@ ADDONS = {
     'swanstation':               ('kodi-game/swanstation',      '',                  '.',                 '', {'branch': 'main', 'cmake': True}),
     'tgbdual':                   ('tgbdual-libretro',           'Makefile',          '.',                 'jni', {}),
     'theodore':                  ('Zlika/theodore',             'Makefile',          '.',                 'jni', {}),
-    'thepowdertoy':              ('kodi-game/ThePowderToy',     '',                  '',                  '', {'cmake': True, 'binary_dir': 'src'}),
+    'thepowdertoy':              ('ThePowderToy',               '',                  '',                  '', {'cmake': True, 'binary_dir': 'src'}),
     'tyrquake':                  ('tyrquake',                   'Makefile',          '.',                 'jni', {}),
     'uae':                       ('libretro-uae',               'Makefile',          '.',                 'jni', {'soname': 'puae'}),
     'uae2021':                   ('libretro-uae',               'Makefile',          '.',                 'jni', {'branch': '2.6.1', 'soname': 'puae2021'}),

@@ -197,7 +197,7 @@ class KodiGameAddons:
             # Third iteration: Update package version if there are changes
             print("Third iteration: Update version")
             for addon in self._addons:
-                if 'depends/common' in addon.info['git']['diff']:
+                if addon.needs_version_bump():
                     print(" Processing addon: {}".format(addon.name))
                     addon.bump_version()
                     addon.process_addon_files()
@@ -512,6 +512,21 @@ class KodiGameAddon():
         self.info['game']['version'] = '{}.{}'.format(
             version, int(pkg_version) + 1)
         print("  Version bumped to {}".format(self.info['game']['version']))
+
+    def needs_version_bump(self):
+        """ Determine whether dependency changes require a version bump """
+        diff = self.info['git'].get('diff', '')
+        changed_paths = (
+            path
+            for match in re.finditer(
+                r'^diff --git a/(\S+) b/(\S+)$', diff, re.MULTILINE)
+            for path in match.groups()
+        )
+        return any(
+            path.startswith('depends/common/') and
+            os.path.basename(path) != 'CMakeLists.txt'
+            for path in changed_paths
+        )
 
     def fetch_and_reset(self, *, reset):
         """ Fetching & resetting Git repository """

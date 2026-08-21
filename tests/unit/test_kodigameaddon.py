@@ -267,6 +267,34 @@ def test_kodigameaddon_bumpversion(kodigameaddon):
     assert kodigameaddon.info['game']['version'] == '1.2.3.2'
 
 
+@pytest.mark.parametrize(('changed_files', 'expected'), [
+    (['depends/common/mygame/CMakeLists.txt'], False),
+    (['depends/common/mygame/mygame.txt'], True),
+    (['depends/common/mygame/CMakeLists.txt',
+      'depends/common/mygame/mygame.txt'], True),
+    (['game.mygame/addon.xml.in', 'CMakeLists.txt'], False),
+])
+def test_kodigameaddon_needsversionbump(kodigameaddon, changed_files,
+                                         expected):
+    """ Test identifying dependency changes that need a version bump """
+    kodigameaddon.info['git']['diff'] = '\n'.join(
+        'diff --git a/{0} b/{0}'.format(path) for path in changed_files)
+    assert kodigameaddon.needs_version_bump() is expected
+
+
+def test_kodigameaddon_needsversionbump_ignores_diff_content(kodigameaddon):
+    """ Test that dependency paths in patch content do not trigger a bump """
+    kodigameaddon.info['git']['diff'] = """\
+diff --git a/game.mygame/addon.xml.in b/game.mygame/addon.xml.in
+--- a/game.mygame/addon.xml.in
++++ b/game.mygame/addon.xml.in
+@@ -1 +1 @@
+-depends/common/mygame/mygame.txt
++depends/common/mygame/CMakeLists.txt
+"""
+    assert not kodigameaddon.needs_version_bump()
+
+
 def test_kodigameaddon_fetchreset(kodigameaddon, gitrepomock):
     """ Test fetching and resetting from Git """
     kodigameaddon.fetch_and_reset(reset=True)

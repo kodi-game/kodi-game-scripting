@@ -17,6 +17,7 @@
 """ Process Kodi Game addons and unify project files """
 
 import argparse
+import collections
 import datetime
 import os
 import multiprocessing
@@ -26,6 +27,7 @@ import subprocess
 import sys
 
 from . import utils
+from .addon_strings import StringTable, read_strings
 from .config import ADDONS, GITHUB_ADDON_PREFIX, GITHUB_ORGANIZATION
 from .git_access import GitHubOrg, GitHubRepo, GitRepo
 from .libretro_ctypes import LibretroWrapper
@@ -288,6 +290,7 @@ class KodiGameAddon():
                 'name': '',
                 'version': '0.0.0',
             },
+            'categories': [],
             'settings': [],
             'oldstrings': [],
             'strings': [],
@@ -361,39 +364,8 @@ class KodiGameAddon():
 
     def load_strings(self):
         """ Load strings from strings.po """
-        strings_path = os.path.join(self._path, self.name, 'resources', 'language',
-                                    'resource.language.en_gb', 'strings.po')
-
-        if os.path.isfile(strings_path):
-            with open(strings_path, 'r', encoding='utf-8') as stringsfile_ctx:
-                strings_content = stringsfile_ctx.read()
-
-            # Loop through lines in strings.po and extract strings, assigning
-            # them to self.info['strings'].
-            #
-            # Example string looks like:
-            #
-            #   msgctxt "#30001"
-            #   msgid "System > Model"
-            #   msgstr ""
-            #
-            for line in strings_content.splitlines():
-                if line.startswith('msgctxt') and '#' in line:
-                    # Extract string ID from line
-                    string_id = int(line.split('"')[1][1:])
-
-                    # Read next line
-                    lines = strings_content.splitlines()
-                    line = lines[lines.index(line) + 1]
-
-                    # Extract string content from line
-                    string_content = line.split('"')[1]
-
-                    # Append string to self.info['strings']
-                    self.info['oldstrings'].append({
-                        'id': string_id,
-                        'content': string_content
-                    })
+        self.info['oldstrings'] = read_strings(
+            os.path.join(self._path, self.name))
 
     def load_library_file(self):
         """ Load the compiled library file """
@@ -405,8 +377,13 @@ class KodiGameAddon():
             self.info['library']['loaded'] = True
             self.info['system_info'] = library.system_info
             self._apply_libretro_info_defaults(library.system_info)
-            self.info['settings'] = self._get_settings(library.variables, self.info['oldstrings'])
-            self.info['strings'] = self._get_strings(self.info['settings'])
+            string_table = StringTable(self.info['oldstrings'])
+            self.info['categories'] = self._get_categories(
+                library.options, library.categories, string_table)
+            self.info['settings'] = [
+                setting for category in self.info['categories']
+                for setting in category['settings']]
+            self.info['strings'] = string_table.strings()
             self.info['library']['opengl'] = library.opengl_linkage
         except OSError as err:
             self.info['library']['error'] = err
@@ -563,68 +540,57 @@ class KodiGameAddon():
         return addon_summary
 
     @classmethod
-    def _get_settings(cls, variables, strings):
-        """ Get settings from libretro variables, while preserving string IDs """
-        settings = []
+    def _get_categories(cls, options, categories, string_table):
+        """ Group the core's options into the categories it declares
 
-        for variable in variables:
-            # Get description
-            description = variable.description
+        A core that declares no categories, or leaves an option out of them,
+        gets the one category we've always used: Kodi's own string 128,
+        "General". """
+        described = {category.key: category for category in categories}
 
-            # Search for existing string ID
-            string_id = None
-            for string in strings:
-                if string['content'] == description:
-                    string_id = string['id']
-                    break
+        # Keep the core's own category order, and keep an option's position
+        # within its category
+        grouped = collections.OrderedDict()
+        for option in options:
+            key = option.category if option.category in described else ''
+            grouped.setdefault(key, []).append(option)
 
-            # If no string ID was found, add an ID to the end of the list
-            if string_id is None:
-                if len(strings) > 0:
-                    string_id = strings[-1]['id'] + 1
-                    # Update the strings array so that the next ID will be incremented
-                    strings.append({
-                        'id': string_id,
-                        'content': description,
-                    })
-                else:
-                    string_id = cls._get_max_string_id(settings) + 1
+        ordered_keys = [category.key for category in categories
+                        if category.key in grouped]
+        if '' in grouped:
+            # Uncategorised options come first, as the only ones there used to
+            # be, so existing settings stay where users left them
+            ordered_keys.insert(0, '')
 
-            # Append the setting
-            settings.append({
-                'id': variable.id,
-                'label': string_id,
-                'description': description,
-                'values': variable.values,
-                'default': variable.default
+        result = []
+        for key in ordered_keys:
+            result.append({
+                'id': key or 'general',
+                # 128 is Kodi's own "General"; a core's own name needs
+                # translating like any other string it hands us
+                'label': (string_table.get(described[key].description)
+                          if key else 128),
+                'help': (string_table.get(described[key].info)
+                         if key else None),
+                'settings': [cls._get_setting(option, string_table)
+                             for option in grouped[key]],
             })
 
-        return settings
+        return result
 
     @staticmethod
-    def _get_max_string_id(settings):
-        """ Get the maximum string ID from a list of settings, starting from 30000 """
-        max_id = 30000
+    def _get_setting(option, string_table):
+        """ Describe one option the way settings.xml wants it
 
-        for setting in settings:
-            if setting['label'] > max_id:
-                max_id = setting['label']
-
-        return max_id
-
-    @staticmethod
-    def _get_strings(settings):
-        """ Get strings from settings by sorting via string ID """
-        strings = []
-
-        # Loop through settings and append strings
-        for setting in settings:
-            strings.append({
-                'id': setting['label'],
-                'content': setting['description']
-            })
-
-        # Sort by string ID
-        strings.sort(key=lambda string: string['id'])
-
-        return strings
+        Everything stays a string. The core reads back the value it gave us,
+        so a boolean storing "true" where the core wants "enabled" would break
+        it; the label is what the user sees instead. """
+        return {
+            'id': option.id,
+            'label': string_table.get(option.description),
+            'help': string_table.get(option.info),
+            'default': option.default,
+            'values': [{'value': value.value,
+                        'label': string_table.get(value.label)}
+                       for value in option.values],
+        }

@@ -1,10 +1,27 @@
-{% if settings %}
+{% if categories %}
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<settings>
-	<category label="128">
-	{% for setting in settings %}
-		<setting label="{{ setting.label }}" type="select" id="{{ setting.id | e }}" values="{{ setting['values']|join('|') | e }}" default="{{ setting.default | e }}"/>
+<settings version="1">
+	<section id="{{ game.addon }}">
+	{% for category in categories %}
+		<category id="{{ category.id | escape_xml }}" label="{{ category.label }}"{% if category.help %} help="{{ category.help }}"{% endif %}>
+			<group id="1">
+			{% for setting in category.settings %}
+				<setting id="{{ setting.id | escape_xml }}" type="string" label="{{ setting.label }}"{% if setting.help %} help="{{ setting.help }}"{% endif %}>
+					<level>0</level>
+					<default>{{ setting.default | escape_xml }}</default>
+					<constraints>
+						<options>
+						{% for value in setting['values'] %}
+							<option{% if value.label %} label="{{ value.label }}"{% endif %}>{{ value.value | escape_xml }}</option>
+						{% endfor %}
+						</options>
+					</constraints>
+					<control type="list" format="string" />
+				</setting>
+			{% endfor %}
+			</group>
+		</category>
 	{% endfor %}
-	</category>
+	</section>
 </settings>
 {% endif %}

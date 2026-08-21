@@ -23,3 +23,29 @@ msgstr ""
 msgctxt "Addon Description"
 msgid ""
 msgstr ""
+
+# Empty string with ID 30000
+
+msgctxt "#30001"
+msgid "mysetting1"
+msgstr ""
+
+msgctxt "#30002"
+msgid "Video"
+msgstr ""
+
+msgctxt "#30003"
+msgid "What the picture looks like."
+msgstr ""
+
+msgctxt "#30004"
+msgid "mysetting2"
+msgstr ""
+
+msgctxt "#30005"
+msgid "What mysetting2 does.\nSet it to \"value1\" unless you know better."
+msgstr ""
+
+msgctxt "#30006"
+msgid "The first value"
+msgstr ""

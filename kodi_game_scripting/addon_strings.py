@@ -53,11 +53,15 @@ def read_strings(addon_path):
     except (OSError, UnicodeDecodeError, IOError):
         return []
 
+    # Iterating a POFile yields obsolete entries alongside live ones, which is
+    # what we want: obsolete text is what no core declares any more, kept only
+    # so its ID stays reserved -- see StringTable.
     strings = []
     for entry in entries:
         match = _NUMERIC_MSGCTXT.match(entry.msgctxt or '')
         if match:
-            strings.append({'id': int(match.group(1)), 'content': entry.msgid})
+            strings.append({'id': int(match.group(1)), 'content': entry.msgid,
+                            'obsolete': entry.obsolete})
 
     strings.sort(key=lambda string: string['id'])
     return strings
@@ -108,12 +112,15 @@ class StringTable:
     def strings(self):
         """ Every string to write back, sorted by ID
 
-        Text no core declares any more is kept rather than dropped. Dropping
-        it would lower the highest ID the next run sees, and the run after
-        that would hand the same ID to different text. """
-        strings = [{'id': string_id, 'content': content}
+        Text no core declares any more is marked obsolete rather than removed.
+        Written as a gettext `#~` entry it disappears from Weblate and from
+        anything reading the file for live text, but the ID stays reserved --
+        deleting it outright would lower the highest ID the next run sees, and
+        the run after that would hand that number to different text while the
+        translations for the old meaning still exist in sixty other files. """
+        strings = [{'id': string_id, 'content': content, 'obsolete': False}
                    for string_id, content in self._used.items()]
-        strings.extend({'id': string_id, 'content': content}
+        strings.extend({'id': string_id, 'content': content, 'obsolete': True}
                        for content, string_id in self._orphans.items())
         strings.sort(key=lambda string: string['id'])
         return strings

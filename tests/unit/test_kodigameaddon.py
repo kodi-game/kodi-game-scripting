@@ -196,8 +196,8 @@ def test_kodigameaddon_loadlibraryfile(kodigameaddon, libretrowrappermock):
                     {'value': '1', 'label': None}]},
     ]
     assert kodigameaddon.info['strings'] == [
-        {'id': 30001, 'content': 'Setting 1'},
-        {'id': 30002, 'content': 'Setting 2'},
+        {'id': 30001, 'content': 'Setting 1', 'obsolete': False},
+        {'id': 30002, 'content': 'Setting 2', 'obsolete': False},
     ]
 
 
@@ -227,14 +227,14 @@ def test_kodigameaddon_settingscategories(kodigameaddon, libretrowrappermock):
     # IDs are allocated in the order the strings are met, category name and
     # description before the settings under it
     assert kodigameaddon.info['strings'] == [
-        {'id': 30001, 'content': 'Loose'},
-        {'id': 30002, 'content': 'Bogus'},
-        {'id': 30003, 'content': 'Video'},
-        {'id': 30004, 'content': 'What it looks like.'},
-        {'id': 30005, 'content': 'VSync'},
-        {'id': 30006, 'content': 'Filter'},
-        {'id': 30007, 'content': 'Audio'},
-        {'id': 30008, 'content': 'Volume'},
+        {'id': 30001, 'content': 'Loose', 'obsolete': False},
+        {'id': 30002, 'content': 'Bogus', 'obsolete': False},
+        {'id': 30003, 'content': 'Video', 'obsolete': False},
+        {'id': 30004, 'content': 'What it looks like.', 'obsolete': False},
+        {'id': 30005, 'content': 'VSync', 'obsolete': False},
+        {'id': 30006, 'content': 'Filter', 'obsolete': False},
+        {'id': 30007, 'content': 'Audio', 'obsolete': False},
+        {'id': 30008, 'content': 'Volume', 'obsolete': False},
     ]
 
 
@@ -260,11 +260,11 @@ def test_kodigameaddon_settingshelpandlabels(kodigameaddon,
     assert filtering['help'] is None
 
     assert kodigameaddon.info['strings'] == [
-        {'id': 30001, 'content': 'VSync'},
-        {'id': 30002, 'content': 'Wait for the display.'},
-        {'id': 30003, 'content': 'Enabled'},
-        {'id': 30004, 'content': 'Disabled'},
-        {'id': 30005, 'content': 'Filter'},
+        {'id': 30001, 'content': 'VSync', 'obsolete': False},
+        {'id': 30002, 'content': 'Wait for the display.', 'obsolete': False},
+        {'id': 30003, 'content': 'Enabled', 'obsolete': False},
+        {'id': 30004, 'content': 'Disabled', 'obsolete': False},
+        {'id': 30005, 'content': 'Filter', 'obsolete': False},
     ]
 
 

@@ -95,12 +95,12 @@ def test_never_reuses_the_id_of_dropped_text():
     assert table.get('Setting 1') == 30001
     assert table.get('Brand new setting') == 30003
 
-    # And the dropped text stays in the file, so the next run still sees
-    # 30002 as taken
+    # And the dropped text stays in the file as an obsolete entry, so the next
+    # run still sees 30002 as taken while Weblate no longer offers it
     assert table.strings() == [
-        {'id': 30001, 'content': 'Setting 1'},
-        {'id': 30002, 'content': 'Dropped by the core'},
-        {'id': 30003, 'content': 'Brand new setting'},
+        {'id': 30001, 'content': 'Setting 1', 'obsolete': False},
+        {'id': 30002, 'content': 'Dropped by the core', 'obsolete': True},
+        {'id': 30003, 'content': 'Brand new setting', 'obsolete': False},
     ]
 
 
@@ -148,7 +148,7 @@ def test_reads_text_that_would_break_a_line_based_parser(tmpdir):
              'msgstr ""\n')
 
     strings = read_strings(str(tmpdir))
-    assert strings == [{'id': 30001, 'content': helptext}]
+    assert strings == [{'id': 30001, 'content': helptext, 'obsolete': 0}]
 
     # And having read it back, it keeps its ID rather than getting a new one
     assert StringTable(strings).get(helptext) == 30001
@@ -165,4 +165,4 @@ def test_non_numeric_entries_are_ignored(tmpdir):
              'msgctxt "Addon Summary"\nmsgid "A core"\nmsgstr ""\n\n'
              'msgctxt "#30001"\nmsgid "Setting 1"\nmsgstr ""\n')
     assert read_strings(str(tmpdir)) == [
-        {'id': 30001, 'content': 'Setting 1'}]
+        {'id': 30001, 'content': 'Setting 1', 'obsolete': 0}]

@@ -33,9 +33,16 @@ msgstr ""
 
 # Empty string with ID 30000
 {% for string in strings %}
+{% if string.obsolete %}
+
+#~ msgctxt "#{{ string.id }}"
+#~ msgid "{{ string.content | escape_po }}"
+#~ msgstr ""
+{% else %}
 
 msgctxt "#{{ string.id }}"
 msgid "{{ string.content | escape_po }}"
 msgstr ""
+{% endif %}
 {% endfor %}
 {% endif %}

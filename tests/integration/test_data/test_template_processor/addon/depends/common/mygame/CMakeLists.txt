@@ -65,8 +65,12 @@ elseif(CORE_SYSTEM_NAME STREQUAL linux)
                     platform=unix
                     )
 elseif(CORE_SYSTEM_NAME STREQUAL osx)
+  set(PLATFORM_CMAKE_OPTIONS)
   if(CPU STREQUAL arm64)
     set(ARCH arm)
+  elseif(CPU STREQUAL x86_64)
+    set(ARCH intel)
+    set(PLATFORM_CMAKE_OPTIONS )
   else()
     set(ARCH intel)
   endif()
@@ -81,6 +85,7 @@ elseif(CORE_SYSTEM_NAME STREQUAL osx)
                     LIBRETRO_APPLE_ISYSROOT=${CMAKE_OSX_SYSROOT}
                     LIBRETRO_APPLE_PLATFORM=${CPU}-apple-macos
                     platform=osx
+                    ${PLATFORM_CMAKE_OPTIONS}
                     )
 elseif(CORE_SYSTEM_NAME STREQUAL ios OR CORE_SYSTEM_NAME STREQUAL darwin_embedded)
   if(CORE_PLATFORM_NAME STREQUAL ios)

@@ -86,6 +86,7 @@ elseif(CORE_SYSTEM_NAME STREQUAL osx)
                     LIBRETRO_APPLE_PLATFORM=${CPU}-apple-macos
                     platform=osx
                     ${PLATFORM_CMAKE_OPTIONS}
+                    MINVERSION=-mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}
                     )
 elseif(CORE_SYSTEM_NAME STREQUAL ios OR CORE_SYSTEM_NAME STREQUAL darwin_embedded)
   if(CORE_PLATFORM_NAME STREQUAL ios)

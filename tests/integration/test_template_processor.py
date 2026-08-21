@@ -47,6 +47,10 @@ def test_process_template(tmpdir):
         'libretro_repo': {
             'branch': 'master',
         },
+        'config': {
+            'cmake_options_osx':
+                'MINVERSION=-mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}',
+        },
     }
     extdata = {
         'system_info': {

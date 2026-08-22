@@ -372,7 +372,7 @@ def test_kodigameaddon_bumpversion(kodigameaddon):
     (['game.mygame/addon.xml.in', 'CMakeLists.txt'], False),
 ])
 def test_kodigameaddon_needsversionbump(kodigameaddon, changed_files,
-                                         expected):
+                                        expected):
     """ Test identifying dependency changes that need a version bump """
     kodigameaddon.info['git']['diff'] = '\n'.join(
         'diff --git a/{0} b/{0}'.format(path) for path in changed_files)

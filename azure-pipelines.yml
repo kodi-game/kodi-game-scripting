@@ -128,7 +128,7 @@ jobs:
         - px68k
         - prosystem
         - prboom
-        #- ppsspp # Compilation fails due to missing stdint.h
+        - ppsspp
         - potator
         - pokemini
         - pocketcdg

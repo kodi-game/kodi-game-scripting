@@ -25,21 +25,14 @@ jobs:
       vmImage: 'ubuntu-24.04'
       pythonVersion: '3.10'
       installScript: |
-        # 3dengine
+        # OpenGL cores
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
         # beetle-psx-hw
         dpkg -s libgl-dev || sudo apt install libgl-dev
 
-        # boom3
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
-
-        # craft
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
-
         # desmume
         dpkg -s libpcap-dev || sudo apt install -y libpcap-dev
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
         # dolphin
         dpkg -s libegl1-mesa-dev || sudo apt install libegl1-mesa-dev
@@ -47,14 +40,10 @@ jobs:
         dpkg -s libusb-1.0-0-dev || sudo apt install -y libusb-1.0-0-dev
         dpkg -s libxi-dev || sudo apt install -y libxi-dev
         dpkg -s libxrandr-dev || sudo apt install -y libxrandr-dev
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
         # easyrpg
         dpkg -s libfmt-dev || sudo apt install -y libfmt-dev
         dpkg -s libinih-dev || sudo apt install -y libinih-dev
-
-        # flycast
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
         # fsuae
         dpkg -s libglib2.0-dev || sudo apt install -y libglib2.0-dev
@@ -66,10 +55,6 @@ jobs:
         # lrps2
         dpkg -s ccache || sudo apt install -y ccache
         dpkg -s libaio-dev || sudo apt install -y libaio-dev
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
-
-        # melonds
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
         # moonlight
         #dpkg -s libavcodec-dev || sudo apt install -y libavcodec-dev
@@ -80,38 +65,19 @@ jobs:
         #dpkg -s libopus-dev || sudo apt install -y libopus-dev
 
         # mupen64plus
-        #dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
         #dpkg -s nasm || sudo apt install -y nasm
 
         # mupen64plus-nx
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
         dpkg -s nasm || sudo apt install -y nasm
 
-        # openlara
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
-
         # parallel_n64
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
         dpkg -s nasm || sudo apt install -y nasm
 
         # parallext
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
         dpkg -s nasm || sudo apt install -y nasm
-
-        # ppsspp
-        #dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
-
-        # same_cdi
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
-
-        # vecx
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
         # wolfenstein3d
         #dpkg -s libsdl1.2-dev || sudo apt install -y libsdl1.2-dev
-
-        # yabasanshiro
-        dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
       addons:
         - yabause
         - yabasanshiro

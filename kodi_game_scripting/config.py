@@ -163,7 +163,7 @@ ADDONS = {
     'tyrquake':                  ('tyrquake',                   'Makefile',          '.',                 'jni', {}),
     'uae':                       ('libretro-uae',               'Makefile',          '.',                 'jni', {'soname': 'puae'}),
     'uae2021':                   ('libretro-uae',               'Makefile',          '.',                 'jni', {'branch': '2.6.1', 'soname': 'puae2021'}),
-    #'uae4arm':                   ('Chips-fr/uae4arm-rpi',       'Makefile.libretro', '.',                 'jni', {}),  # Fails to build on non arm system
+    'uae4arm':                   ('Chips-fr/uae4arm-rpi',       'Makefile.libretro', '.',                 'jni', {'platform_linux_aarch64': 'unix-aarch64', 'platform_linux_arm': 'unix-neon'}),  # Fails to build on non arm system
     'uzem':                      ('libretro-uzem',              'Makefile.libretro', '.',                 'jni', {'cmake_options_osx': 'MINVERSION=-mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}'}),
     'vba-next':                  ('vba-next',                   'Makefile',          '.',                 'libretro/jni', {'soname': 'vba_next'}),
     'vbam':                      ('visualboyadvance-m/visualboyadvance-m', 'Makefile', 'src/libretro',    'src/libretro/jni', {}),

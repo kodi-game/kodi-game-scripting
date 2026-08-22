@@ -108,3 +108,43 @@ def test_process_template(tmpdir):
             assert_identical(subdircmp)
 
     assert_identical(filecmp.dircmp(str(tmpdir), REFERENCE_DIR))
+
+
+def test_process_template_linux_arm_platforms(tmpdir):
+    """Test opting a core into architecture-specific Linux platforms"""
+    data = {
+        'game': {
+            'name': 'uae4arm',
+        },
+        'config': {
+            'platform_linux_aarch64': 'unix-aarch64',
+            'platform_linux_arm': 'unix-neon',
+        },
+        'makefile': {
+            'cmake': False,
+            'dir': '.',
+            'file': 'Makefile.libretro',
+        },
+        'library': {
+            'soname': 'uae4arm_libretro',
+            'jnisoname': 'libretro',
+        },
+    }
+
+    TemplateProcessor.process(
+        os.path.join('addon', 'depends', 'common'), str(tmpdir), data)
+
+    cmake_path = os.path.join(str(tmpdir), 'uae4arm', 'CMakeLists.txt')
+    with open(cmake_path, 'r', encoding='utf-8') as cmake_file:
+        cmake = cmake_file.read()
+
+    linux_build = cmake.split(
+        'elseif(CORE_SYSTEM_NAME STREQUAL linux)', 1)[1].split(
+            'elseif(CORE_SYSTEM_NAME STREQUAL osx)', 1)[0]
+    assert ('if(CMAKE_SYSTEM_PROCESSOR STREQUAL arm64 OR '
+            'CMAKE_SYSTEM_PROCESSOR STREQUAL aarch64)') in linux_build
+    assert 'elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^arm")' in linux_build
+    assert 'set(PLATFORM unix-aarch64)' in linux_build
+    assert 'set(PLATFORM unix-neon)' in linux_build
+    assert 'platform=${PLATFORM}' in linux_build
+    assert '                    platform=unix\n' not in linux_build

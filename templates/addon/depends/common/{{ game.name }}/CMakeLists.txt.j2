@@ -57,13 +57,27 @@ if(CORE_SYSTEM_NAME STREQUAL windows)
                     platform=win
                     {{ config.cmake_options | default('') }})
 elseif(CORE_SYSTEM_NAME STREQUAL linux)
+{% if config.platform_linux_aarch64 or config.platform_linux_arm %}
+  if(CMAKE_SYSTEM_PROCESSOR STREQUAL arm64 OR CMAKE_SYSTEM_PROCESSOR STREQUAL aarch64)
+    set(PLATFORM {{ config.platform_linux_aarch64 | default('unix') }})
+  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^arm")
+    set(PLATFORM {{ config.platform_linux_arm | default('unix') }})
+  else()
+    set(PLATFORM unix)
+  endif()
+
+{% endif %}
   set(BUILD_COMMAND $(MAKE)
                     -C {{ makefile.dir }}
                     -f {{ makefile.file }}
                     ${build_job_count}
                     ${LIBRETRO_DEBUG}
                     GIT_VERSION=
+{% if config.platform_linux_aarch64 or config.platform_linux_arm %}
+                    platform=${PLATFORM}
+{% else %}
                     platform=unix
+{% endif %}
                     {{ config.cmake_options | default('') }})
 elseif(CORE_SYSTEM_NAME STREQUAL osx)
   set(PLATFORM_CMAKE_OPTIONS)

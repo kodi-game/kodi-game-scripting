@@ -158,7 +158,7 @@ ADDONS = {
     'supafaust':                 ('supafaust',                  'Makefile',          '.',                 'jni', {'soname': 'mednafen_supafaust', 'exclude_platforms': ['osx-x86_64', 'osx-arm64']}),
     'swanstation':               ('kodi-game/swanstation',      '',                  '.',                 '', {'branch': 'main', 'cmake': True}),
     'tgbdual':                   ('tgbdual-libretro',           'Makefile',          '.',                 'jni', {}),
-    'theodore':                  ('Zlika/theodore',             'Makefile',          '.',                 'jni', {}),
+    'theodore':                  ('kodi-game/theodore',         'Makefile',          '.',                 'jni', {}),
     'thepowdertoy':              ('kodi-game/ThePowderToy',     '',                  '',                  '', {'cmake': True, 'binary_dir': 'src'}),
     'tyrquake':                  ('tyrquake',                   'Makefile',          '.',                 'jni', {}),
     'uae':                       ('libretro-uae',               'Makefile',          '.',                 'jni', {'soname': 'puae'}),

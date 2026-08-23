@@ -182,7 +182,11 @@ elseif(CORE_SYSTEM_NAME STREQUAL android)
     set(PLATFORM {{ config.platform_android_aarch64 }})
 {% endif %}
   elseif(CPU STREQUAL i686)
-    set(PLATFORM x86)
+    set(PLATFORM {{ config.platform_android_x86 | default('x86') }})
+{% if config.platform_android_x86_64 %}
+  elseif(CPU STREQUAL x86_64)
+    set(PLATFORM {{ config.platform_android_x86_64 }})
+{% endif %}
   else()
     message(FATAL_ERROR "${PROJECT_NAME} needs Android ${CPU} build command in CMakeLists.txt!")
   endif()

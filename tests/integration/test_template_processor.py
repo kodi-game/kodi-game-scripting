@@ -228,6 +228,42 @@ def test_uae4arm_android_generation(tmpdir):
                    for filename in os.listdir(depends_dir))
 
 
+def test_same_cdi_android_generation(tmpdir):
+    """Test SAME_CDI uses its libretro makefile for every Android ABI."""
+    addon_dir = generate_configured_addon(tmpdir, 'same_cdi')
+    cmake = read_file(os.path.join(
+        addon_dir, 'depends', 'common', 'same_cdi', 'CMakeLists.txt'))
+    android_build = cmake_section(
+        cmake, 'elseif(CORE_SYSTEM_NAME STREQUAL android)',
+        'elseif(CORE_SYSTEM_NAME STREQUAL freebsd)')
+
+    assert '${NDKROOT}/ndk-build' not in android_build
+    assert '-C jni' not in android_build
+    assert ('if(CPU STREQUAL armeabi-v7a)\n'
+            '    set(PLATFORM android-arm)') in android_build
+    assert ('elseif(CPU STREQUAL arm64-v8a)\n'
+            '    set(PLATFORM android-arm64)') in android_build
+    assert ('elseif(CPU STREQUAL i686)\n'
+            '    set(PLATFORM android-x86)') in android_build
+    assert ('elseif(CPU STREQUAL x86_64)\n'
+            '    set(PLATFORM android-x86_64)') in android_build
+    assert '-f Makefile.libretro' in android_build
+    assert '${build_job_count}' in android_build
+    assert '${LIBRETRO_DEBUG}' in android_build
+    assert 'CC=${CMAKE_C_COMPILER}' in android_build
+    assert 'CXX=${CMAKE_CXX_COMPILER}' in android_build
+    assert 'CC_AS=${CMAKE_C_COMPILER}' in android_build
+    assert 'platform=${PLATFORM}' in android_build
+
+    # SAME_CDI emits same_cdi_libretro_android.so on Android. Consume that
+    # artifact while retaining the normal Kodi library name at install time.
+    assert ('set(LIBRETRO_SONAME '
+            'same_cdi_libretro_android${CMAKE_SHARED_LIBRARY_SUFFIX})') \
+        in android_build
+    assert ('DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/libretro '
+            'RENAME same_cdi_libretro${CMAKE_SHARED_LIBRARY_SUFFIX})') in cmake
+
+
 def test_uae4arm_osx_arm64_generation(tmpdir):
     """Test UAE4ARM uses its Apple ARM platform and cross-build inputs."""
     addon_dir = generate_configured_addon(tmpdir, 'uae4arm')

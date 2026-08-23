@@ -147,7 +147,13 @@ ADDONS = {
     'remotejoy':                 ('libretro-remotejoy',         'Makefile',          '.',                 'jni', {}),
     'retro8':                    ('retro8',                     'Makefile',          '.',                 'jni', {}),
     #'rustation':                 ('rustation-libretro',         'Makefile',          '.',                 'jni', {}),  # Checkout fails
-    'same_cdi':                  ('same_cdi',                   'Makefile.libretro', '.',                 'jni', {}),
+    'same_cdi':                  ('same_cdi',                   'Makefile.libretro', '.',                 '', {
+        'platform_android_aarch64': 'android-arm64',
+        'platform_android_arm': 'android-arm',
+        'platform_android_x86': 'android-x86',
+        'platform_android_x86_64': 'android-x86_64',
+        'use_cmake_compilers_android': True,
+    }),
     'sameboy':                   ('SameBoy',                    'Makefile',          'libretro',          'libretro/jni', {'branch': 'buildbot'}),
     'scummvm':                   ('scummvm',                    'Makefile',          'backends/platform/libretro', 'backends/platform/libretro/jni', {}),
     'smsplus-gx':                ('smsplus-gx',                 'Makefile.libretro', '.',                 'jni', {'soname': 'smsplus'}),

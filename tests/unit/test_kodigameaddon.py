@@ -189,8 +189,8 @@ def test_kodigameaddon_loadlibraryfile(kodigameaddon, libretrowrappermock):
     assert kodigameaddon.info['settings'] == [
         {'id': 'setting1', 'label': 30001, 'help': None,
          'default': 'disabled',
-         'values': [{'value': 'enabled', 'label': None},
-                    {'value': 'disabled', 'label': None}]},
+         'values': [{'value': 'enabled', 'label': 305},
+                    {'value': 'disabled', 'label': 13106}]},
         {'id': 'setting2', 'label': 30002, 'help': None, 'default': '0',
          'values': [{'value': '0', 'label': None},
                     {'value': '1', 'label': None}]},
@@ -265,6 +265,76 @@ def test_kodigameaddon_settingshelpandlabels(kodigameaddon,
         {'id': 30003, 'content': 'Enabled', 'obsolete': False},
         {'id': 30004, 'content': 'Disabled', 'obsolete': False},
         {'id': 30005, 'content': 'Filter', 'obsolete': False},
+    ]
+
+
+def test_kodigameaddon_unlabelled_generic_values(kodigameaddon,
+                                                 libretrowrappermock):
+    """Test that common unlabelled values use Kodi's built-in strings."""
+    setup_library(libretrowrappermock, [
+        make_option('generic', 'Generic',
+                    ['disabled', 'enabled', 'Disabled', 'none', 'auto',
+                     'default', 'off', 'on', 'On', 'no', 'yes', 'true',
+                     'false', 'always', 'never'], 'disabled'),
+    ])
+
+    kodigameaddon.load_library_file()
+
+    assert kodigameaddon.info['settings'][0]['values'] == [
+        {'value': 'disabled', 'label': 13106},
+        {'value': 'enabled', 'label': 305},
+        {'value': 'Disabled', 'label': 13106},
+        {'value': 'none', 'label': 231},
+        {'value': 'auto', 'label': 16316},
+        {'value': 'default', 'label': 571},
+        {'value': 'off', 'label': 351},
+        {'value': 'on', 'label': 16041},
+        {'value': 'On', 'label': 16041},
+        {'value': 'no', 'label': 106},
+        {'value': 'yes', 'label': 107},
+        {'value': 'true', 'label': 20122},
+        {'value': 'false', 'label': 20424},
+        {'value': 'always', 'label': 34122},
+        {'value': 'never', 'label': 34123},
+    ]
+    assert kodigameaddon.info['strings'] == [
+        {'id': 30001, 'content': 'Generic', 'obsolete': False},
+    ]
+
+
+def test_kodigameaddon_explicit_value_label_takes_precedence(
+        kodigameaddon, libretrowrappermock):
+    """Test that a core's explicit label overrides a built-in string."""
+    setup_library(libretrowrappermock, [
+        make_option('power', 'Power', [('disabled', 'Core Disabled')],
+                    'disabled'),
+    ])
+
+    kodigameaddon.load_library_file()
+
+    assert kodigameaddon.info['settings'][0]['values'] == [
+        {'value': 'disabled', 'label': 30002},
+    ]
+    assert kodigameaddon.info['strings'] == [
+        {'id': 30001, 'content': 'Power', 'obsolete': False},
+        {'id': 30002, 'content': 'Core Disabled', 'obsolete': False},
+    ]
+
+
+def test_kodigameaddon_arbitrary_unlabelled_value(kodigameaddon,
+                                                  libretrowrappermock):
+    """Test that arbitrary values stay literal and are not translated."""
+    setup_library(libretrowrappermock, [
+        make_option('revision', 'Revision', ['Rev. A NTSC'], 'Rev. A NTSC'),
+    ])
+
+    kodigameaddon.load_library_file()
+
+    assert kodigameaddon.info['settings'][0]['values'] == [
+        {'value': 'Rev. A NTSC', 'label': None},
+    ]
+    assert kodigameaddon.info['strings'] == [
+        {'id': 30001, 'content': 'Revision', 'obsolete': False},
     ]
 
 

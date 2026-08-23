@@ -45,7 +45,7 @@ ADDONS = {
     'beetle-vb':                 ('beetle-vb-libretro',         'Makefile',          '.',                 'jni', {'soname': 'mednafen_vb'}),
     'beetle-wswan':              ('beetle-wswan-libretro',      'Makefile',          '.',                 'jni', {'soname': 'mednafen_wswan'}),
     'bk':                        ('bk-emulator',                'Makefile.libretro', '.',                 'jni', {}),
-    'blastem':                   ('blastem',                    'Makefile.libretro', '.',                 'android/jni', {'branch': 'libretro --', 'cmake_options': 'NOGL=1'}),
+    'blastem':                   ('blastem',                    'Makefile.libretro', '.',                 'android/jni', {'branch': 'libretro --', 'cmake_options': 'NOGL=1', 'needs_python': True}),
     'bluemsx':                   ('blueMSX-libretro',           'Makefile',          '.',                 'jni', {}),
     'bnes':                      ('bnes-libretro',              'Makefile',          '.',                 'libretro/jni', {}),
     'boom3':                     ('boom3',                      'Makefile',          'neo',               '', {

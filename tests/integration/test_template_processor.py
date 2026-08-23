@@ -200,6 +200,16 @@ def test_flycast_cmake_options(tmpdir):
     assert not os.path.exists(os.path.join(depends_dir, 'CMakeLists.txt'))
 
 
+def test_blastem_mingw_python(tmpdir):
+    """Test Blastem uses upstream MSYS mirrors to install Python."""
+    addon_dir = generate_configured_addon(tmpdir, 'blastem')
+    mingw = read_file(os.path.join(
+        addon_dir, 'depends', 'windows', 'mingw', 'CMakeLists.txt'))
+
+    assert 'mirrorlist.${repo}' not in mingw
+    assert ('pacman --noconfirm -S make ${HOST}-gcc nasm python') in mingw
+
+
 def test_dolphin_cmake_options(tmpdir):
     """Test Dolphin's CMake build selects only its libretro frontend."""
     addon_dir = generate_configured_addon(tmpdir, 'dolphin')

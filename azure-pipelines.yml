@@ -105,6 +105,8 @@ jobs:
         - tgbdual
         - swanstation
         - supafaust
+        - stella2023
+        - stella2014
         - stella
         - snes9x2010
         - snes9x2002

@@ -190,6 +190,28 @@ def test_uae4arm_jenkins_platforms(tmpdir):
         '["android-aarch64", "android-armv7", "osx-arm64"])\n')
 
 
+def test_flycast_cmake_options(tmpdir):
+    """Test Flycast's upstream CMake build enables its libretro target."""
+    addon_dir = generate_configured_addon(tmpdir, 'flycast')
+    depends_dir = os.path.join(addon_dir, 'depends', 'common', 'flycast')
+
+    assert read_file(os.path.join(depends_dir, 'flags.txt')) == \
+        '-DLIBRETRO=ON\n'
+    assert not os.path.exists(os.path.join(depends_dir, 'CMakeLists.txt'))
+
+
+def test_dolphin_cmake_options(tmpdir):
+    """Test Dolphin's CMake build selects only its libretro frontend."""
+    addon_dir = generate_configured_addon(tmpdir, 'dolphin')
+    depends_dir = os.path.join(addon_dir, 'depends', 'common', 'dolphin')
+
+    assert read_file(os.path.join(depends_dir, 'flags.txt')) == \
+        ('-DLIBRETRO=ON -DENABLE_X11=OFF -DENABLE_HWDB=OFF '
+         '-DENABLE_EVDEV=OFF -DENABLE_EGL=OFF '
+         '-DCMAKE_BUILD_TYPE=Release\n')
+    assert not os.path.exists(os.path.join(depends_dir, 'CMakeLists.txt'))
+
+
 def test_uae4arm_android_generation(tmpdir):
     """Test UAE4ARM uses direct Make for both supported Android ABIs."""
     addon_dir = generate_configured_addon(tmpdir, 'uae4arm')

@@ -38,6 +38,22 @@ from .versions import AddonVersion
 COMMIT_MSG = "Updated by kodi-game-scripting\n\n" \
              "https://github.com/kodi-game/kodi-game-scripting/"
 
+KODI_VALUE_LABELS = {
+    'disabled': 13106,
+    'enabled': 305,
+    'none': 231,
+    'auto': 16316,
+    'default': 571,
+    'off': 351,
+    'on': 16041,
+    'no': 106,
+    'yes': 107,
+    'true': 20122,
+    'false': 20424,
+    'always': 34122,
+    'never': 34123,
+}
+
 
 def main():
     """ Process Kodi Game addons and unify project files """
@@ -591,6 +607,8 @@ class KodiGameAddon():
             'help': string_table.get(option.info),
             'default': option.default,
             'values': [{'value': value.value,
-                        'label': string_table.get(value.label)}
+                        'label': (string_table.get(value.label)
+                                  if value.label else
+                                  KODI_VALUE_LABELS.get(value.value.lower()))}
                        for value in option.values],
         }

@@ -49,3 +49,7 @@ msgstr ""
 msgctxt "#30006"
 msgid "The first value"
 msgstr ""
+
+msgctxt "#30007"
+msgid "The second value"
+msgstr ""

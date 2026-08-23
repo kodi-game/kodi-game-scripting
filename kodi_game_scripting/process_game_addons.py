@@ -601,14 +601,27 @@ class KodiGameAddon():
         Everything stays a string. The core reads back the value it gave us,
         so a boolean storing "true" where the core wants "enabled" would break
         it; the label is what the user sees instead. """
+        label = string_table.get(option.description)
+        help_label = string_table.get(option.info)
+        values = [
+            {'value': value.value,
+             'label': (string_table.get(value.label)
+                       if value.label else
+                       KODI_VALUE_LABELS.get(value.value.lower()))}
+            for value in option.values
+        ]
+
+        # Kodi hides literal entries in an option list that also has numeric
+        # labels, so a setting must label either every value or none of them.
+        if any(value['label'] is not None for value in values):
+            for value in values:
+                if value['label'] is None:
+                    value['label'] = string_table.get(value['value'])
+
         return {
             'id': option.id,
-            'label': string_table.get(option.description),
-            'help': string_table.get(option.info),
+            'label': label,
+            'help': help_label,
             'default': option.default,
-            'values': [{'value': value.value,
-                        'label': (string_table.get(value.label)
-                                  if value.label else
-                                  KODI_VALUE_LABELS.get(value.value.lower()))}
-                       for value in option.values],
+            'values': values,
         }

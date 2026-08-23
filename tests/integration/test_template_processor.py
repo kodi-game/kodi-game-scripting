@@ -18,6 +18,7 @@
 
 import filecmp
 import os
+import xml.etree.ElementTree
 from unittest import mock
 
 import pytest
@@ -84,7 +85,7 @@ def test_process_template(tmpdir):
     }
     # Between them these cover what a settings.xml has to handle: options a
     # core leaves uncategorised and options it doesn't, help text present and
-    # absent, and values with and without a label of their own
+    # absent, and entirely labelled and entirely literal value lists
     extdata = {
         'system_info': {
             'extensions': ['ext1', 'ext2']
@@ -100,7 +101,7 @@ def test_process_template(tmpdir):
                 {'id': 'mysetting2', 'label': 30004, 'help': 30005,
                  'default': 'value2',
                  'values': [{'value': 'value1', 'label': 30006},
-                            {'value': 'value2', 'label': None}]},
+                            {'value': 'value2', 'label': 30007}]},
             ]},
         ],
         'strings': [
@@ -112,6 +113,7 @@ def test_process_template(tmpdir):
             {'id': 30005, 'content': 'What mysetting2 does.\nSet it to '
                                      '"value1" unless you know better.'},
             {'id': 30006, 'content': 'The first value'},
+            {'id': 30007, 'content': 'The second value'},
         ],
     }
 
@@ -131,6 +133,14 @@ def test_process_template(tmpdir):
 
     # Run the generation and include data from the previously generated files.
     template_processor.process(TEMPLATE_DIR, str(tmpdir), data)
+
+    settings_path = os.path.join(
+        str(tmpdir), 'addon', 'game.libretro.mygame', 'resources',
+        'settings.xml')
+    for setting in xml.etree.ElementTree.parse(settings_path).iter('setting'):
+        labels = ['label' in option.attrib
+                  for option in setting.iter('option')]
+        assert all(labels) or not any(labels)
 
     def assert_identical(dircmp):
         assert not dircmp.right_only and not dircmp.diff_files
@@ -207,7 +217,7 @@ def test_blastem_mingw_python(tmpdir):
         addon_dir, 'depends', 'windows', 'mingw', 'CMakeLists.txt'))
 
     assert 'mirrorlist.${repo}' not in mingw
-    assert ('pacman --noconfirm -S make ${HOST}-gcc nasm python') in mingw
+    assert 'pacman --noconfirm -S make ${HOST}-gcc nasm python' in mingw
 
 
 def test_dolphin_cmake_options(tmpdir):

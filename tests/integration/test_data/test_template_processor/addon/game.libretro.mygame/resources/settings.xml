@@ -24,7 +24,7 @@
 					<constraints>
 						<options>
 							<option label="30006">value1</option>
-							<option>value2</option>
+							<option label="30007">value2</option>
 						</options>
 					</constraints>
 					<control type="list" format="string" />

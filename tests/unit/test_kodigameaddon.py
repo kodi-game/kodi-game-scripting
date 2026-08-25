@@ -169,6 +169,13 @@ def setup_library(libretrowrappermock, options, categories=()):
     return system_info
 
 
+def assert_option_labels_are_all_or_none(settings):
+    """Assert that each setting labels either every option or no options."""
+    for setting in settings:
+        labels = [value['label'] is not None for value in setting['values']]
+        assert all(labels) or not any(labels)
+
+
 def test_kodigameaddon_loadlibraryfile(kodigameaddon, libretrowrappermock):
     """ Test loading info from compiled library """
     system_info = setup_library(libretrowrappermock, [
@@ -199,6 +206,7 @@ def test_kodigameaddon_loadlibraryfile(kodigameaddon, libretrowrappermock):
         {'id': 30001, 'content': 'Setting 1', 'obsolete': False},
         {'id': 30002, 'content': 'Setting 2', 'obsolete': False},
     ]
+    assert_option_labels_are_all_or_none(kodigameaddon.info['settings'])
 
 
 def test_kodigameaddon_settingscategories(kodigameaddon, libretrowrappermock):
@@ -321,21 +329,82 @@ def test_kodigameaddon_explicit_value_label_takes_precedence(
     ]
 
 
-def test_kodigameaddon_arbitrary_unlabelled_value(kodigameaddon,
-                                                  libretrowrappermock):
-    """Test that arbitrary values stay literal and are not translated."""
+def test_kodigameaddon_arbitrary_unlabelled_values(kodigameaddon,
+                                                   libretrowrappermock):
+    """Test that an entirely unlabelled list stays literal."""
     setup_library(libretrowrappermock, [
-        make_option('revision', 'Revision', ['Rev. A NTSC'], 'Rev. A NTSC'),
+        make_option('revision', 'Revision', ['foo', 'bar'], 'bar'),
     ])
 
     kodigameaddon.load_library_file()
 
-    assert kodigameaddon.info['settings'][0]['values'] == [
-        {'value': 'Rev. A NTSC', 'label': None},
-    ]
+    setting = kodigameaddon.info['settings'][0]
+    assert setting['default'] == 'bar'
+    assert setting['values'] == [{'value': 'foo', 'label': None},
+                                 {'value': 'bar', 'label': None}]
     assert kodigameaddon.info['strings'] == [
         {'id': 30001, 'content': 'Revision', 'obsolete': False},
     ]
+    assert_option_labels_are_all_or_none(kodigameaddon.info['settings'])
+
+
+def test_kodigameaddon_generic_value_completes_option_labels(
+        kodigameaddon, libretrowrappermock):
+    """A built-in label makes every value in its setting receive a label."""
+    setup_library(libretrowrappermock, [
+        make_option('quality', 'Quality',
+                    ['None', 'Low', 'Medium', 'High'], 'Medium'),
+    ])
+
+    kodigameaddon.load_library_file()
+
+    setting = kodigameaddon.info['settings'][0]
+    assert setting['default'] == 'Medium'
+    assert setting['values'] == [
+        {'value': 'None', 'label': 231},
+        {'value': 'Low', 'label': 30002},
+        {'value': 'Medium', 'label': 30003},
+        {'value': 'High', 'label': 30004},
+    ]
+    assert kodigameaddon.info['strings'] == [
+        {'id': 30001, 'content': 'Quality', 'obsolete': False},
+        {'id': 30002, 'content': 'Low', 'obsolete': False},
+        {'id': 30003, 'content': 'Medium', 'obsolete': False},
+        {'id': 30004, 'content': 'High', 'obsolete': False},
+    ]
+    assert_option_labels_are_all_or_none(kodigameaddon.info['settings'])
+
+    # Regenerating from the resulting table keeps every add-on ID stable.
+    kodigameaddon.info['oldstrings'] = kodigameaddon.info['strings']
+    kodigameaddon.load_library_file()
+    assert kodigameaddon.info['settings'][0] == setting
+
+
+def test_kodigameaddon_explicit_label_completes_option_labels(
+        kodigameaddon, libretrowrappermock):
+    """A core label takes precedence and labels arbitrary peers as raw text."""
+    setup_library(libretrowrappermock, [
+        make_option('speed', 'Speed',
+                    [('Disabled', 'Core Disabled'), 'Normal', 'Very Fast'],
+                    'Very Fast'),
+    ])
+
+    kodigameaddon.load_library_file()
+
+    setting = kodigameaddon.info['settings'][0]
+    assert setting['default'] == 'Very Fast'
+    assert setting['values'] == [
+        {'value': 'Disabled', 'label': 30002},
+        {'value': 'Normal', 'label': 30003},
+        {'value': 'Very Fast', 'label': 30004},
+    ]
+    assert kodigameaddon.info['strings'] == [
+        {'id': 30001, 'content': 'Speed', 'obsolete': False},
+        {'id': 30002, 'content': 'Core Disabled', 'obsolete': False},
+        {'id': 30003, 'content': 'Normal', 'obsolete': False},
+        {'id': 30004, 'content': 'Very Fast', 'obsolete': False},
+    ]
+    assert_option_labels_are_all_or_none(kodigameaddon.info['settings'])
 
 
 def test_kodigameaddon_loadlibraryfileerr(kodigameaddon, libretrowrappermock):

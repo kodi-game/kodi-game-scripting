@@ -191,7 +191,10 @@ ADDONS = {
     }),
     'uzem':                      ('libretro-uzem',              'Makefile.libretro', '.',                 'jni', {'cmake_options_osx': 'MINVERSION=-mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}'}),
     'vba-next':                  ('vba-next',                   'Makefile',          '.',                 'libretro/jni', {'soname': 'vba_next'}),
-    'vbam':                      ('visualboyadvance-m/visualboyadvance-m', 'Makefile', 'src/libretro',    'src/libretro/jni', {}),
+    'vbam':                      ('visualboyadvance-m/visualboyadvance-m', '',       '',                  '', {
+        'cmake': True,
+        'cmake_options': '-DENABLE_WX=OFF -DENABLE_SDL=OFF -DENABLE_LINK=OFF -DENABLE_LIBRETRO=ON -DBUILD_TESTING=OFF',
+    }),
     'vecx':                      ('libretro-vecx',              'Makefile',          '.',                 'jni', {}),
     'vemulator':                 ('vemulator-libretro',         'Makefile',          '.',                 'jni', {}),
     'vice_x128':                 ('vice-libretro',              'Makefile',          '.',                 'jni', {'soname': 'vice_x128', 'cmake_options': 'EMUTYPE=x128'}),

@@ -210,6 +210,20 @@ def test_flycast_cmake_options(tmpdir):
     assert not os.path.exists(os.path.join(depends_dir, 'CMakeLists.txt'))
 
 
+def test_vbam_uses_upstream_libretro_cmake_target(tmpdir):
+    """Test upstream VBAM builds only its libretro CMake target."""
+    addon_dir = generate_configured_addon(tmpdir, 'vbam')
+    depends_dir = os.path.join(addon_dir, 'depends', 'common', 'vbam')
+    flags = read_file(os.path.join(depends_dir, 'flags.txt'))
+    recipe = read_file(os.path.join(depends_dir, 'vbam.txt'))
+
+    assert recipe == ('vbam https://github.com/visualboyadvance-m/'
+                      'visualboyadvance-m master\n')
+    assert flags == ('-DENABLE_WX=OFF -DENABLE_SDL=OFF -DENABLE_LINK=OFF '
+                     '-DENABLE_LIBRETRO=ON -DBUILD_TESTING=OFF\n')
+    assert not os.path.exists(os.path.join(depends_dir, 'CMakeLists.txt'))
+
+
 def test_lrps2_cmake_options(tmpdir):
     """Test LRPS2 installs its core into Kodi's dependency prefix."""
     addon_dir = generate_configured_addon(tmpdir, 'lrps2')

@@ -210,6 +210,16 @@ def test_flycast_cmake_options(tmpdir):
     assert not os.path.exists(os.path.join(depends_dir, 'CMakeLists.txt'))
 
 
+def test_lrps2_cmake_options(tmpdir):
+    """Test LRPS2 installs its core into Kodi's dependency prefix."""
+    addon_dir = generate_configured_addon(tmpdir, 'lrps2')
+    depends_dir = os.path.join(addon_dir, 'depends', 'common', 'lrps2')
+
+    assert read_file(os.path.join(depends_dir, 'flags.txt')) == \
+        '-DPACKAGE_MODE=ON -DBIN_DIR=lib/libretro\n'
+    assert not os.path.exists(os.path.join(depends_dir, 'CMakeLists.txt'))
+
+
 def test_blastem_mingw_python(tmpdir):
     """Test Blastem uses upstream MSYS mirrors to install Python."""
     addon_dir = generate_configured_addon(tmpdir, 'blastem')

@@ -52,10 +52,6 @@ jobs:
         # fuse
         #dpkg -s libglib2.0-dev || sudo apt install -y libglib2.0-dev
 
-        # lrps2
-        dpkg -s ccache || sudo apt install -y ccache
-        dpkg -s libaio-dev || sudo apt install -y libaio-dev
-
         # moonlight
         #dpkg -s libavcodec-dev || sudo apt install -y libavcodec-dev
         #dpkg -s libavdevice-dev || sudo apt install -y libavdevice-dev
@@ -161,7 +157,7 @@ jobs:
         - mame2000
         #- mame # Insanely huge and long running (hours and 50GB on a fast machine)
         - lutro
-        #- lrps2 # Disabled, currently broken
+        - lrps2
         - jumpnbump
         - hatari
         - handy

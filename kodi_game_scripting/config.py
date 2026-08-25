@@ -106,7 +106,7 @@ ADDONS = {
     'handy':                     ('libretro-handy',             'Makefile',          '.',                 'jni', {}),
     'hatari':                    ('hatari',                     'Makefile.libretro', '.',                 'libretro/jni', {}),
     'jumpnbump':                 ('jumpnbump-libretro',         'Makefile',          '.',                 'jni', {}),
-    'lrps2':                     ('kodi-game/LRPS2',            '',                  '.',                 '', {'cmake': True, 'branch': 'main', 'soname': 'pcsx2'}),
+    'lrps2':                     ('ps2',                        '',                  '.',                 '', {'cmake': True, 'branch': 'libretroization', 'soname': 'pcsx2', 'cmake_options': '-DPACKAGE_MODE=ON -DBIN_DIR=lib/libretro'}),
     'lutro':                     ('libretro-lutro',             'Makefile',          '.',                 'jni', {}),
     #'mame':                      ('mame',                       'Makefile.libretro', '.',                 'jni', {'cmake_options': 'PTR64=1'}),  # Huge and longrunning
     'mame2000':                  ('mame2000-libretro',          'Makefile',          '.',                 'jni', {}),

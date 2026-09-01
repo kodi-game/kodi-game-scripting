@@ -21,7 +21,9 @@ import os
 import pytest
 
 from kodi_game_scripting.addon_strings import (
-    STRINGS_PO_PATH, StringTable, read_strings)
+    KODI_LANGUAGES, SOURCE_LANGUAGE, STRINGS_PO_PATH, StringTable,
+    by_kodi_language, read_strings, strings_po_path)
+from kodi_game_scripting.libretro_ctypes import RETRO_LANGUAGE_TAGS
 
 pytestmark = [pytest.mark.unit]
 
@@ -166,3 +168,55 @@ def test_non_numeric_entries_are_ignored(tmpdir):
              'msgctxt "#30001"\nmsgid "Setting 1"\nmsgstr ""\n')
     assert read_strings(str(tmpdir)) == [
         {'id': 30001, 'content': 'Setting 1', 'obsolete': 0}]
+
+
+def test_every_mapped_language_is_one_libretro_can_report():
+    """ A typo here would quietly drop a language's translations """
+    assert set(KODI_LANGUAGES) <= set(RETRO_LANGUAGE_TAGS.values())
+
+
+def test_the_source_catalogue_is_never_a_target():
+    """ A core's English must not overwrite what the add-on declares """
+    assert 'en' not in KODI_LANGUAGES
+    assert 'en-GB' not in KODI_LANGUAGES
+    assert SOURCE_LANGUAGE not in KODI_LANGUAGES.values()
+
+
+def test_no_two_languages_share_a_directory():
+    """ Two mapped to one would have the second overwrite the first """
+    targets = list(KODI_LANGUAGES.values())
+    assert len(targets) == len(set(targets))
+
+
+def test_translations_are_rekeyed_by_kodi_language():
+    """ What the writer needs is the directory, not the libretro name """
+    translated = by_kodi_language({'french': {'On': 'Activé'},
+                                   'german': {'On': 'Ein'}})
+    assert translated == {'fr_fr': {'On': 'Activé'},
+                          'de_de': {'On': 'Ein'}}
+
+
+def test_languages_kodi_cannot_hold_are_dropped():
+    """ Irish and Catalan (Valencia) have no directory to write to """
+    assert not by_kodi_language({'irish': {'On': 'Ar'},
+                                 'catalan_valencia': {'On': 'Activat'},
+                                 'british_english': {'On': 'On'}})
+
+
+def test_the_strings_path_defaults_to_the_source_catalogue():
+    """ Existing callers read en_gb and must keep doing so """
+    assert strings_po_path() == STRINGS_PO_PATH
+    assert strings_po_path('fr_fr') == os.path.join(
+        'resources', 'language', 'resource.language.fr_fr', 'strings.po')
+
+
+def test_a_language_kodi_cannot_store_is_dropped():
+    """ Kodi has no directory for Irish or Valencian, so they go nowhere """
+    assert not by_kodi_language({'irish': {'On': 'Ar'},
+                                 'catalan_valencia': {'On': 'Actiu'}})
+
+
+def test_the_script_is_what_libretro_names_not_the_country():
+    """ zh-Hant is a script; Kodi happens to file it under a Taiwan locale """
+    assert by_kodi_language({'chinese_traditional': {'On': '\u958b'}}) == \
+        {'zh_tw': {'On': '\u958b'}}

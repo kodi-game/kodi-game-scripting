@@ -101,6 +101,60 @@ class RetroLanguage(IntEnum):
         return self.name.lower()
 
 
+# The language each RETRO_LANGUAGE_* value means, as a BCP 47 tag. This is the
+# layer to reason in: libretro's enum and Kodi's resource directories are both
+# naming systems of their own, and neither survives contact with the other.
+# "zh-Hant" is Traditional Chinese script, which is what libretro describes,
+# where Kodi happens to file it under a Taiwan locale.
+RETRO_LANGUAGE_TAGS = {
+    RetroLanguage.ENGLISH: 'en',
+    RetroLanguage.JAPANESE: 'ja',
+    RetroLanguage.FRENCH: 'fr',
+    RetroLanguage.SPANISH: 'es',
+    RetroLanguage.GERMAN: 'de',
+    RetroLanguage.ITALIAN: 'it',
+    RetroLanguage.DUTCH: 'nl',
+    RetroLanguage.PORTUGUESE_BRAZIL: 'pt-BR',
+    RetroLanguage.PORTUGUESE_PORTUGAL: 'pt-PT',
+    RetroLanguage.RUSSIAN: 'ru',
+    RetroLanguage.KOREAN: 'ko',
+    RetroLanguage.CHINESE_TRADITIONAL: 'zh-Hant',
+    RetroLanguage.CHINESE_SIMPLIFIED: 'zh-Hans',
+    RetroLanguage.ESPERANTO: 'eo',
+    RetroLanguage.POLISH: 'pl',
+    RetroLanguage.VIETNAMESE: 'vi',
+    RetroLanguage.ARABIC: 'ar',
+    RetroLanguage.GREEK: 'el',
+    RetroLanguage.TURKISH: 'tr',
+    RetroLanguage.SLOVAK: 'sk',
+    RetroLanguage.PERSIAN: 'fa',
+    RetroLanguage.HEBREW: 'he',
+    RetroLanguage.ASTURIAN: 'ast',
+    RetroLanguage.FINNISH: 'fi',
+    RetroLanguage.INDONESIAN: 'id',
+    RetroLanguage.SWEDISH: 'sv',
+    RetroLanguage.UKRAINIAN: 'uk',
+    RetroLanguage.CZECH: 'cs',
+    RetroLanguage.CATALAN_VALENCIA: 'ca-valencia',
+    RetroLanguage.CATALAN: 'ca',
+    RetroLanguage.BRITISH_ENGLISH: 'en-GB',
+    RetroLanguage.HUNGARIAN: 'hu',
+    RetroLanguage.BELARUSIAN: 'be',
+    RetroLanguage.GALICIAN: 'gl',
+    RetroLanguage.NORWEGIAN: 'no',
+    RetroLanguage.IRISH: 'ga',
+    RetroLanguage.THAI: 'th',
+}
+
+_TAG_BY_LIBRETRO_NAME = {language.libretro_name: tag
+                         for language, tag in RETRO_LANGUAGE_TAGS.items()}
+
+
+def language_tag(libretro_name):
+    """ The BCP 47 tag for a libretro language name, or None if unknown """
+    return _TAG_BY_LIBRETRO_NAME.get(libretro_name)
+
+
 # The core options version we tell cores the frontend speaks
 CORE_OPTIONS_VERSION = 2
 

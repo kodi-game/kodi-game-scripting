@@ -18,6 +18,7 @@
 
 import collections
 import ctypes
+from enum import IntEnum
 import json
 import os
 import re
@@ -47,6 +48,58 @@ RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY = 31
 # disk and register nothing when they find none. Unset, the probe declines the
 # request exactly as before.
 SYSTEM_DIRECTORY_ENV = 'KGS_SYSTEM_DIRECTORY'
+
+RETRO_ENVIRONMENT_GET_LANGUAGE = 39
+
+# The RETRO_LANGUAGE_* values a core is handed. Spelled out rather than taken
+# from position, because the number is the ABI: a core picks its table with it.
+
+
+class RetroLanguage(IntEnum):
+    """ enum retro_language """
+    ENGLISH = 0
+    JAPANESE = 1
+    FRENCH = 2
+    SPANISH = 3
+    GERMAN = 4
+    ITALIAN = 5
+    DUTCH = 6
+    PORTUGUESE_BRAZIL = 7
+    PORTUGUESE_PORTUGAL = 8
+    RUSSIAN = 9
+    KOREAN = 10
+    CHINESE_TRADITIONAL = 11
+    CHINESE_SIMPLIFIED = 12
+    ESPERANTO = 13
+    POLISH = 14
+    VIETNAMESE = 15
+    ARABIC = 16
+    GREEK = 17
+    TURKISH = 18
+    SLOVAK = 19
+    PERSIAN = 20
+    HEBREW = 21
+    ASTURIAN = 22
+    FINNISH = 23
+    INDONESIAN = 24
+    SWEDISH = 25
+    UKRAINIAN = 26
+    CZECH = 27
+    CATALAN_VALENCIA = 28
+    CATALAN = 29
+    BRITISH_ENGLISH = 30
+    HUNGARIAN = 31
+    BELARUSIAN = 32
+    GALICIAN = 33
+    NORWEGIAN = 34
+    IRISH = 35
+    THAI = 36
+
+    @property
+    def libretro_name(self):
+        """ The name libretro writes, e.g. "portuguese_brazil" """
+        return self.name.lower()
+
 
 # The core options version we tell cores the frontend speaks
 CORE_OPTIONS_VERSION = 2
@@ -151,6 +204,34 @@ class RetroCoreOptionsV2Intl(ctypes.Structure):
     ]
 
 
+def _pair_strings(english, localised):
+    """ Match a core's translated strings to the English they stand in for
+
+    Keyed on the English text, because that is what the string table hands
+    IDs out against: a translation is only useful against the string it
+    translates, not against the option it came from. """
+    paired = {}
+
+    def add(source, target):
+        if source and target and source != target:
+            paired[source] = target
+
+    for name in ('options', 'categories'):
+        by_key = {item['key']: item for item in localised.get(name, [])}
+        for item in english.get(name, []):
+            other = by_key.get(item['key'])
+            if other is None:
+                continue
+            add(item.get('description'), other.get('description'))
+            add(item.get('info'), other.get('info'))
+            labels = {value['value']: value.get('label')
+                      for value in other.get('values', [])}
+            for value in item.get('values', []):
+                add(value.get('label'), labels.get(value['value']))
+
+    return paired
+
+
 def _str(char_p):
     """ Decode a char* that may be NULL """
     return char_p.decode('utf-8', 'replace') if char_p else ''
@@ -214,11 +295,38 @@ class LibretroWrapper:
                           category['info'])
             for category in probe_result['categories']]
 
+        # {language: {english text: translated text}}, for the languages the
+        # core carries a table for
+        self.translations = self._probe_translations(
+            library_path, probe_result)
+
         # opengl linkage
         self.opengl_linkage = self.has_opengl_linkage(library_path)
 
     @classmethod
-    def probe(cls, library_path):
+    def _probe_translations(cls, library_path, english):
+        """ Ask the core for its strings once per language it may know
+
+        Cores ship their translations inside themselves and choose a table
+        from the answer to GET_LANGUAGE, so this is the only way to read them.
+        Skipped for a core that never asks, which is most of them. """
+        if not english.get('translatable'):
+            return {}
+
+        translations = {}
+        for language in RetroLanguage:
+            if language is RetroLanguage.ENGLISH:
+                continue
+            localised, _ = cls.probe(library_path, int(language))
+            if localised is None or not localised.get('translated'):
+                continue
+            paired = _pair_strings(english, localised)
+            if paired:
+                translations[language.libretro_name] = paired
+        return translations
+
+    @classmethod
+    def probe(cls, library_path, language=0):
         """ Load the core in a helper process and report what it registers.
 
         Some cores only register their options in retro_init(), and some cores
@@ -241,7 +349,8 @@ class LibretroWrapper:
                 helper = subprocess.run(
                     [sys.executable, '-m',
                      'kodi_game_scripting.libretro_ctypes',
-                     '--probe', os.path.abspath(library_path), result_path],
+                     '--probe', os.path.abspath(library_path), result_path,
+                     str(language)],
                     check=False, timeout=PROBE_TIMEOUT_SECONDS,
                     stderr=subprocess.PIPE,
                     cwd=scratch_directory, env=cls._probe_environment())
@@ -312,8 +421,9 @@ class LibretroProbe:
 
         Runs in a helper process; see LibretroWrapper.probe(). """
 
-    def __init__(self, library_path, result_path):
+    def __init__(self, library_path, result_path, language=0):
         self._result_path = result_path
+        self._language = language
         self._lib = ctypes.cdll.LoadLibrary(library_path)
         self._result = {
             'system_info': {
@@ -323,6 +433,10 @@ class LibretroProbe:
             },
             'options': [],
             'categories': [],
+            # Whether the core picks its strings by language, and whether it
+            # had a table for the one it was given
+            'translatable': False,
+            'translated': False,
         }
         # Cores may register options more than once (typically SET_VARIABLES
         # first and then a richer API). The first set of options we're given
@@ -410,6 +524,12 @@ class LibretroProbe:
         # Everything below this reads or writes through the pointer.
         if not data:
             return False
+
+        if cmd == RETRO_ENVIRONMENT_GET_LANGUAGE:
+            self._result['translatable'] = True
+            ctypes.cast(data, ctypes.POINTER(ctypes.c_uint))[0] = \
+                self._language
+            return True
 
         if cmd == RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:
             self._result['system_info']['supports_no_game'] = \
@@ -555,6 +675,16 @@ class LibretroProbe:
         self._write()
         return True
 
+    def _intl_definitions(self, options):
+        """ Pick the translated table when the core has one for the language
+
+        A core with no table for it leaves local null and us is all there is,
+        which is the English strings over again. """
+        if self._language and options.local:
+            self._result['translated'] = True
+            return options.local
+        return options.us
+
     def _set_core_options(self, data, intl):
         """ Read struct retro_core_option_definition[], core options v1
 
@@ -563,9 +693,7 @@ class LibretroProbe:
         if intl:
             options = ctypes.cast(
                 data, ctypes.POINTER(RetroCoreOptionsIntl))[0]
-            # Always take us: the strings this generates are en_gb, and we
-            # never answer GET_LANGUAGE, so local would be us anyway
-            definitions = options.us
+            definitions = self._intl_definitions(options)
         else:
             definitions = ctypes.cast(
                 data, ctypes.POINTER(RetroCoreOptionDefinition))
@@ -601,7 +729,11 @@ class LibretroProbe:
                 data, ctypes.POINTER(RetroCoreOptionsV2Intl))[0]
             if not options_intl.us:
                 return True
-            options = options_intl.us[0]
+            if self._language and options_intl.local:
+                self._result['translated'] = True
+                options = options_intl.local[0]
+            else:
+                options = options_intl.us[0]
         else:
             options = ctypes.cast(data, ctypes.POINTER(RetroCoreOptionsV2))[0]
 
@@ -641,8 +773,9 @@ class LibretroProbe:
 
 
 if __name__ == '__main__':  # pragma: no cover
-    if len(sys.argv) == 4 and sys.argv[1] == '--probe':
-        LibretroProbe(sys.argv[2], sys.argv[3]).run()
+    if len(sys.argv) in (4, 5) and sys.argv[1] == '--probe':
+        LibretroProbe(sys.argv[2], sys.argv[3],
+                      int(sys.argv[4]) if len(sys.argv) == 5 else 0).run()
     else:
         LIB = LibretroWrapper(sys.argv[1])
         print(LIB.system_info)

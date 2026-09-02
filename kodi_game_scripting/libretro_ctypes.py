@@ -36,6 +36,17 @@ RETRO_ENVIRONMENT_SET_CORE_OPTIONS = 53
 RETRO_ENVIRONMENT_SET_CORE_OPTIONS_INTL = 54
 RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2 = 67
 RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2_INTL = 68
+RETRO_ENVIRONMENT_GET_VARIABLE = 15
+RETRO_ENVIRONMENT_SET_PIXEL_FORMAT = 10
+RETRO_ENVIRONMENT_GET_LOG_INTERFACE = 27
+RETRO_ENVIRONMENT_GET_MESSAGE_INTERFACE_VERSION = 59
+RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY = 9
+RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY = 31
+
+# Opt-in directory for cores that build their option lists from what is on
+# disk and register nothing when they find none. Unset, the probe declines the
+# request exactly as before.
+SYSTEM_DIRECTORY_ENV = 'KGS_SYSTEM_DIRECTORY'
 
 # The core options version we tell cores the frontend speaks
 CORE_OPTIONS_VERSION = 2
@@ -56,6 +67,14 @@ class RetroSystemInfo(ctypes.Structure):
         ('need_fullpath', ctypes.c_bool),
         ('block_extract', ctypes.c_bool)
     ]
+
+
+RETRO_LOG_PRINTF_T = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_char_p)
+
+
+class RetroLogCallback(ctypes.Structure):
+    """ struct retro_log_callback """
+    _fields_ = [('log', RETRO_LOG_PRINTF_T)]
 
 
 class RetroVariable(ctypes.Structure):
@@ -311,6 +330,12 @@ class LibretroProbe:
         self._have_options = False
         # Held for as long as the core may call back into it
         self._callback = None
+        # Same, for any option value handed back through GET_VARIABLE
+        self._variable_values = []
+        # Same, for the directory handed back through GET_SYSTEM_DIRECTORY
+        self._system_directory = None
+        # Discards what the core logs; held so the core can keep calling it
+        self._log_callback = RETRO_LOG_PRINTF_T(lambda level, message: None)
 
     def run(self):
         """ Probe the core, writing results out as they become known """
@@ -372,6 +397,47 @@ class LibretroProbe:
 
     def _environment(self, cmd, data):
         """ Libretro environment callback """
+        if cmd in (RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE,
+                   RETRO_ENVIRONMENT_SET_DISK_CONTROL_EXT_INTERFACE):
+            self._result['system_info']['supports_disc_control'] = True
+            self._write()
+            return True
+
+        if cmd == RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
+            return True
+
+        # A core may pass NULL to ask whether a command is answered at all.
+        # Everything below this reads or writes through the pointer.
+        if not data:
+            return False
+
+        if cmd == RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:
+            self._result['system_info']['supports_no_game'] = \
+                ctypes.cast(data, ctypes.POINTER(ctypes.c_bool))[0]
+            return True
+
+        return self._environment_queries(cmd, data)
+
+    def _environment_queries(self, cmd, data):
+        """ The part of the environment callback that answers a core's asks """
+        if cmd in (RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY,
+                   RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY):
+            return self._get_directory(data)
+
+        if cmd == RETRO_ENVIRONMENT_GET_LOG_INTERFACE:
+            # Not for the output: a core refused a logger keeps the null
+            # pointer and calls through it anyway.
+            ctypes.cast(data, ctypes.POINTER(RetroLogCallback))[0].log = \
+                self._log_callback
+            return True
+
+        if cmd == RETRO_ENVIRONMENT_GET_MESSAGE_INTERFACE_VERSION:
+            ctypes.cast(data, ctypes.POINTER(ctypes.c_uint))[0] = 0
+            return True
+
+        if cmd == RETRO_ENVIRONMENT_GET_VARIABLE:
+            return self._get_variable(data)
+
         if cmd == RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:
             # This is what gets a core to hand over its categories, help text
             # and value labels instead of a flat list of pipe-delimited values
@@ -379,18 +445,38 @@ class LibretroProbe:
                 CORE_OPTIONS_VERSION
             return True
 
-        if cmd == RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:
-            self._result['system_info']['supports_no_game'] = \
-                ctypes.cast(data, ctypes.POINTER(ctypes.c_bool))[0]
-            return True
-
-        if cmd in (RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE,
-                   RETRO_ENVIRONMENT_SET_DISK_CONTROL_EXT_INTERFACE):
-            self._result['system_info']['supports_disc_control'] = True
-            self._write()
-            return True
-
         return self._environment_options(cmd, data)
+
+    def _get_directory(self, data):
+        """ Answer GET_SYSTEM_DIRECTORY and GET_SAVE_DIRECTORY """
+        directory = os.environ.get(SYSTEM_DIRECTORY_ENV)
+        if not directory:
+            return False
+
+        # The pointer has to outlive this call, so keep a reference
+        self._system_directory = ctypes.c_char_p(directory.encode())
+        ctypes.cast(data, ctypes.POINTER(ctypes.c_char_p))[0] = \
+            self._system_directory
+        return True
+
+    def _get_variable(self, data):
+        """ Answer GET_VARIABLE with the default the core just declared
+
+        A core reading its own options back gets NULL otherwise and takes it
+        into strcmp, ending the probe before anything is written. """
+        variable = ctypes.cast(data, ctypes.POINTER(RetroVariable))[0]
+        if not variable.key:
+            return False
+
+        key = _str(variable.key)
+        for option in self._result['options']:
+            if option['key'] != key:
+                continue
+            value = ctypes.c_char_p(option['default'].encode())
+            self._variable_values.append(value)
+            ctypes.cast(data, ctypes.POINTER(RetroVariable))[0].value = value
+            return True
+        return False
 
     def _environment_options(self, cmd, data):
         """ The part of the environment callback that registers settings """

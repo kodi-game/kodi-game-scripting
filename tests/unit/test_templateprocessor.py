@@ -18,7 +18,8 @@
 
 import pytest
 
-from kodi_game_scripting.template_processor import get_list, regex_replace
+from kodi_game_scripting.template_processor import (
+    get_list, libretro_platforms, regex_replace)
 
 pytestmark = [pytest.mark.unit]
 
@@ -43,3 +44,15 @@ def test_regexreplace_multiline():
     """ Test the regex_replace filter with a multiline string """
     assert regex_replace(
         'a\nbb\nc', r'(b+)\n', '', multiline=True) == 'a\nc'
+
+
+def test_libretro_platforms():
+    """ Test the libretro_platforms filter """
+    assert libretro_platforms(
+        'Nintendo - SNES / SFC (Snes9x 2002)') == 'Nintendo - SNES / SFC'
+    assert libretro_platforms('Sega - MS/GG/MD/CD (Genesis Plus GX)') == \
+        'Sega - MS/GG/MD/CD'
+    assert libretro_platforms('2048') == ''
+    assert libretro_platforms('Atari - 2600 (Stella') == ''
+    assert libretro_platforms(') (') == ''
+    assert libretro_platforms('') == ''

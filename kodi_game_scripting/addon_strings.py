@@ -28,12 +28,81 @@ import re
 
 import polib
 
+from .libretro_ctypes import language_tag
+
 
 # Add-on strings are conventionally 30000-30999. 30000 itself is left empty.
 FIRST_STRING_ID = 30000
 
-STRINGS_PO_PATH = os.path.join('resources', 'language',
-                               'resource.language.en_gb', 'strings.po')
+# The catalogue everything else is translated from
+SOURCE_LANGUAGE = 'en_gb'
+
+# Where a BCP 47 language belongs in a Kodi add-on. Deliberately partial: a
+# language with no Kodi resource directory is dropped rather than guessed at.
+#
+# English and British English are absent because they are the source
+# catalogue, and a core's idea of English must never overwrite what the add-on
+# declares. Irish and Catalan (Valencia) are absent because Kodi has no
+# directory for them; Catalan proper covers ca_es.
+KODI_LANGUAGES = {
+    'ja': 'ja_jp',
+    'fr': 'fr_fr',
+    'es': 'es_es',
+    'de': 'de_de',
+    'it': 'it_it',
+    'nl': 'nl_nl',
+    'pt-BR': 'pt_br',
+    'pt-PT': 'pt_pt',
+    'ru': 'ru_ru',
+    'ko': 'ko_kr',
+    'zh-Hant': 'zh_tw',
+    'zh-Hans': 'zh_cn',
+    'eo': 'eo',
+    'pl': 'pl_pl',
+    'vi': 'vi_vn',
+    'ar': 'ar_sa',
+    'el': 'el_gr',
+    'tr': 'tr_tr',
+    'sk': 'sk_sk',
+    'fa': 'fa_ir',
+    'he': 'he_il',
+    'ast': 'ast_es',
+    'fi': 'fi_fi',
+    'id': 'id_id',
+    'sv': 'sv_se',
+    'uk': 'uk_ua',
+    'cs': 'cs_cz',
+    'ca': 'ca_es',
+    'hu': 'hu_hu',
+    'be': 'be_by',
+    'gl': 'gl_es',
+    'no': 'nb_no',
+    'th': 'th_th',
+}
+
+
+def strings_po_path(language=SOURCE_LANGUAGE):
+    """ Where an add-on keeps its strings for a language """
+    return os.path.join('resources', 'language',
+                        f'resource.language.{language}', 'strings.po')
+
+
+def by_kodi_language(translations):
+    """ Re-key a core's translations by the Kodi language they belong in
+
+    The core names its languages the libretro way, Kodi files them its own
+    way, and neither is the language: the BCP 47 tag in between is. Anything
+    Kodi has no directory for is dropped.
+    """
+    out = {}
+    for language, strings in translations.items():
+        directory = KODI_LANGUAGES.get(language_tag(language))
+        if directory is not None:
+            out[directory] = strings
+    return out
+
+
+STRINGS_PO_PATH = strings_po_path()
 
 _NUMERIC_MSGCTXT = re.compile(r'^#(\d+)$')
 

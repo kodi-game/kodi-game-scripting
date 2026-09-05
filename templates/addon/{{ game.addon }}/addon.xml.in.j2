@@ -15,7 +15,7 @@
 	</requires>
 	<extension point="kodi.gameclient"
 			library_@PLATFORM@="@LIBRARY_FILENAME@">
-		<platforms>{{ xml.addon.extension[0].platforms.content | default('') | escape }}</platforms>
+		<platforms>{{ addon_name | libretro_platforms | escape }}</platforms>
 		<extensions>{{ system_info.extensions | join('|') | escape }}</extensions>
 		<supports_vfs>{{ 'false' if system_info.need_fullpath | default('true') else 'true' }}</supports_vfs>
 		<supports_standalone>{{ system_info.supports_no_game | default('false') | lower }}</supports_standalone>

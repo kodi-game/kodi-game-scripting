@@ -46,6 +46,21 @@ def regex_replace(string, find, replace, *, multiline=False):
     return re.sub(find, replace, str(string), flags=flags)
 
 
+def libretro_platforms(addon_name):
+    """ Filter: Extract the platforms from a libretro add-on name
+
+    libretro names a core "Platforms (Emulator name)", or just "Emulator name"
+    when it emulates none. Kodi splits the same name apart in
+    CGameClient::ParseLibretroName(); this has to agree with it, because that
+    is what Kodi falls back to when the tag is empty. """
+    addon_name = str(addon_name)
+    begin = addon_name.find('(')
+    end = addon_name.find(')')
+    if begin != -1 and end != -1 and begin < end:
+        return addon_name[:begin].rstrip()
+    return ''
+
+
 def escape_xml(string):
     """Filter: Replace unsafe XML characters with named references"""
     return (
@@ -100,6 +115,7 @@ class TemplateProcessor:
         template_env.filters["regex_replace"] = regex_replace
         template_env.filters["get_list"] = get_list
         template_env.filters["escape_xml"] = escape_xml
+        template_env.filters["libretro_platforms"] = libretro_platforms
         template_env.filters["escape_po"] = escape_po
 
         # Loop over all templates

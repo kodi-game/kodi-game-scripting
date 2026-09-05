@@ -170,7 +170,7 @@ ADDONS = {
     'stella2014':                ('stella2014-libretro',        'Makefile',          '.',                 'jni', {}),
     'stella2023':                ('stella2023',                 'Makefile',          'src/os/libretro',   'src/os/libretro/jni', {}),
     'supafaust':                 ('supafaust',                  'Makefile',          '.',                 'jni', {'soname': 'mednafen_supafaust', 'exclude_platforms': ['osx-x86_64', 'osx-arm64']}),
-    'swanstation':               ('kodi-game/swanstation',      '',                  '.',                 '', {'branch': 'main', 'cmake': True}),
+    'swanstation':               ('swanstation',                '',                  '.',                 '', {'branch': 'main', 'cmake': True}),
     'tgbdual':                   ('tgbdual-libretro',           'Makefile',          '.',                 'jni', {}),
     'theodore':                  ('kodi-game/theodore',         'Makefile',          '.',                 'jni', {}),
     'thepowdertoy':              ('kodi-game/ThePowderToy',     '',                  '',                  '', {'cmake': True, 'binary_dir': 'src'}),

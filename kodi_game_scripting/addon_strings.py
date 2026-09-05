@@ -102,6 +102,70 @@ def by_kodi_language(translations):
     return out
 
 
+def write_translations(addon_path, strings, translations):
+    """ Fill in the strings a core translated, for every language it knows
+
+    libretro is the source of truth: where a core has translated a string, its
+    text is written. Anything it has no translation for is left as it was, so
+    work already done in Weblate survives.
+
+    Only languages the add-on already has a file for are written. Creating one
+    means inventing a Plural-Forms header, which is Weblate's to decide.
+
+    Returns the languages actually changed.
+    """
+    written = []
+
+    for language, translated in sorted(by_kodi_language(translations).items()):
+        path = os.path.join(addon_path, strings_po_path(language))
+        if not os.path.isfile(path):
+            continue
+
+        try:
+            # Unwrapped, or saving reflows every long line in the file and the
+            # diff is the whole catalogue rather than what changed
+            catalogue = polib.pofile(path, wrapwidth=0)
+        except (OSError, UnicodeDecodeError, IOError):
+            continue
+
+        by_id = {}
+        for entry in catalogue:
+            match = _NUMERIC_MSGCTXT.match(entry.msgctxt or '')
+            if match:
+                by_id[int(match.group(1))] = entry
+
+        changed = False
+        for string in strings:
+            text = translated.get(string['content'])
+            entry = by_id.get(string['id'])
+
+            if entry is None:
+                # The English catalogue has strings this file has never seen
+                entry = polib.POEntry(msgctxt=f"#{string['id']}",
+                                      msgid=string['content'],
+                                      msgstr=text or '',
+                                      obsolete=string['obsolete'])
+                catalogue.append(entry)
+                changed = True
+                continue
+
+            # A string that changed meaning keeps its ID, so the msgid has to
+            # follow it or the file describes the wrong text
+            if entry.msgid != string['content']:
+                entry.msgid = string['content']
+                changed = True
+
+            if text and entry.msgstr != text:
+                entry.msgstr = text
+                changed = True
+
+        if changed:
+            catalogue.save(path)
+            written.append(language)
+
+    return written
+
+
 STRINGS_PO_PATH = strings_po_path()
 
 _NUMERIC_MSGCTXT = re.compile(r'^#(\d+)$')

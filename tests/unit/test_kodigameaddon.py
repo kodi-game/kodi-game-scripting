@@ -166,6 +166,7 @@ def setup_library(libretrowrappermock, options, categories=()):
     libretrowrappermock.return_value.categories = [
         LibretroWrapper.Category(*category) for category in categories]
     libretrowrappermock.return_value.opengl_linkage = False
+    libretrowrappermock.return_value.translations = {}
     return system_info
 
 

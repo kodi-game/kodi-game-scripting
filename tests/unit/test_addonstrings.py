@@ -18,11 +18,12 @@
 
 import os
 
+import polib
 import pytest
 
 from kodi_game_scripting.addon_strings import (
     KODI_LANGUAGES, SOURCE_LANGUAGE, STRINGS_PO_PATH, StringTable,
-    by_kodi_language, read_strings, strings_po_path)
+    by_kodi_language, read_strings, strings_po_path, write_translations)
 from kodi_game_scripting.libretro_ctypes import RETRO_LANGUAGE_TAGS
 
 pytestmark = [pytest.mark.unit]
@@ -220,3 +221,121 @@ def test_the_script_is_what_libretro_names_not_the_country():
     """ zh-Hant is a script; Kodi happens to file it under a Taiwan locale """
     assert by_kodi_language({'chinese_traditional': {'On': '\u958b'}}) == \
         {'zh_tw': {'On': '\u958b'}}
+
+
+TRANSLATED_PO = PO_HEADER + """
+msgctxt "#30001"
+msgid "On"
+msgstr "Ein"
+
+msgctxt "#30002"
+msgid "Off"
+msgstr ""
+"""
+
+
+def _write_language(tmpdir, language, body):
+    path = os.path.join(str(tmpdir), strings_po_path(language))
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, 'w', encoding='utf-8') as handle:
+        handle.write(body)
+    return path
+
+
+def _entries(path):
+    return {e.msgctxt: e.msgstr for e in polib.pofile(path) if e.msgctxt}
+
+
+def test_a_core_translation_wins_over_what_is_already_there(tmpdir):
+    """ libretro is the source of truth for the strings it knows """
+    path = _write_language(tmpdir, 'de_de', TRANSLATED_PO)
+    strings = [{'id': 30001, 'content': 'On', 'obsolete': False}]
+
+    written = write_translations(str(tmpdir), strings,
+                                 {'german': {'On': 'An'}})
+
+    assert written == ['de_de']
+    assert _entries(path)['#30001'] == 'An'
+
+
+def test_weblate_fills_what_the_core_has_no_translation_for(tmpdir):
+    """ A string the core cannot translate keeps the work already done """
+    path = _write_language(tmpdir, 'de_de', TRANSLATED_PO)
+    strings = [{'id': 30001, 'content': 'On', 'obsolete': False},
+               {'id': 30002, 'content': 'Off', 'obsolete': False}]
+
+    write_translations(str(tmpdir), strings, {'german': {'Off': 'Aus'}})
+
+    entries = _entries(path)
+    assert entries['#30001'] == 'Ein'
+    assert entries['#30002'] == 'Aus'
+
+
+def test_a_string_the_file_has_never_seen_is_added(tmpdir):
+    """ The English catalogue grows, and the translations follow it """
+    path = _write_language(tmpdir, 'de_de', TRANSLATED_PO)
+    strings = [{'id': 30003, 'content': 'Fast forward', 'obsolete': False}]
+
+    write_translations(str(tmpdir), strings,
+                       {'german': {'Fast forward': 'Vorspulen'}})
+
+    assert _entries(path)['#30003'] == 'Vorspulen'
+
+
+def test_a_language_the_addon_has_no_file_for_is_left_alone(tmpdir):
+    """ Creating one means inventing a Plural-Forms header """
+    _write_language(tmpdir, 'de_de', TRANSLATED_PO)
+    strings = [{'id': 30001, 'content': 'On', 'obsolete': False}]
+
+    written = write_translations(str(tmpdir), strings,
+                                 {'french': {'On': 'Activé'}})
+
+    assert not written
+    assert not os.path.exists(os.path.join(str(tmpdir),
+                                           strings_po_path('fr_fr')))
+
+
+def test_nothing_is_written_when_nothing_changed(tmpdir):
+    """ Rewriting every file each run would churn sixty of them for nothing """
+    _write_language(tmpdir, 'de_de', TRANSLATED_PO)
+    strings = [{'id': 30001, 'content': 'On', 'obsolete': False}]
+
+    assert not write_translations(str(tmpdir), strings,
+                                  {'german': {'On': 'Ein'}})
+
+
+def test_the_source_catalogue_is_never_written(tmpdir):
+    """ A core's English must not overwrite what the add-on declares """
+    path = _write_language(tmpdir, SOURCE_LANGUAGE, TRANSLATED_PO)
+    strings = [{'id': 30001, 'content': 'On', 'obsolete': False}]
+    english = {'english': {'On': 'ON!'}, 'british_english': {'On': 'ON!'}}
+
+    write_translations(str(tmpdir), strings, english)
+
+    assert _entries(path)['#30001'] == 'Ein'
+
+
+def test_a_long_line_is_not_rewrapped(tmpdir):
+    """ Saving must not reflow the file, or the diff is the whole catalogue """
+    long_text = ('Use High Level Emulation BIOS. Not recommended, as it is '
+                 'causing more issues than it solves.')
+    body = PO_HEADER + f"""
+msgctxt "#30001"
+msgid "{long_text}"
+msgstr ""
+
+msgctxt "#30002"
+msgid "Off"
+msgstr ""
+"""
+    path = _write_language(tmpdir, 'de_de', body)
+    strings = [{'id': 30001, 'content': long_text, 'obsolete': False},
+               {'id': 30002, 'content': 'Off', 'obsolete': False}]
+
+    write_translations(str(tmpdir), strings, {'german': {'Off': 'Aus'}})
+
+    with open(path, encoding='utf-8') as handle:
+        written = handle.read()
+
+    assert f'msgid "{long_text}"' in written
+    assert 'msgid ""\n"Use High Level' not in written

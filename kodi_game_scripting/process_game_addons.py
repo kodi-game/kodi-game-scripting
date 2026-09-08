@@ -27,7 +27,7 @@ import subprocess
 import sys
 
 from . import utils
-from .addon_strings import StringTable, read_strings
+from .addon_strings import StringTable, read_strings, write_translations
 from .config import ADDONS, GITHUB_ADDON_PREFIX, GITHUB_ORGANIZATION
 from .git_access import GitHubOrg, GitHubRepo, GitRepo
 from .libretro_ctypes import LibretroWrapper
@@ -348,6 +348,15 @@ class KodiGameAddon():
         """ Generate addon files """
         TemplateProcessor.process('addon', self._path, self.info)
 
+        # After the templates, which write the English catalogue these are
+        # translations of
+        written = write_translations(os.path.join(self._path, self.name),
+                                     self.info.get('strings') or [],
+                                     self.info.get('translations') or {})
+        if written:
+            print(f"{self.name}: translated {len(written)} language(s) "
+                  f"from the core")
+
     def load_addon_xml(self):
         """ Load metadata from addon.xml.in """
         addon_xml_path = os.path.join(self._path, self.name, 'addon.xml.in')
@@ -400,6 +409,7 @@ class KodiGameAddon():
                 setting for category in self.info['categories']
                 for setting in category['settings']]
             self.info['strings'] = string_table.strings()
+            self.info['translations'] = library.translations
             self.info['library']['opengl'] = library.opengl_linkage
         except OSError as err:
             self.info['library']['error'] = err

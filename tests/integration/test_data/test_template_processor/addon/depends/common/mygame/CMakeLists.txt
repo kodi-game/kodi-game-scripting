@@ -65,6 +65,21 @@ elseif(CORE_SYSTEM_NAME STREQUAL linux)
                     platform=unix
                     )
 elseif(CORE_SYSTEM_NAME STREQUAL osx)
+  set(LIBRETRO_CROSS_COMPILE CROSS_COMPILE=1)
+  string(TOLOWER "${CMAKE_HOST_SYSTEM_PROCESSOR}" LIBRETRO_HOST_CPU)
+  if(LIBRETRO_HOST_CPU STREQUAL "aarch64")
+    set(LIBRETRO_HOST_CPU arm64)
+  elseif(LIBRETRO_HOST_CPU STREQUAL "amd64")
+    set(LIBRETRO_HOST_CPU x86_64)
+  endif()
+
+  # Kodi's toolchain may set CMAKE_CROSSCOMPILING even for native builds.
+  # Omit CROSS_COMPILE entirely when the macOS host and target CPUs match.
+  if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin" AND
+     "${CPU}" STREQUAL "${LIBRETRO_HOST_CPU}")
+    set(LIBRETRO_CROSS_COMPILE)
+  endif()
+
   set(PLATFORM_CMAKE_OPTIONS)
   if(CPU STREQUAL arm64)
     set(ARCH arm)
@@ -82,7 +97,7 @@ elseif(CORE_SYSTEM_NAME STREQUAL osx)
                     CC=${CMAKE_C_COMPILER}
                     CXX=${CMAKE_CXX_COMPILER}
                     arch=${ARCH}
-                    CROSS_COMPILE=1
+                    ${LIBRETRO_CROSS_COMPILE}
                     GIT_VERSION=
                     SDKROOT=${CMAKE_OSX_SYSROOT}
                     MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}

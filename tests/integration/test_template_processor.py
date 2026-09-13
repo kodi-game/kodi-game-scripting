@@ -18,6 +18,7 @@
 
 import filecmp
 import os
+import subprocess
 import xml.etree.ElementTree
 from unittest import mock
 
@@ -63,6 +64,18 @@ def read_file(filename):
 def cmake_section(cmake, start, end):
     """Extract a generated platform section from CMakeLists.txt."""
     return cmake.split(start, 1)[1].split(end, 1)[0]
+
+
+def evaluate_build_command(tmpdir, section, variables):
+    """Execute generated CMake and return its actual Make argument list."""
+    script = tmpdir.join('build-command.cmake')
+    script.write(''.join('set({} "{}")\n'.format(key, value)
+                         for key, value in variables.items()) + section +
+                 '\nfile(WRITE "${CMAKE_CURRENT_BINARY_DIR}/build-command.txt" '
+                 '"${BUILD_COMMAND}")\n')
+    subprocess.run([os.environ.get('CMAKE', 'cmake'), '-P', str(script)],
+                   cwd=str(tmpdir), check=True)
+    return tmpdir.join('build-command.txt').read().split(';')
 
 
 def test_process_template(tmpdir):
@@ -366,8 +379,61 @@ def test_boom3_android_generation(tmpdir):
             'RENAME boom3_libretro${CMAKE_SHARED_LIBRARY_SUFFIX})') in cmake
 
 
+@pytest.mark.parametrize('game_name', ['dosbox-pure', 'uae4arm', 'virtualjaguar'])
+@pytest.mark.parametrize('host,target_cpu,cross_compile', [
+    (('Darwin', 'arm64'), 'arm64', []),
+    (('Darwin', 'aarch64'), 'arm64', []),
+    (('Darwin', 'ARM64'), 'arm64', []),
+    (('Darwin', 'AARCH64'), 'arm64', []),
+    (('Darwin', 'arm64'), 'x86_64', ['CROSS_COMPILE=1']),
+    (('Darwin', 'aarch64'), 'x86_64', ['CROSS_COMPILE=1']),
+    (('Darwin', 'x86_64'), 'x86_64', []),
+    (('Darwin', 'AMD64'), 'x86_64', []),
+    (('Darwin', 'x86_64'), 'arm64', ['CROSS_COMPILE=1']),
+    (('Darwin', ''), 'arm64', ['CROSS_COMPILE=1']),
+    (('Linux', 'arm64'), 'arm64', ['CROSS_COMPILE=1']),
+    (('Linux', 'aarch64'), 'arm64', ['CROSS_COMPILE=1']),
+    (('Linux', 'x86_64'), 'x86_64', ['CROSS_COMPILE=1']),
+    (('Windows', 'ARM64'), 'arm64', ['CROSS_COMPILE=1']),
+])
+def test_osx_cross_compile_arguments(tmpdir, game_name, host, target_cpu,
+                                     cross_compile):
+    """Omit CROSS_COMPILE only for matching Darwin host/target CPUs."""
+    addon_dir = generate_configured_addon(tmpdir, game_name)
+    cmake = read_file(os.path.join(
+        addon_dir, 'depends', 'common', game_name, 'CMakeLists.txt'))
+    osx_build = cmake_section(
+        cmake, 'elseif(CORE_SYSTEM_NAME STREQUAL osx)',
+        'elseif(CORE_SYSTEM_NAME STREQUAL ios OR '
+        'CORE_SYSTEM_NAME STREQUAL darwin_embedded)')
+
+    # Kodi's toolchain can report cross-compilation for a native build.
+    # Neither value may override the actual host/target comparison.
+    for cmake_crosscompiling in ('TRUE', 'FALSE'):
+        command = evaluate_build_command(tmpdir, osx_build, {
+            'CMAKE_HOST_SYSTEM_NAME': host[0],
+            'CMAKE_HOST_SYSTEM_PROCESSOR': host[1],
+            'CPU': target_cpu,
+            'CMAKE_CROSSCOMPILING': cmake_crosscompiling,
+            'CMAKE_C_COMPILER': '/toolchain/clang',
+            'CMAKE_CXX_COMPILER': '/toolchain/clang++',
+            'CMAKE_OSX_SYSROOT': '/sdk/MacOSX.sdk',
+            'CMAKE_OSX_DEPLOYMENT_TARGET': '11.0',
+        })
+        assert [arg for arg in command if arg.startswith('CROSS_COMPILE=')] \
+            == cross_compile
+        assert {
+            'CC=/toolchain/clang',
+            'CXX=/toolchain/clang++',
+            'SDKROOT=/sdk/MacOSX.sdk',
+            'MACOSX_DEPLOYMENT_TARGET=11.0',
+            'LIBRETRO_APPLE_ISYSROOT=/sdk/MacOSX.sdk',
+            'LIBRETRO_APPLE_PLATFORM={}-apple-macos11.0'.format(target_cpu),
+        } <= set(command)
+
+
 def test_uae4arm_osx_arm64_generation(tmpdir):
-    """Test UAE4ARM uses its Apple ARM platform and cross-build inputs."""
+    """Test UAE4ARM uses its Apple ARM platform and toolchain inputs."""
     addon_dir = generate_configured_addon(tmpdir, 'uae4arm')
     cmake = read_file(os.path.join(
         addon_dir, 'depends', 'common', 'uae4arm', 'CMakeLists.txt'))
@@ -383,7 +449,6 @@ def test_uae4arm_osx_arm64_generation(tmpdir):
     assert 'CC=${CMAKE_C_COMPILER}' in osx_build
     assert 'CXX=${CMAKE_CXX_COMPILER}' in osx_build
     assert 'CC_AS=${CMAKE_C_COMPILER}' in osx_build
-    assert 'CROSS_COMPILE=1' in osx_build
     assert 'LIBRETRO_APPLE_ISYSROOT=${CMAKE_OSX_SYSROOT}' in osx_build
     assert ('LIBRETRO_APPLE_PLATFORM=${CPU}-apple-macos'
             '${CMAKE_OSX_DEPLOYMENT_TARGET}') in osx_build

@@ -120,8 +120,8 @@ jobs:
         - picodrive
         - pcsx-rearmed
         - pcem
-        #- parallext # Fails to build on Jenkins
-        #- parallel_n64 # Marked as broken until hardware rendering is ready
+        - parallext
+        - parallel_n6
         - opera
         - openlara
         - onscripter

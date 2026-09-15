@@ -28,6 +28,9 @@ jobs:
         # OpenGL cores
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
+        # N64 cores
+        #dpkg -s nasm || sudo apt install -y nasm
+
         # beetle-psx-hw
         dpkg -s libgl-dev || sudo apt install libgl-dev
 
@@ -59,18 +62,6 @@ jobs:
         #dpkg -s libcurl4-openssl-dev || sudo apt install -y libcurl4-openssl-dev
         #dpkg -s libgl-dev || sudo apt install -y libgl-dev
         #dpkg -s libopus-dev || sudo apt install -y libopus-dev
-
-        # mupen64plus
-        #dpkg -s nasm || sudo apt install -y nasm
-
-        # mupen64plus-nx
-        dpkg -s nasm || sudo apt install -y nasm
-
-        # parallel_n64
-        dpkg -s nasm || sudo apt install -y nasm
-
-        # parallext
-        dpkg -s nasm || sudo apt install -y nasm
       addons:
         - yabause
         - yabasanshiro

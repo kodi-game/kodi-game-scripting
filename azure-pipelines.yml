@@ -29,7 +29,7 @@ jobs:
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev
 
         # N64 cores
-        #dpkg -s nasm || sudo apt install -y nasm
+        dpkg -s nasm || sudo apt install -y nasm
 
         # beetle-psx-hw
         dpkg -s libgl-dev || sudo apt install libgl-dev

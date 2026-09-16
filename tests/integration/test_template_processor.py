@@ -379,7 +379,9 @@ def test_boom3_android_generation(tmpdir):
             'RENAME boom3_libretro${CMAKE_SHARED_LIBRARY_SUFFIX})') in cmake
 
 
-@pytest.mark.parametrize('game_name', ['dosbox-pure', 'uae4arm', 'virtualjaguar'])
+@pytest.mark.parametrize('game_name', [
+    'dosbox-pure', 'mupen64plus-nx', 'uae4arm', 'virtualjaguar',
+])
 @pytest.mark.parametrize('host,target_cpu,cross_compile', [
     (('Darwin', 'arm64'), 'arm64', []),
     (('Darwin', 'aarch64'), 'arm64', []),
@@ -398,7 +400,7 @@ def test_boom3_android_generation(tmpdir):
 ])
 def test_osx_cross_compile_arguments(tmpdir, game_name, host, target_cpu,
                                      cross_compile):
-    """Omit CROSS_COMPILE only for matching Darwin host/target CPUs."""
+    """Pass the target architecture and cross-compile only when needed."""
     addon_dir = generate_configured_addon(tmpdir, game_name)
     cmake = read_file(os.path.join(
         addon_dir, 'depends', 'common', game_name, 'CMakeLists.txt'))
@@ -425,11 +427,16 @@ def test_osx_cross_compile_arguments(tmpdir, game_name, host, target_cpu,
         assert {
             'CC=/toolchain/clang',
             'CXX=/toolchain/clang++',
+            'ARCH=' + target_cpu,
+            'arch=' + ('arm' if target_cpu == 'arm64' else 'intel'),
             'SDKROOT=/sdk/MacOSX.sdk',
             'MACOSX_DEPLOYMENT_TARGET=11.0',
             'LIBRETRO_APPLE_ISYSROOT=/sdk/MacOSX.sdk',
             'LIBRETRO_APPLE_PLATFORM={}-apple-macos11.0'.format(target_cpu),
         } <= set(command)
+
+    # Keep the target architecture override confined to macOS.
+    assert cmake.count('ARCH=${CPU}') == osx_build.count('ARCH=${CPU}') == 1
 
 
 def test_uae4arm_osx_arm64_generation(tmpdir):

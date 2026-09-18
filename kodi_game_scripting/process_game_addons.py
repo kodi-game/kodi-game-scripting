@@ -318,7 +318,7 @@ class KodiGameAddon():
                 'exclude_platforms': addon_config[4].get('exclude_platforms',
                                                          []),
                 'git_tag': addon_config[4].get('git_tag', False),
-                'hexsha': '',
+                'hexsha': addon_config[4].get('commit', ''),
             },
             'makefile': {
                 'file': addon_config[1],
@@ -464,6 +464,8 @@ class KodiGameAddon():
 
     def load_git_tag(self):
         """ Get the latest git tag from the libretro repository """
+        if self.info['config'].get('commit'):
+            return
         if self.info['libretro_repo']['git_tag']:
             repo = GitHubOrg(
                 self.info['libretro_repo']['org'], auth=True).get_repo(
@@ -472,6 +474,9 @@ class KodiGameAddon():
 
     def load_git_revision(self):
         """ Get the revision of the libretro core from the Git checkout """
+        # A configured pin takes precedence over any previous build checkout.
+        if self.info['config'].get('commit'):
+            return
         path = os.path.join(self._working_directory,
                             'build', 'build', self.game_name, 'src')
         if GitRepo.is_git_repo(os.path.join(path, self.game_name)):

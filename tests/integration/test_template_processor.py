@@ -163,6 +163,30 @@ def test_process_template(tmpdir):
     assert_identical(filecmp.dircmp(str(tmpdir), REFERENCE_DIR))
 
 
+@pytest.mark.parametrize('git_tag', [False, True])
+def test_stella_pinned_source(tmpdir, git_tag):
+    """Use the pinned archive on both passes, despite an old build checkout."""
+    addon_name = 'game.libretro.stella'
+    with mock.patch('kodi_game_scripting.process_game_addons.GitRepo') as repo:
+        repo.is_git_repo.return_value = True
+        repo.return_value.get_hexsha.return_value = 'old-checkout'
+        addon = KodiGameAddon(addon_name, 'stella',
+                              GitHubRepo(addon_name, '', ''), str(tmpdir), None)
+        addon.info['libretro_repo']['git_tag'] = git_tag
+        with mock.patch('kodi_game_scripting.process_game_addons.GitHubOrg') as org:
+            addon.load_git_tag()
+            org.assert_not_called()
+        addon.process_addon_files()
+        source_file = os.path.join(str(tmpdir), addon_name, 'depends',
+                                   'common', 'stella', 'stella.txt')
+        expected = ('stella https://github.com/stella-emu/stella/archive/'
+                    'c1ffb833c8b180433b0cad76bb6b55f8dfbc46ee.tar.gz')
+        assert read_file(source_file).strip() == expected
+        addon.load_git_revision()
+        addon.process_addon_files()
+        assert read_file(source_file).strip() == expected
+
+
 def test_process_template_linux_arm_platforms(tmpdir):
     """Test opting a core into architecture-specific Linux platforms"""
     data = {

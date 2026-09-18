@@ -166,7 +166,7 @@ ADDONS = {
     'snes9x':                    ('snes9x',                     'Makefile',          'libretro',          'libretro/jni', {}),
     'snes9x2002':                ('snes9x2002',                 'Makefile',          '.',                 'jni', {}),
     'snes9x2010':                ('snes9x2010',                 'Makefile',          '.',                 'jni', {}),
-    'stella':                    ('stella-emu/stella',          'Makefile',          'src/os/libretro',   'src/os/libretro/jni', {}),
+    'stella':                    ('stella-emu/stella',          'Makefile',          'src/os/libretro',   'src/os/libretro/jni', {'commit': 'c1ffb833c8b180433b0cad76bb6b55f8dfbc46ee'}),
     'stella2014':                ('stella2014-libretro',        'Makefile',          '.',                 'jni', {}),
     'stella2023':                ('stella2023',                 'Makefile',          'src/os/libretro',   'src/os/libretro/jni', {}),
     'supafaust':                 ('supafaust',                  'Makefile',          '.',                 'jni', {'soname': 'mednafen_supafaust', 'exclude_platforms': ['osx-x86_64', 'osx-arm64']}),

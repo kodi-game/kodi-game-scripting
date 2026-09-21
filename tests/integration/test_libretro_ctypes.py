@@ -118,4 +118,4 @@ def test_load_missing_library(tmpdir):
     # A core that won't load is the everyday case, so the reason has to
     # survive the trip back from the helper process
     assert missing in str(excinfo.value)
-    assert 'No such file' in str(excinfo.value)
+    assert 'no such file' in str(excinfo.value).lower()

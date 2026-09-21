@@ -24,6 +24,7 @@ from unittest import mock
 
 import pytest
 
+from kodi_game_scripting import config
 from kodi_game_scripting.git_access import GitHubRepo
 from kodi_game_scripting.process_game_addons import KodiGameAddon
 from kodi_game_scripting.template_processor import TemplateProcessor, \
@@ -167,6 +168,9 @@ def test_process_template(tmpdir):
 def test_stella_pinned_source(tmpdir, git_tag):
     """Use the pinned archive on both passes, despite an old build checkout."""
     addon_name = 'game.libretro.stella'
+    # Exercise the configured pin without duplicating its changing value.
+    pinned_commit = config.ADDONS['stella'][4]['commit']
+    assert pinned_commit
     with mock.patch('kodi_game_scripting.process_game_addons.GitRepo') as repo:
         repo.is_git_repo.return_value = True
         repo.return_value.get_hexsha.return_value = 'old-checkout'
@@ -180,7 +184,7 @@ def test_stella_pinned_source(tmpdir, git_tag):
         source_file = os.path.join(str(tmpdir), addon_name, 'depends',
                                    'common', 'stella', 'stella.txt')
         expected = ('stella https://github.com/stella-emu/stella/archive/'
-                    'c1ffb833c8b180433b0cad76bb6b55f8dfbc46ee.tar.gz')
+                    '{}.tar.gz'.format(pinned_commit))
         assert read_file(source_file).strip() == expected
         addon.load_git_revision()
         addon.process_addon_files()
@@ -272,12 +276,15 @@ def test_lrps2_cmake_options(tmpdir):
 
 
 def test_blastem_mingw_python(tmpdir):
-    """Test Blastem uses upstream MSYS mirrors to install Python."""
+    """Test Blastem installs Python from Kodi's MSYS mirrors."""
     addon_dir = generate_configured_addon(tmpdir, 'blastem')
     mingw = read_file(os.path.join(
         addon_dir, 'depends', 'windows', 'mingw', 'CMakeLists.txt'))
 
-    assert 'mirrorlist.${repo}' not in mingw
+    assert ('Server = http://mirrors.kodi.tv/build-deps/win32/msys2/'
+            'repos/${repo}2/$arch') in mingw
+    assert ('Server = http://mirrors.kodi.tv/build-deps/win32/msys2/'
+            'repos/${repo}\\n') in mingw
     assert 'pacman --noconfirm -S make ${HOST}-gcc nasm python' in mingw
 
 

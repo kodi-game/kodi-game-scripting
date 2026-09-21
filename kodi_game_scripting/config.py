@@ -124,7 +124,7 @@ ADDONS = {
     'moonlight':                 ('kodi-game/moonlight-libretro','Makefile',          '.',                 '', {}),
     'mrboom':                    ('kodi-game/mrboom-libretro',  'Makefile',          '.',                 'libretro/jni', {}),
     'mu':                        ('Mu',                         'Makefile.libretro', 'libretroBuildSystem', 'libretroBuildSystem/jni', {}),
-    'mupen64plus-nx':            ('kodi-game/mupen64plus-libretro-nx', 'Makefile',   '.',                 'libretro/jni', {'branch': 'develop', 'soname': 'mupen64plus_next', 'cmake_options': 'HAVE_THR_AL=1 LLE=1 HAVE_PARALLEL_RSP=1'}),
+    'mupen64plus-nx':            ('kodi-game/mupen64plus-libretro-nx', 'Makefile',   '.',                 'libretro/jni', {'branch': 'develop', 'soname': 'mupen64plus_next', 'cmake_options': 'HAVE_THR_AL=1 LLE=1 HAVE_PARALLEL_RSP=1', 'cmake_options_android': 'GLES3=1'}),
     'nestopia':                  ('nestopia',                   'Makefile',          'libretro',          'libretro/jni', {}),
     'neocd':                     ('neocd_libretro',             'Makefile',          '.',                 'jni', {}),
     'nx':                        ('nxengine-libretro',          'Makefile',          '.',                 'jni', {'soname': 'nxengine'}),

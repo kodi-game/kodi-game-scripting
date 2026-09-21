@@ -300,6 +300,58 @@ def test_dolphin_cmake_options(tmpdir):
     assert not os.path.exists(os.path.join(depends_dir, 'CMakeLists.txt'))
 
 
+@pytest.mark.parametrize('jni', ['jni', ''], ids=['ndk-build', 'make'])
+def test_process_template_android_options(tmpdir, jni):
+    """Keep generic options and add Android options only to Android builds."""
+    data = {
+        'game': {'name': 'mygame'},
+        'config': {
+            'cmake_options': 'GENERIC_OPTION=1',
+            'cmake_options_android': 'GLES3=1',
+        },
+        'makefile': {'dir': '.', 'file': 'Makefile', 'jni': jni},
+        'library': {'soname': 'mygame_libretro', 'jnisoname': 'libretro'},
+    }
+    TemplateProcessor.process(
+        os.path.join('addon', 'depends', 'common'), str(tmpdir), data)
+    cmake = read_file(os.path.join(str(tmpdir), 'mygame', 'CMakeLists.txt'))
+    android_build = cmake_section(
+        cmake, 'elseif(CORE_SYSTEM_NAME STREQUAL android)',
+        'elseif(CORE_SYSTEM_NAME STREQUAL freebsd)')
+
+    assert ('${NDKROOT}/ndk-build' in android_build) == bool(jni)
+    command = evaluate_build_command(tmpdir, android_build, {
+        'CPU': 'armeabi-v7a',
+        'NDKROOT': '/ndk',
+        'CMAKE_C_COMPILER': '/toolchain/clang',
+    })
+    if jni:
+        command = command[:command.index('&&')]
+    assert 'GENERIC_OPTION=1' in command
+    assert 'GLES3=1' in command
+    assert 'GLES3=1' not in cmake.replace(android_build, '')
+
+
+def test_mupen64plus_nx_android_options(tmpdir):
+    """Enable GLES3 only in Mupen64Plus-NX's Android build command."""
+    addon_dir = generate_configured_addon(tmpdir, 'mupen64plus-nx')
+    cmake = read_file(os.path.join(
+        addon_dir, 'depends', 'common', 'mupen64plus-nx', 'CMakeLists.txt'))
+    android_build = cmake_section(
+        cmake, 'elseif(CORE_SYSTEM_NAME STREQUAL android)',
+        'elseif(CORE_SYSTEM_NAME STREQUAL freebsd)')
+
+    assert 'HAVE_THR_AL=1 LLE=1 HAVE_PARALLEL_RSP=1' in android_build
+    command = evaluate_build_command(tmpdir, android_build, {
+        'CPU': 'arm64-v8a',
+        'NDKROOT': '/ndk',
+    })
+    assert '/ndk/ndk-build' in command
+    assert {'HAVE_THR_AL=1', 'LLE=1', 'HAVE_PARALLEL_RSP=1', 'GLES3=1'} \
+        <= set(command[:command.index('&&')])
+    assert 'GLES3=1' not in cmake.replace(android_build, '')
+
+
 def test_uae4arm_android_generation(tmpdir):
     """Test UAE4ARM uses direct Make for both supported Android ABIs."""
     addon_dir = generate_configured_addon(tmpdir, 'uae4arm')

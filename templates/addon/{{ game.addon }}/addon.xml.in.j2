@@ -21,6 +21,7 @@
 		<supports_standalone>{{ system_info.supports_no_game | default('false') | lower }}</supports_standalone>
 		<supports_disc_control>{{ system_info.supports_disc_control | default('false') | lower }}</supports_disc_control>
 		<requires_opengl>{{ 'true' if library.opengl | default('false') else 'false' }}</requires_opengl>
+		<libretro_core>{{ library.soname | default('') | escape }}</libretro_core>
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<license>{{ libretro_info.license | default(xml.addon.extension[1].license.content) | default('') | escape }}</license>

@@ -14,6 +14,7 @@
 		<supports_standalone>false</supports_standalone>
 		<supports_disc_control>false</supports_disc_control>
 		<requires_opengl>true</requires_opengl>
+		<libretro_core></libretro_core>
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<license></license>

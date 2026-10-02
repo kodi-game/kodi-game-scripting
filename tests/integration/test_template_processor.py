@@ -251,6 +251,19 @@ def test_flycast_cmake_options(tmpdir):
     assert not os.path.exists(os.path.join(depends_dir, 'CMakeLists.txt'))
 
 
+@pytest.mark.parametrize('game_name,core', [
+    ('fceumm', 'fceumm_libretro'),
+    ('beetle-psx', 'mednafen_psx_libretro'),
+])
+def test_libretro_core_name(tmpdir, game_name, core):
+    """Test addon.xml names the core as RetroArch reports it."""
+    addon_dir = generate_configured_addon(tmpdir, game_name)
+    addon_xml = read_file(os.path.join(
+        addon_dir, 'game.libretro.{}'.format(game_name), 'addon.xml.in'))
+
+    assert '<libretro_core>{}</libretro_core>'.format(core) in addon_xml
+
+
 def test_vbam_uses_upstream_libretro_cmake_target(tmpdir):
     """Test upstream VBAM builds only its libretro CMake target."""
     addon_dir = generate_configured_addon(tmpdir, 'vbam')

@@ -40,7 +40,7 @@ REFERENCE_DIR = os.path.join(
     'test_data', os.path.splitext(os.path.basename(__file__))[0])
 
 
-def generate_configured_addon(tmpdir, game_name):
+def generate_configured_addon(tmpdir, game_name, libretro_info=None):
     """Generate an add-on from its real config.py entry."""
     addon_name = 'game.libretro.{}'.format(game_name)
     github_repo = GitHubRepo(addon_name, '', '')
@@ -52,6 +52,8 @@ def generate_configured_addon(tmpdir, game_name):
         addon = KodiGameAddon(addon_name, game_name, github_repo,
                               str(tmpdir), None)
 
+    if libretro_info is not None:
+        addon.info['libretro_info'] = libretro_info
     addon.process_addon_files()
     return os.path.join(str(tmpdir), addon_name)
 
@@ -262,6 +264,18 @@ def test_libretro_core_name(tmpdir, game_name, core):
         addon_dir, 'game.libretro.{}'.format(game_name), 'addon.xml.in'))
 
     assert '<libretro_core>{}</libretro_core>'.format(core) in addon_xml
+
+
+@pytest.mark.parametrize('features', ['basic', 'serialized', 'deterministic'])
+def test_savestate_features(tmpdir, features):
+    """Test addon.xml rates the core's states as its info file does."""
+    addon_dir = generate_configured_addon(
+        tmpdir, 'fceumm', {'savestate_features': features})
+    addon_xml = read_file(os.path.join(
+        addon_dir, 'game.libretro.fceumm', 'addon.xml.in'))
+
+    assert '<savestate_features>{}</savestate_features>'.format(
+        features) in addon_xml
 
 
 def test_vbam_uses_upstream_libretro_cmake_target(tmpdir):

@@ -165,6 +165,23 @@ elseif(CORE_SYSTEM_NAME STREQUAL freebsd)
                     GIT_VERSION=
                     platform=unix
                     )
+elseif(CORE_SYSTEM_NAME STREQUAL wasm)
+  # Kodi loads cores with dlopen(), so the emscripten platform has to link a
+  # side module, with the core's own libretro-common (STATIC_LINKING=0).
+  set(BUILD_COMMAND $(MAKE)
+                    -C 
+                    -f 
+                    ${build_job_count}
+                    ${LIBRETRO_DEBUG}
+                    "CC=${CMAKE_C_COMPILER} -pthread -fPIC"
+                    "CXX=${CMAKE_CXX_COMPILER} -pthread -fPIC"
+                    AR=${CMAKE_AR}
+                    "LDFLAGS=-pthread -sSIDE_MODULE=1"
+                    GIT_VERSION=
+                    platform=emscripten
+                    STATIC_LINKING=0
+                    TARGET=${LIBRETRO_SONAME}
+                    )
 else()
   message(FATAL_ERROR "${PROJECT_NAME} - Unknown system: ${CORE_SYSTEM_NAME}")
 endif()

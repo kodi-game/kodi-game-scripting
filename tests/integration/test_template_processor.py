@@ -239,7 +239,7 @@ def test_uae4arm_jenkins_platforms(tmpdir):
     jenkins = read_file(os.path.join(addon_dir, 'Jenkinsfile'))
 
     assert jenkins == (
-        'buildPlugin(version: "Omega", platforms: '
+        'buildPlugin(version: "Piers", platforms: '
         '["android-aarch64", "android-armv7", "osx-arm64"])\n')
 
 

@@ -550,7 +550,7 @@ def test_kodigameaddon_tag(kodigameaddon, gitrepomock):
     """ Test tagging a release in Git """
     kodigameaddon.info['game']['version'] = '1.2.3.4'
     kodigameaddon.tag()
-    assert gitrepomock.return_value.tag.call_args[0][0].startswith('1.2.3.4-')
+    gitrepomock.return_value.tag.assert_called_once_with('1.2.3.4-Piers')
 
 
 def test_kodigameaddon_push(kodigameaddon, gitrepomock):

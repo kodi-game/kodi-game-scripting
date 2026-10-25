@@ -104,7 +104,7 @@ ADDONS = {
     'gpsp':                      ('gpsp',                       'Makefile',          '.',                 'jni', {}),
     'gw':                        ('gw-libretro',                'Makefile',          '.',                 'build/jni', {}),
     'handy':                     ('libretro-handy',             'Makefile',          '.',                 'jni', {}),
-    'hatari':                    ('hatari',                     '',                  '.',                 'libretro/jni', {'branch': 'main', 'cmake': True, 'cmake_options': '-DENABLE_HATARI=OFF -DENABLE_TOOLS=OFF -DENABLE_LIBRETRO=ON '}),
+    'hatari':                    ('hatari',                     '',                  '.',                 'libretro/jni', {'branch': 'main', 'cmake': True, 'cmake_options': '-DENABLE_HATARI=OFF -DENABLE_TOOLS=OFF -DENABLE_LIBRETRO=ON'}),
     'jumpnbump':                 ('jumpnbump-libretro',         'Makefile',          '.',                 'jni', {}),
     'lrps2':                     ('ps2',                        '',                  '.',                 '', {'cmake': True, 'soname': 'pcsx2', 'cmake_options': '-DPACKAGE_MODE=ON -DBIN_DIR=lib/libretro'}),
     'lutro':                     ('libretro-lutro',             'Makefile',          '.',                 'jni', {}),

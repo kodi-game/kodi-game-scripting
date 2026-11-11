@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.5...4.0)
 project(libretro_test LANGUAGES C)
 
 # The same source built three ways, one per settings API a core can use

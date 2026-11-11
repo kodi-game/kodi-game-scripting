@@ -193,6 +193,25 @@ def test_stella_pinned_source(tmpdir, git_tag):
         assert read_file(source_file).strip() == expected
 
 
+def test_submodules_keep_the_clone(tmpdir):
+    """Keep cloning a core that needs its submodules, despite a build checkout."""
+    addon_name = 'game.libretro.cemu'
+    assert config.ADDONS['cemu'][4]['submodules']
+    with mock.patch('kodi_game_scripting.process_game_addons.GitRepo') as repo:
+        repo.is_git_repo.return_value = True
+        repo.return_value.get_hexsha.return_value = 'built-checkout'
+        addon = KodiGameAddon(addon_name, 'cemu',
+                              GitHubRepo(addon_name, '', ''), str(tmpdir), None)
+        addon.process_addon_files()
+        source_file = os.path.join(str(tmpdir), addon_name, 'depends',
+                                   'common', 'cemu', 'cemu.txt')
+        expected = 'cemu https://github.com/WizzardSK/cemu-libretro libretro'
+        assert read_file(source_file).strip() == expected
+        addon.load_git_revision()
+        addon.process_addon_files()
+        assert read_file(source_file).strip() == expected
+
+
 def test_process_template_linux_arm_platforms(tmpdir):
     """Test opting a core into architecture-specific Linux platforms"""
     data = {

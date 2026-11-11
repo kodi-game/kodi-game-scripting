@@ -65,6 +65,13 @@ ADDONS = {
     'bsnes2014-performance':     ('bsnes2014',                  'Makefile',          '.',                 'target-libretro/jni', {'branch': 'libretro --', 'soname': 'bsnes2014_performance', 'cmake_options': 'PROFILE=performance'}),
     'cannonball':                ('cannonball',                 'Makefile',          '.',                 'jni', {}),
     'cap32':                     ('libretro-cap32',             'Makefile',          '.',                 'jni', {}),
+    'cemu':                      ('WizzardSK/cemu-libretro',    '',                  '',                  '', {
+        'branch': 'libretro',
+        'cmake': True,
+        'cmake_options': '-DENABLE_VCPKG=OFF -DENABLE_WAYLAND=OFF -DENABLE_LIBUSB=OFF -DCMAKE_BUILD_TYPE=Release',
+        'exclude_platforms': ['android-aarch64', 'android-armv7', 'osx-x86_64', 'osx-arm64', 'windows-i686', 'windows-x86_64'],
+        'submodules': True,
+    }),
     'chailove':                  ('kodi-game/libretro-chailove', 'Makefile',         '.',                 'jni', {}),
     'craft':                     ('Craft',                      'Makefile.libretro', '.',                 'jni', {}),
     'crocods':                   ('libretro-crocods',           'Makefile',          '.',                 'jni', {}),

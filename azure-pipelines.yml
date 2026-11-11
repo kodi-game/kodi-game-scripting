@@ -34,6 +34,28 @@ jobs:
         # beetle-psx-hw
         dpkg -s libgl-dev || sudo apt install libgl-dev
 
+        # cemu
+        dpkg -s glslang-dev || sudo apt install -y glslang-dev
+        dpkg -s glslang-tools || sudo apt install -y glslang-tools
+        dpkg -s libboost-filesystem-dev || sudo apt install -y libboost-filesystem-dev
+        dpkg -s libboost-nowide-dev || sudo apt install -y libboost-nowide-dev
+        dpkg -s libboost-program-options-dev || sudo apt install -y libboost-program-options-dev
+        dpkg -s libcurl4-openssl-dev || sudo apt install -y libcurl4-openssl-dev
+        dpkg -s libegl-dev || sudo apt install -y libegl-dev
+        dpkg -s libfmt-dev || sudo apt install -y libfmt-dev
+        dpkg -s libglm-dev || sudo apt install -y libglm-dev
+        dpkg -s libpng-dev || sudo apt install -y libpng-dev
+        dpkg -s libpugixml-dev || sudo apt install -y libpugixml-dev
+        dpkg -s libssl-dev || sudo apt install -y libssl-dev
+        dpkg -s libx11-dev || sudo apt install -y libx11-dev
+        dpkg -s libxrender-dev || sudo apt install -y libxrender-dev
+        dpkg -s libzip-dev || sudo apt install -y libzip-dev
+        dpkg -s libzstd-dev || sudo apt install -y libzstd-dev
+        dpkg -s rapidjson-dev || sudo apt install -y rapidjson-dev
+        dpkg -s zipcmp || sudo apt install -y zipcmp
+        dpkg -s zipmerge || sudo apt install -y zipmerge
+        dpkg -s ziptool || sudo apt install -y ziptool
+
         # desmume
         dpkg -s libpcap-dev || sudo apt install -y libpcap-dev
 
@@ -190,6 +212,7 @@ jobs:
         - crocods
         - craft
         - chailove
+        - cemu
         - cap32
         - cannonball
         - bsnes2014-performance

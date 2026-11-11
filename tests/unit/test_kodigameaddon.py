@@ -425,6 +425,28 @@ def test_kodigameaddon_loadinfofile(kodigameaddon, mocker):
         .assert_called_once_with('mygame_libretro')
 
 
+def test_kodigameaddon_loadaddonxml_nosummary(tmp_path):
+    """ Test loading the addon.xml.in of a new add-on, which has no summary or
+    description yet """
+    addon = KodiGameAddon('game.mygame', 'mygame', GITHUBREPO, str(tmp_path),
+                          'master')
+    addon_dir = tmp_path / 'game.mygame' / 'game.mygame'
+    addon_dir.mkdir(parents=True)
+    (addon_dir / 'addon.xml.in').write_text(
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<addon id="game.mygame">\n'
+        '  <extension point="kodi.gameclient"/>\n'
+        '  <extension point="xbmc.addon.metadata">\n'
+        '    <platform>@PLATFORM@</platform>\n'
+        '  </extension>\n'
+        '</addon>\n', encoding='utf-8')
+    addon.load_addon_xml()
+    assert not addon.info['game']['summaries']
+    assert addon.info['game']['summary_english'] == ''
+    assert not addon.info['game']['descriptions']
+    assert addon.info['game']['description_english'] == ''
+
+
 def test_kodigameaddon_loadassets(kodigameaddon, mocker):
     """ Test loading asset files """
     mocker.patch('kodi_game_scripting.utils.list_all_files', return_value=[

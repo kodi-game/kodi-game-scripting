@@ -366,8 +366,8 @@ class KodiGameAddon():
             def listify(var):
                 return var if isinstance(var, list) else [var]
 
-            summaries = listify(xml_data['addon']['extension'][1]['summary'])
-            descriptions = listify(xml_data['addon']['extension'][1]['description'])
+            summaries = listify(xml_data['addon']['extension'][1].get('summary', []))
+            descriptions = listify(xml_data['addon']['extension'][1].get('description', []))
             disclaimers = listify(xml_data['addon']['extension'][1].get('disclaimer', []))
 
             self.info['game']['summaries'] = summaries

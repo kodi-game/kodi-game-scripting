@@ -96,6 +96,18 @@ def test_githuborg_initautherror(githuborg_fixture):
     cred_mock.return_value.clean.assert_called_once_with()
 
 
+def test_githuborg_inituser(githuborg_fixture):
+    """ Test a repo owner that is a user rather than an organization """
+    githuborg_mock, _, _ = githuborg_fixture
+    githubapi = githuborg_mock.return_value
+    githubapi.get_organization.side_effect = github.UnknownObjectException(
+        404, {'message': 'Not Found'}, {})
+    org = GitHubOrg('user')
+    githubapi.get_user.assert_called_once_with('user')
+    org.get_repo('repo')
+    githubapi.get_user.return_value.get_repo.assert_called_once_with('repo')
+
+
 def test_githuborg_getrepos(githuborg_fixture):
     """ Test getting GitHub repos """
     githuborg_mock, _, _ = githuborg_fixture

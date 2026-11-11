@@ -519,6 +519,58 @@ def test_kodigameaddon_loadgameversioninitial(kodigameaddon, gitrepomock):
     assert kodigameaddon.info['game']['version'] == '1.2.3.0'
 
 
+def _tag(name, sha):
+    tag = mock.MagicMock()
+    tag.name = name
+    tag.commit.sha = sha
+    return tag
+
+
+def test_kodigameaddon_loadgameversionfromtags(kodigameaddon, gitrepomock,
+                                               githuborgmock):
+    """ A core with no version of its own takes the newest tag its commit
+    contains """
+    kodigameaddon.info['system_info']['version'] = 'undefined'
+    kodigameaddon.info['libretro_repo']['hexsha'] = 'pinned'
+    gitrepomock.return_value.describe.return_value = 'g1234567'
+    repo = githuborgmock.return_value.get_repo.return_value
+    repo.get_tags.return_value = [_tag('3.8.13', 'sha13'),
+                                  _tag('nightly', 'shanightly'),
+                                  _tag('3.9.0', 'sha90')]
+    status = {'sha90': 'behind', 'sha13': 'ahead'}
+    repo.compare.side_effect = lambda base, head: mock.Mock(
+        status=status[base])
+    kodigameaddon.load_game_version()
+    assert kodigameaddon.info['game']['version'] == '3.8.13.0'
+    assert [c.args[0] for c in repo.compare.call_args_list] == \
+        ['sha90', 'sha13']
+
+
+def test_kodigameaddon_loadgameversionkeepscoreversion(kodigameaddon,
+                                                       gitrepomock,
+                                                       githuborgmock):
+    """ A version the core reports wins over the tags """
+    kodigameaddon.info['system_info']['version'] = '1.2.3'
+    kodigameaddon.info['libretro_repo']['hexsha'] = 'pinned'
+    gitrepomock.return_value.describe.return_value = 'g1234567'
+    kodigameaddon.load_game_version()
+    assert kodigameaddon.info['game']['version'] == '1.2.3.0'
+    githuborgmock.assert_not_called()
+
+
+def test_kodigameaddon_loadgameversionnotag(kodigameaddon, gitrepomock,
+                                            githuborgmock):
+    """ With no tag in the commit's history the version stays a placeholder """
+    kodigameaddon.info['system_info']['version'] = 'abcdef1'
+    kodigameaddon.info['libretro_repo']['hexsha'] = 'pinned'
+    gitrepomock.return_value.describe.return_value = 'g1234567'
+    repo = githuborgmock.return_value.get_repo.return_value
+    repo.get_tags.return_value = [_tag('2127.0-rc2', 'sharc2')]
+    repo.compare.return_value = mock.Mock(status='diverged')
+    kodigameaddon.load_game_version()
+    assert kodigameaddon.info['game']['version'] == '0.0.1.0'
+
+
 def test_kodigameaddon_bumpversion(kodigameaddon):
     """ Test bumping game version """
     kodigameaddon.info['game']['version'] = '1.2.3.1'

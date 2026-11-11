@@ -62,7 +62,11 @@ class GitHubOrg:
                   .format(rate.limit, rate.remaining, rate.reset.isoformat()))
             if auth and not apitoken:
                 cred.save(username, password)
-            self._org = self._github.get_organization(org)
+            try:
+                self._org = self._github.get_organization(org)
+            except github.UnknownObjectException:
+                # Many cores are under a user's account, not an organization
+                self._org = self._github.get_user(org)
         except github.BadCredentialsException as err:
             if auth and not apitoken:
                 cred.clean()

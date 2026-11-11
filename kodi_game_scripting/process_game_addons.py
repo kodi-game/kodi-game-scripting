@@ -36,6 +36,9 @@ from .template_processor import TemplateProcessor
 from .libretro_super import LibretroSuper
 from .versions import AddonVersion
 
+# The newest version tags checked for one the core's commit contains
+MAX_VERSION_TAGS = 20
+
 COMMIT_MSG = "Updated by kodi-game-scripting\n\n" \
              "https://github.com/kodi-game/kodi-game-scripting/"
 
@@ -490,6 +493,25 @@ class KodiGameAddon():
                     self.info['libretro_repo']['name'])
             self.info['libretro_repo']['branch'] = repo.get_tags()[0].name
 
+    def load_version_tag(self):
+        """ Get the newest version tag that the core's commit contains """
+        hexsha = self.info['libretro_repo']['hexsha']
+        if not hexsha:
+            return ''
+        repo = GitHubOrg(self.info['libretro_repo']['org'], auth=True) \
+            .get_repo(self.info['libretro_repo']['name'])
+
+        def version(tag):
+            return [int(part) for part in AddonVersion.get(tag.name).split('.')]
+
+        tags = [tag for tag in repo.get_tags()
+                if AddonVersion.get(tag.name) != AddonVersion.get('')]
+        for tag in sorted(tags, key=version, reverse=True)[:MAX_VERSION_TAGS]:
+            status = repo.compare(tag.commit.sha, hexsha).status
+            if status in ('ahead', 'identical'):
+                return tag.name
+        return ''
+
     def load_git_revision(self):
         """ Get the revision of the libretro core from the Git checkout """
         # A configured pin takes precedence over any previous build checkout.
@@ -505,6 +527,12 @@ class KodiGameAddon():
         """ Load game version from compiled library and git """
         self.info['game']['version'] = AddonVersion.get(
             self.info['system_info']['version'])
+        # A core that takes its version from git has none to report when
+        # it's built from an archive, or from a clone without its tags
+        if self.info['game']['version'] == AddonVersion.get(''):
+            tag = self.load_version_tag()
+            if tag:
+                self.info['game']['version'] = AddonVersion.get(tag)
         git_tag = self._repo.describe()
         match = re.search(r'^(?:[0-9]+\.){3}([0-9]+)', git_tag)
         pkg_version = match.group(1) if match else '0'

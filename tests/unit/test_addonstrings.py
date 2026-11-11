@@ -24,7 +24,7 @@ import pytest
 from kodi_game_scripting.addon_strings import (
     KODI_LANGUAGES, SOURCE_LANGUAGE, STRINGS_PO_PATH, StringTable,
     _label_from_uncategorized, by_kodi_language, carry_translations,
-    read_strings, strings_po_path, write_translations)
+    read_strings, retire_translations, strings_po_path, write_translations)
 from kodi_game_scripting.libretro_ctypes import RETRO_LANGUAGE_TAGS
 
 pytestmark = [pytest.mark.unit]
@@ -374,8 +374,40 @@ def test_a_categorised_label_keeps_its_flat_translation(tmpdir):
     assert written == ['de_de']
     entries = _entries(path)
     assert entries['#30003'] == 'Emuliertes Modell'
-    # The old one stays for Weblate to retire with its obsolete English
-    assert entries['#30001'] == 'System - Emuliertes Modell'
+
+
+def test_a_string_retired_in_english_is_retired_in_translations(tmpdir):
+    """ The flat labels' translations go when their English does """
+    path = _write_language(tmpdir, 'de_de', FLAT_PO)
+    carry_translations(str(tmpdir), FLAT_STRINGS, UNCATEGORIZED)
+
+    written = retire_translations(str(tmpdir), FLAT_STRINGS)
+
+    assert written == ['de_de']
+    retired = {e.msgctxt: e.msgstr for e in polib.pofile(path) if e.obsolete}
+    assert retired == {'#30001': 'System - Emuliertes Modell',
+                       '#30002': ''}
+    assert _entries(path)['#30003'] == 'Emuliertes Modell'
+    with open(path, encoding='utf-8') as handle:
+        assert '#~ msgctxt "#30001"' in handle.read()
+
+
+def test_a_live_string_is_not_retired(tmpdir):
+    """ Only what English retired goes """
+    path = _write_language(tmpdir, 'de_de', TRANSLATED_PO)
+    strings = [{'id': 30001, 'content': 'On', 'obsolete': False},
+               {'id': 30002, 'content': 'Off', 'obsolete': False}]
+
+    assert not retire_translations(str(tmpdir), strings)
+    assert not any(e.obsolete for e in polib.pofile(path))
+
+
+def test_the_source_catalogue_is_not_retired_in(tmpdir):
+    """ en_gb's obsolete entries are the string table's to write """
+    path = _write_language(tmpdir, SOURCE_LANGUAGE, FLAT_PO)
+
+    assert not retire_translations(str(tmpdir), FLAT_STRINGS)
+    assert not any(e.obsolete for e in polib.pofile(path))
 
 
 def test_an_untranslated_flat_label_carries_nothing(tmpdir):

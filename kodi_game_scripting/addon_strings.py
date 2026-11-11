@@ -279,6 +279,30 @@ def carry_translations(addon_path, strings, uncategorized):
     return written
 
 
+def retire_translations(addon_path, strings):
+    """ Retire in every language the strings retired in English
+
+    Text no core declares any more stays in the source catalogue as obsolete,
+    so its ID isn't reused. Its translations are retired the same way, as
+    Weblate does when it syncs. Returns the languages changed. """
+    retired = {string['id'] for string in strings if string['obsolete']}
+
+    written = []
+    if retired:
+        for language, path, catalogue in _translated_catalogues(addon_path):
+            changed = False
+            for entry in catalogue:
+                match = _NUMERIC_MSGCTXT.match(entry.msgctxt or '')
+                if match and int(match.group(1)) in retired and \
+                        not entry.obsolete:
+                    entry.obsolete = True
+                    changed = True
+            if changed:
+                catalogue.save(path)
+                written.append(language)
+    return written
+
+
 STRINGS_PO_PATH = strings_po_path()
 
 _NUMERIC_MSGCTXT = re.compile(r'^#(\d+)$')

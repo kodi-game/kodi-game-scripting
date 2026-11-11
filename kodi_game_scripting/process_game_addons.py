@@ -28,7 +28,7 @@ import sys
 
 from . import utils
 from .addon_strings import (StringTable, carry_translations, read_strings,
-                            write_translations)
+                            retire_translations, write_translations)
 from .config import ADDONS, GITHUB_ADDON_PREFIX, GITHUB_ORGANIZATION
 from .git_access import GitHubOrg, GitHubRepo, GitRepo
 from .libretro_ctypes import LibretroWrapper
@@ -364,6 +364,12 @@ class KodiGameAddon():
         if carried:
             print(f"{self.name}: carried translations over to the "
                   f"categorised labels in {len(carried)} language(s)")
+
+        retired = retire_translations(os.path.join(self._path, self.name),
+                                      self.info.get('strings') or [])
+        if retired:
+            print(f"{self.name}: retired the obsolete strings in "
+                  f"{len(retired)} language(s)")
 
     def load_addon_xml(self):
         """ Load metadata from addon.xml.in """

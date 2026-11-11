@@ -241,6 +241,7 @@ jobs:
         - beetle-lynx
         - beetle-gba
         - beetle-bsnes
+        - azahar
         - atari800
         - a5200
         - 81

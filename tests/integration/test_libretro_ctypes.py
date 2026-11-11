@@ -70,7 +70,9 @@ def test_core_options_v2(tmpdir):
     setting1, setting2 = lib.options
 
     assert setting1.id == 'setting1'
+    # In its category, the core's shorter label; the flat one is kept
     assert setting1.description == 'Setting 1'
+    assert setting1.uncategorized_description == 'Video - Setting 1'
     assert setting1.info == 'What setting 1 does.'
     assert setting1.category == 'video'
     assert setting1.values == [('enabled', 'On'), ('disabled', 'Off')]
@@ -79,6 +81,9 @@ def test_core_options_v2(tmpdir):
 
     # An option is allowed to leave out everything that's optional
     assert setting2.id == 'setting2'
+    # Its shorter label is for a category it isn't in
+    assert setting2.description == 'Setting 2'
+    assert setting2.uncategorized_description == ''
     assert setting2.info == ''
     assert setting2.category == ''
     assert setting2.values == [('0', ''), ('1', ''), ('2', ''), ('3', '')]

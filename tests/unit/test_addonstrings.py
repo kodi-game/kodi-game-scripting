@@ -23,7 +23,8 @@ import pytest
 
 from kodi_game_scripting.addon_strings import (
     KODI_LANGUAGES, SOURCE_LANGUAGE, STRINGS_PO_PATH, StringTable,
-    by_kodi_language, read_strings, strings_po_path, write_translations)
+    _label_from_uncategorized, by_kodi_language, carry_translations,
+    read_strings, retire_translations, strings_po_path, write_translations)
 from kodi_game_scripting.libretro_ctypes import RETRO_LANGUAGE_TAGS
 
 pytestmark = [pytest.mark.unit]
@@ -339,3 +340,148 @@ msgstr ""
 
     assert f'msgid "{long_text}"' in written
     assert 'msgid ""\n"Use High Level' not in written
+
+
+# Settings used to be labelled with a core's flat-list text, which repeats
+# the category's name
+FLAT_PO = PO_HEADER + """
+msgctxt "#30001"
+msgid "System - Emulated Model"
+msgstr "System - Emuliertes Modell"
+
+msgctxt "#30002"
+msgid "Video - Color Correction"
+msgstr ""
+"""
+
+FLAT_STRINGS = [
+    {'id': 30001, 'content': 'System - Emulated Model', 'obsolete': True},
+    {'id': 30002, 'content': 'Video - Color Correction', 'obsolete': True},
+    {'id': 30003, 'content': 'Emulated Model', 'obsolete': False},
+    {'id': 30004, 'content': 'Color Correction', 'obsolete': False},
+]
+
+UNCATEGORIZED = {'Emulated Model': 'System - Emulated Model',
+                 'Color Correction': 'Video - Color Correction'}
+
+
+def test_a_categorised_label_keeps_its_flat_translation(tmpdir):
+    """ The translation follows the label to its new ID, less the category """
+    path = _write_language(tmpdir, 'de_de', FLAT_PO)
+
+    written = carry_translations(str(tmpdir), FLAT_STRINGS, UNCATEGORIZED)
+
+    assert written == ['de_de']
+    entries = _entries(path)
+    assert entries['#30003'] == 'Emuliertes Modell'
+
+
+def test_a_string_retired_in_english_is_retired_in_translations(tmpdir):
+    """ The flat labels' translations go when their English does """
+    path = _write_language(tmpdir, 'de_de', FLAT_PO)
+    carry_translations(str(tmpdir), FLAT_STRINGS, UNCATEGORIZED)
+
+    written = retire_translations(str(tmpdir), FLAT_STRINGS)
+
+    assert written == ['de_de']
+    retired = {e.msgctxt: e.msgstr for e in polib.pofile(path) if e.obsolete}
+    assert retired == {'#30001': 'System - Emuliertes Modell',
+                       '#30002': ''}
+    assert _entries(path)['#30003'] == 'Emuliertes Modell'
+    with open(path, encoding='utf-8') as handle:
+        assert '#~ msgctxt "#30001"' in handle.read()
+
+
+def test_a_live_string_is_not_retired(tmpdir):
+    """ Only what English retired goes """
+    path = _write_language(tmpdir, 'de_de', TRANSLATED_PO)
+    strings = [{'id': 30001, 'content': 'On', 'obsolete': False},
+               {'id': 30002, 'content': 'Off', 'obsolete': False}]
+
+    assert not retire_translations(str(tmpdir), strings)
+    assert not any(e.obsolete for e in polib.pofile(path))
+
+
+def test_the_source_catalogue_is_not_retired_in(tmpdir):
+    """ en_gb's obsolete entries are the string table's to write """
+    path = _write_language(tmpdir, SOURCE_LANGUAGE, FLAT_PO)
+
+    assert not retire_translations(str(tmpdir), FLAT_STRINGS)
+    assert not any(e.obsolete for e in polib.pofile(path))
+
+
+def test_an_untranslated_flat_label_carries_nothing(tmpdir):
+    """ No translation to carry is no entry, not an empty one """
+    path = _write_language(tmpdir, 'de_de', FLAT_PO)
+
+    carry_translations(str(tmpdir), FLAT_STRINGS, UNCATEGORIZED)
+
+    assert '#30004' not in _entries(path)
+
+
+def test_a_translation_already_there_is_kept(tmpdir):
+    """ Weblate or the core may already have translated the shorter label """
+    path = _write_language(tmpdir, 'de_de', FLAT_PO + """
+msgctxt "#30003"
+msgid "Emulated Model"
+msgstr "Modell"
+""")
+
+    written = carry_translations(str(tmpdir), FLAT_STRINGS, UNCATEGORIZED)
+
+    assert not written
+    assert _entries(path)['#30003'] == 'Modell'
+
+
+def test_a_translation_without_the_separator_is_left_for_weblate(tmpdir):
+    """ Where the category can't be cut out cleanly, nothing is guessed """
+    path = _write_language(tmpdir, 'de_de', PO_HEADER + """
+msgctxt "#30001"
+msgid "System - Emulated Model"
+msgstr "Emuliertes Modell des Systems"
+""")
+
+    written = carry_translations(str(tmpdir), FLAT_STRINGS, UNCATEGORIZED)
+
+    assert not written
+    assert '#30003' not in _entries(path)
+
+
+def test_the_source_catalogue_is_not_carried_into(tmpdir):
+    """ en_gb is written from the core, never from other languages """
+    path = _write_language(tmpdir, SOURCE_LANGUAGE, FLAT_PO)
+
+    written = carry_translations(str(tmpdir), FLAT_STRINGS, UNCATEGORIZED)
+
+    assert not written
+    assert '#30003' not in _entries(path)
+
+
+@pytest.mark.parametrize('translated, uncategorized, label, expected', [
+    ('System - Emuliertes Modell', 'System - Emulated Model',
+     'Emulated Model', 'Emuliertes Modell'),
+    ('Vidéo > Shader', 'Video > Shader', 'Shader', 'Shader'),
+    # The label has the separator in it as well
+    ('Vidéo - Saut - Seuil', 'Video - Frame Skip - Threshold',
+     'Frame Skip - Threshold', 'Saut - Seuil'),
+    # A different number of separators can't be cut safely
+    ('Vidéo - Saut', 'Video - Frame Skip - Threshold',
+     'Frame Skip - Threshold', ''),
+    # A hyphen in English may be a dash in the translation
+    ('Система — Эмулируемая модель', 'System - Emulated Model',
+     'Emulated Model', 'Эмулируемая модель'),
+    # A label that followed a dash in lower case starts with a capital
+    ('Video – bildskärmskant', 'Video - Display Border', 'Display Border',
+     'Bildskärmskant'),
+    # Scripts without case are left as they are
+    ('视频 - 调色板', 'Video - Palette', 'Palette', '调色板'),
+    # Spaces alone don't say where the category ends
+    ('System Modell', 'System Model', 'Model', ''),
+    # The flat label isn't the categorised one behind a category
+    ('System - Modell', 'System - Model', 'Emulated Model', ''),
+])
+def test_cutting_the_category_out_of_a_translation(
+        translated, uncategorized, label, expected):
+    """ Only what is certainly the label comes out """
+    assert _label_from_uncategorized(
+        translated, uncategorized, label) == expected

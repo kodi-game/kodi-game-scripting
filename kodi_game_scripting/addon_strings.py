@@ -166,6 +166,143 @@ def write_translations(addon_path, strings, translations):
     return written
 
 
+def _label_from_uncategorized(translated, uncategorized, label):
+    """ Cut a label's translation out of its uncategorised translation
+
+    A core's flat-list label is its categorised one behind the category's
+    name and a separator: "System - Emulated Model" for "Emulated Model".
+    Translations almost always keep the separator, so what follows the same
+    number of them is the translated label. Anything less certain returns ''
+    and is left for Weblate. """
+    if not label or uncategorized == label or \
+            not uncategorized.endswith(label):
+        return ''
+
+    prefix = uncategorized[:-len(label)]
+    separator = re.search(r'\W+$', prefix)
+    if separator is None or not separator.group(0).strip():
+        return ''
+    separator = separator.group(0)
+
+    # A translation may write the hyphen as its language's en or em dash
+    candidates = [separator]
+    if '-' in separator:
+        candidates += [separator.replace('-', dash)
+                       for dash in ('\u2013', '\u2014')]
+    found = [candidate for candidate in candidates
+             if translated.count(candidate) == uncategorized.count(separator)]
+    if len(found) != 1:
+        return ''
+
+    text = translated.split(found[0], prefix.count(separator))[-1].strip()
+    # Some languages start what follows the separator in lower case
+    if text and label[0].isupper() and text[0].islower() and \
+            len(text[0].upper()) == 1:
+        text = text[0].upper() + text[1:]
+    return text
+
+
+def _translated_catalogues(addon_path):
+    """ Every language's strings.po in an add-on but the source catalogue's,
+    as (language, path, catalogue) """
+    language_dir = os.path.join(addon_path, 'resources', 'language')
+    if not os.path.isdir(language_dir):
+        return
+
+    for directory in sorted(os.listdir(language_dir)):
+        language = directory[len('resource.language.'):]
+        path = os.path.join(addon_path, strings_po_path(language))
+        if not directory.startswith('resource.language.') or \
+                language == SOURCE_LANGUAGE or not os.path.isfile(path):
+            continue
+        try:
+            catalogue = polib.pofile(path, wrapwidth=0)
+        except (OSError, UnicodeDecodeError, IOError):
+            continue
+        yield language, path, catalogue
+
+
+def _carry_into(catalogue, pairs):
+    """ Carry translations within one catalogue; True if it changed """
+    by_id = {}
+    for entry in catalogue:
+        match = _NUMERIC_MSGCTXT.match(entry.msgctxt or '')
+        if match:
+            by_id[int(match.group(1))] = entry
+
+    changed = False
+    for old_id, new_id, old, new in pairs:
+        old_entry = by_id.get(old_id)
+        if old_entry is None or not old_entry.msgstr or \
+                'fuzzy' in old_entry.flags:
+            continue
+        text = _label_from_uncategorized(old_entry.msgstr, old, new)
+        entry = by_id.get(new_id)
+        if not text or (entry is not None and
+                        (entry.msgstr or entry.obsolete)):
+            continue
+
+        if entry is None:
+            entry = polib.POEntry(msgctxt=f'#{new_id}', msgid=new)
+            catalogue.append(entry)
+            by_id[new_id] = entry
+        entry.msgstr = text
+        changed = True
+
+    return changed
+
+
+def carry_translations(addon_path, strings, uncategorized):
+    """ Give each shorter categorised label the translations of its flat one
+
+    Settings used to be labelled with a core's flat-list text, which repeats
+    the category's name. The categorised text is new to the string table, so
+    it gets a new ID with no translations, while the old ones stay with the old
+    ID. Each language's old translation is carried over, less the category.
+
+    `uncategorized` maps a categorised label to the flat-list label it
+    replaces. A translation already there is kept. Returns the languages
+    changed. """
+    ids = {}
+    for string in strings:
+        ids.setdefault(string['content'], string['id'])
+    pairs = [(ids[old], ids[new], old, new)
+             for new, old in uncategorized.items()
+             if old in ids and new in ids]
+
+    written = []
+    if pairs:
+        for language, path, catalogue in _translated_catalogues(addon_path):
+            if _carry_into(catalogue, pairs):
+                catalogue.save(path)
+                written.append(language)
+    return written
+
+
+def retire_translations(addon_path, strings):
+    """ Retire in every language the strings retired in English
+
+    Text no core declares any more stays in the source catalogue as obsolete,
+    so its ID isn't reused. Its translations are retired the same way, as
+    Weblate does when it syncs. Returns the languages changed. """
+    retired = {string['id'] for string in strings if string['obsolete']}
+
+    written = []
+    if retired:
+        for language, path, catalogue in _translated_catalogues(addon_path):
+            changed = False
+            for entry in catalogue:
+                match = _NUMERIC_MSGCTXT.match(entry.msgctxt or '')
+                if match and int(match.group(1)) in retired and \
+                        not entry.obsolete:
+                    entry.obsolete = True
+                    changed = True
+            if changed:
+                catalogue.save(path)
+                written.append(language)
+    return written
+
+
 STRINGS_PO_PATH = strings_po_path()
 
 _NUMERIC_MSGCTXT = re.compile(r'^#(\d+)$')

@@ -304,8 +304,11 @@ class LibretroWrapper:
     EXT = 'dylib' if sys.platform == 'darwin' else 'so'
     LDD_CMD = ['otool', '-L'] if sys.platform == 'darwin' else ['ldd']
 
+    # uncategorized_description is the label the core gives an option for a
+    # flat list, when the one in description is its shorter categorised label
     Option = collections.namedtuple(
-        'Option', 'id description info category values default')
+        'Option', 'id description info category values default '
+        'uncategorized_description', defaults=('',))
     OptionValue = collections.namedtuple('OptionValue', 'value label')
     Category = collections.namedtuple('Category', 'key description info')
 
@@ -342,7 +345,8 @@ class LibretroWrapper:
                 option['category'],
                 [self.OptionValue(value['value'], value['label'])
                  for value in option['values']],
-                option['default'])
+                option['default'],
+                option.get('uncategorized_description', ''))
             for option in probe_result['options']]
         self.categories = [
             self.Category(category['key'], category['description'],
@@ -794,11 +798,13 @@ class LibretroProbe:
         self._result['options'] = []
         self._result['categories'] = []
 
+        declared = set()
         if options.categories:
             index = 0
             while options.categories[index].key:
                 category = options.categories[index]
                 index += 1
+                declared.add(_str(category.key))
                 self._result['categories'].append({
                     'key': _str(category.key),
                     'description': _str(category.desc),
@@ -810,13 +816,19 @@ class LibretroProbe:
             while options.definitions[index].key:
                 definition = options.definitions[index]
                 index += 1
-                # desc is deliberate: desc_categorized drops the context that
-                # existing translations were written against
+                category = _str(definition.category_key)
+                # desc repeats the category's name for frontends that list
+                # every option together; under the category, the core's
+                # shorter label is the one written to be read there
+                categorized = (_str(definition.desc_categorized)
+                               if category in declared else '')
                 self._add_option({
                     'key': _str(definition.key),
-                    'description': _str(definition.desc),
+                    'description': categorized or _str(definition.desc),
+                    'uncategorized_description': (_str(definition.desc)
+                                                  if categorized else ''),
                     'info': _str(definition.info),
-                    'category': _str(definition.category_key),
+                    'category': category,
                     'values': self._read_values(definition.values),
                     'default': _str(definition.default_value),
                 })

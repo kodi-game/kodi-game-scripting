@@ -31,6 +31,13 @@ ADDONS = {
     '81':                        ('81-libretro',                'Makefile',          '.',                 'build/jni', {}),
     'a5200':                     ('a5200',                      'Makefile',          '.',                 'jni', {}),
     'atari800':                  ('libretro-atari800',          'Makefile',          '.',                 'jni', {}),
+    'azahar':                    ('azahar-emu/azahar',          '',                  '',                  '', {
+        'branch': 'master',
+        'cmake': True,
+        'cmake_options': '-DENABLE_LIBRETRO=ON -DENABLE_VULKAN=OFF -DENABLE_TESTS=OFF -DENABLE_LTO=OFF -DCMAKE_BUILD_TYPE=Release',
+        'exclude_platforms': ['android-aarch64', 'android-armv7', 'osx-x86_64', 'osx-arm64', 'windows-i686', 'windows-x86_64'],
+        'submodules': True,
+    }),
     'beetle-bsnes':              ('beetle-bsnes-libretro',      'Makefile',          '.',                 'jni', {'soname': 'mednafen_snes'}),
     'beetle-gba':                ('beetle-gba-libretro',        'Makefile',          '.',                 'jni', {'soname': 'mednafen_gba'}),
     'beetle-lynx':               ('beetle-lynx-libretro',       'Makefile',          '.',                 'jni', {'soname': 'mednafen_lynx'}),

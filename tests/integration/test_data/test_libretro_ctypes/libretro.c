@@ -37,8 +37,8 @@ static struct retro_core_option_v2_category categories[] = {
 static struct retro_core_option_v2_definition definitions[] = {
    {
       "setting1",
+      "Video - Setting 1",
       "Setting 1",
-      NULL,
       "What setting 1 does.",
       NULL,
       "video",
@@ -52,7 +52,7 @@ static struct retro_core_option_v2_definition definitions[] = {
    {
       "setting2",
       "Setting 2",
-      NULL,
+      "Second",
       NULL,
       NULL,
       NULL,

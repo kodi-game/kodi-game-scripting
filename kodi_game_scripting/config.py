@@ -133,7 +133,10 @@ ADDONS = {
     'mesen':                     ('Mesen',                      'Makefile',          'Libretro',          'Libretro/jni', {}),
     'mesen-s':                   ('Mesen-S',                    'Makefile',          'Libretro',          'Libretro/jni', {}),
     'meteor':                    ('meteor-libretro',            'Makefile',          'libretro',          'libretro/jni', {}),
-    'mgba':                      ('mgba',                       'Makefile',          '.',                 'libretro-build/jni', {}),
+    'mgba':                      ('mgba-emu/mgba',              '',                  '.',                 '', {
+        'cmake': True,
+        'cmake_options': '-DLIBMGBA_ONLY=ON -DBUILD_LIBRETRO=ON -DSKIP_LIBRARY=ON -DLIBRETRO_LIBDIR:PATH=lib/libretro',
+    }),
     'minivmac':                  ('kodi-game/libretro-minivmac','Makefile',          '.',                 'jni', {}),
     'moonlight':                 ('kodi-game/moonlight-libretro','Makefile',          '.',                 '', {}),
     'mrboom':                    ('kodi-game/mrboom-libretro',  'Makefile',          '.',                 'libretro/jni', {}),

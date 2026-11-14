@@ -143,7 +143,7 @@ jobs:
         - pcsx-rearmed
         - pcem
         - parallext
-        - parallel_n6
+        - parallel_n64
         - opera
         - openlara
         - onscripter

@@ -69,6 +69,7 @@ jobs:
         # easyrpg
         dpkg -s libfmt-dev || sudo apt install -y libfmt-dev
         dpkg -s libinih-dev || sudo apt install -y libinih-dev
+        dpkg -s libpixman-1-dev || sudo apt install -y libpixman-1-dev
 
         # fsuae
         dpkg -s libglib2.0-dev || sudo apt install -y libglib2.0-dev

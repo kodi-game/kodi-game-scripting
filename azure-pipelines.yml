@@ -22,8 +22,8 @@ jobs:
   - template: .azure/job-template.yml
     parameters:
       displayName: "BuildAll"
-      vmImage: 'ubuntu-24.04'
-      pythonVersion: '3.10'
+      vmImage: 'ubuntu-26.04'
+      pythonVersion: '3.12'
       installScript: |
         # OpenGL cores
         dpkg -s mesa-common-dev || sudo apt install -y mesa-common-dev

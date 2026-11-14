@@ -87,7 +87,7 @@ ADDONS = {
     'desmume2015':               ('desmume2015',                'Makefile.libretro', 'desmume', 'desmume/src/libretro/jni', {}),
     'dinothawr':                 ('Dinothawr',                  'Makefile',          '.',                 'jni', {}),
     'dolphin':                   ('dolphin',                    '',                  '',                  '', {'cmake': True, 'cmake_options': '-DLIBRETRO=ON -DENABLE_X11=OFF -DENABLE_HWDB=OFF -DENABLE_EVDEV=OFF -DENABLE_EGL=OFF -DCMAKE_BUILD_TYPE=Release'}),
-    'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.',                 'jni', {}),
+    'dosbox':                    ('dosbox-libretro',            'Makefile.libretro', '.',                 'jni', {'commit': '0e3a122d1687e63777ed85d6c7994090c326bad9'}),
     'dosbox-pure':               ('dosbox-pure',                'Makefile',          '.',                 'jni', {'branch': 'main', 'soname': 'dosbox_pure'}),
     'easyrpg':                   ('EasyRPG/Player',             '',                  '',                  '', {'cmake': True}),
     'ecwolf':                    ('ecwolf',                     'Makefile',          'src/libretro',      'src/libretro/jni', {}),

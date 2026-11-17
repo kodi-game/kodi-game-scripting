@@ -147,7 +147,7 @@ ADDONS = {
     'nx':                        ('nxengine-libretro',          'Makefile',          '.',                 'jni', {'soname': 'nxengine'}),
     'o2em':                      ('libretro-o2em',              'Makefile',          '.',                 'jni', {}),
     'oberon':                    ('oberon-risc-emu',            'Makefile.libretro', '.',                 'Libretro/jni', {}),
-    'onscripter':                ('kodi-game/libretro-onscripter','Makefile',        '.',                 'jni', {'branch': 'main'}),
+    'onscripter':                ('kodi-game/libretro-onscripter','',                '',                  '', {'branch': 'main', 'cmake': True}),
     'openlara':                  ('OpenLara',                   'Makefile',          'src/platform/libretro', 'src/platform/libretro/jni', {}),
     'opera':                     ('opera-libretro',             'Makefile',          '.',                 'jni', {}),
     'parallel_n64':              ('parallel-n64',               'Makefile',          '.',                 'jni', {'exclude_platforms': ['windows-i686']}),

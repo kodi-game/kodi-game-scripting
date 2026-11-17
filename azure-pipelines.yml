@@ -136,7 +136,7 @@ jobs:
         - snes9x2002
         - snes9x
         - smsplus-gx
-        #- scummvm # Broken, needs updates
+        - scummvm
         - sameboy
         - same_cdi
         #- rustation # Disabled for now

@@ -69,6 +69,13 @@ jobs:
         dpkg -s libxi-dev || sudo apt install -y libxi-dev
         dpkg -s libxrandr-dev || sudo apt install -y libxrandr-dev
 
+        # dosbox
+        dpkg -s autoconf || sudo apt install -y autoconf
+        dpkg -s automake || sudo apt install -y automake
+        dpkg -s libasound2-dev || sudo apt install -y libasound2-dev
+        dpkg -s libtool-bin || sudo apt install -y libtool-bin
+        dpkg -s ninja-build || sudo apt install -y ninja-build
+
         # easyrpg
         dpkg -s libfmt-dev || sudo apt install -y libfmt-dev
         dpkg -s libinih-dev || sudo apt install -y libinih-dev

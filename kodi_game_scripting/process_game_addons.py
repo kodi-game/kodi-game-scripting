@@ -59,6 +59,11 @@ KODI_VALUE_LABELS = {
 }
 
 
+# Kodi applies its own deadzone to the sticks, so a core's would add to it
+DEADZONE_OPTION = re.compile(r'dead_?zone', re.IGNORECASE)
+ZERO_VALUE = re.compile(r'0+(\.0+)?%?')
+
+
 def main():
     """ Process Kodi Game addons and unify project files """
     parser = argparse.ArgumentParser(description=__doc__)
@@ -679,10 +684,15 @@ class KodiGameAddon():
                 if value['label'] is None:
                     value['label'] = string_table.get(value['value'])
 
+        default = option.default
+        if DEADZONE_OPTION.search(option.id):
+            default = next((value.value for value in option.values
+                            if ZERO_VALUE.fullmatch(value.value)), default)
+
         return {
             'id': option.id,
             'label': label,
             'help': help_label,
-            'default': option.default,
+            'default': default,
             'values': values,
         }

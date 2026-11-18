@@ -59,8 +59,9 @@ KODI_VALUE_LABELS = {
 }
 
 
-# Kodi applies its own deadzone to the sticks, so a core's would add to it
-DEADZONE_OPTION = re.compile(r'dead_?zone', re.IGNORECASE)
+# Kodi applies its own deadzone to the sticks, so a core's would add to it. A
+# trigger threshold is a deadzone too, and deadzones are left to the frontend.
+DEADZONE_OPTION = re.compile(r'dead_?zone|trigger_?threshold', re.IGNORECASE)
 ZERO_VALUE = re.compile(r'0+(\.0+)?%?')
 
 

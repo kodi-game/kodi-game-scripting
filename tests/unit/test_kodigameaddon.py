@@ -223,10 +223,15 @@ def test_kodigameaddon_deadzonedefault(kodigameaddon, libretrowrappermock):
         make_option('core_deadzone_radius', 'Deadzone Radius',
                     ['0.010', '0.020'], '0.010'),
         make_option('core_sensitivity', 'Sensitivity', ['0', '100'], '100'),
+        make_option('core_trigger_threshold', 'Trigger Threshold',
+                    ['0', '12', '50'], '12'),
+        # A threshold other than the triggers' isn't a deadzone
+        make_option('core_frameskip_threshold', 'Frameskip Threshold',
+                    ['0', '33'], '33'),
     ])
     kodigameaddon.load_library_file()
     assert [setting['default'] for setting in kodigameaddon.info['settings']] \
-        == ['0', '0%', '0.00', '0.010', '100']
+        == ['0', '0%', '0.00', '0.010', '100', '0', '33']
 
 
 def test_kodigameaddon_settingscategories(kodigameaddon, libretrowrappermock):

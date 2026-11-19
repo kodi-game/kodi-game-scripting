@@ -145,11 +145,11 @@ jobs:
         - snes9x2002
         - snes9x
         - smsplus-gx
-        - scummvm
+        #- scummvm # Disabled for now (70 minute build)
         - sameboy
         - same_cdi
         #- rustation # Disabled for now
-        - rpcs3
+        #- rpcs3 # Disabled for now (40 minute build)
         - retro8
         - remotejoy
         - reminiscence

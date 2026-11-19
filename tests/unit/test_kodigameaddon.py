@@ -210,6 +210,30 @@ def test_kodigameaddon_loadlibraryfile(kodigameaddon, libretrowrappermock):
     assert_option_labels_are_all_or_none(kodigameaddon.info['settings'])
 
 
+def test_kodigameaddon_deadzonedefault(kodigameaddon, libretrowrappermock):
+    """ Test that a deadzone option defaults to zero where the core offers it """
+    setup_library(libretrowrappermock, [
+        make_option('core_analog_deadzone', 'Analog Deadzone',
+                    ['0', '5', '15'], '15'),
+        make_option('core-stick-deadzone', 'Stick Deadzone',
+                    ['0%', '15%'], '15%'),
+        make_option('core_SteeringDeadzone', 'Steering Deadzone',
+                    ['0.00', '0.10'], '0.10'),
+        # No zero to choose, so the core's default stays
+        make_option('core_deadzone_radius', 'Deadzone Radius',
+                    ['0.010', '0.020'], '0.010'),
+        make_option('core_sensitivity', 'Sensitivity', ['0', '100'], '100'),
+        make_option('core_trigger_threshold', 'Trigger Threshold',
+                    ['0', '12', '50'], '12'),
+        # A threshold other than the triggers' isn't a deadzone
+        make_option('core_frameskip_threshold', 'Frameskip Threshold',
+                    ['0', '33'], '33'),
+    ])
+    kodigameaddon.load_library_file()
+    assert [setting['default'] for setting in kodigameaddon.info['settings']] \
+        == ['0', '0%', '0.00', '0.010', '100', '0', '33']
+
+
 def test_kodigameaddon_settingscategories(kodigameaddon, libretrowrappermock):
     """ Test that options are grouped into the categories a core declares """
     setup_library(libretrowrappermock, [
